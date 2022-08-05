@@ -12,7 +12,7 @@ import AddLocationIcon from '@mui/icons-material/AddLocation';
 import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
 import DashboardRoundedIcon from '@mui/icons-material/DashboardRounded';
 
-const darkTheme = createTheme({
+const theme = createTheme({
     palette: {
         // mode: 'dark',
         background: {
@@ -20,12 +20,28 @@ const darkTheme = createTheme({
             paper: '#f5f8f8'
         },
         primary: {
-            main: '#2c6e6a'
+            main: '#2c6e6a',
         },
         secondary: {
             main: '#2da3c2'
-        }
+        },
     },
+    components: {
+        MuiListItem: {
+            styleOverrides: {
+                root: {
+                    transition: '500ms',
+                    '&.Mui-selected': {
+                        backgroundColor: 'rgba(44,109,106, 0.7)',
+
+                        'svg, span': {
+                             color: '#f5f8f8'
+                        }
+                    }
+                }
+            }
+        }
+    }
 });
 
 export const navList = [
@@ -33,7 +49,7 @@ export const navList = [
         name: 'Home',
         icon: <HomeRoundedIcon/>,
         path: '/',
-        component: <div style={{height: 100, width: 100, backgroundColor: 'red'}}/>
+        component: <div style={{height: '120vh', width: 100, backgroundColor: 'red'}}></div>
     },
     {
         name: 'Dashboard',
@@ -53,11 +69,11 @@ const App: React.FC = () => {
     const location = useLocation()
     const dispatch = useAppDispatch()
     const {enqueueSnackbar} = useSnackbar()
-    const {user, error, isLoading} = useAppSelector(state => state.authReducer)
+    const {user, error} = useAppSelector(state => state.authReducer)
 
     useEffect(() => {
-        if (error) {
-            enqueueSnackbar(error, {variant: 'error'});
+        if (error?.message) {
+            enqueueSnackbar(error.message, {variant: 'error'});
         }
     }, [error])
 
@@ -84,14 +100,15 @@ const App: React.FC = () => {
                 <Route path="login" element={<Navigate to={'/'}/>}/>
                 <Route path="change_password" element={<Navigate to={'/'}/>}/>
                 <Route path="/" element={<HomePage/>}>
-                    {navList.map(navItem => <Route key={navItem.name} path={navItem.path} element={navItem.component}/>)}
+                    {navList.map(navItem => <Route key={navItem.name} path={navItem.path}
+                                                   element={navItem.component}/>)}
                 </Route>
             </Routes>
         )
     }
 
     return (
-        <ThemeProvider theme={darkTheme}>
+        <ThemeProvider theme={theme}>
             <div className="App">
                 <CssBaseline/>
                 {routes()}

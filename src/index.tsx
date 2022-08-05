@@ -16,11 +16,9 @@ const store = setupStore();
 root.render(
     <Provider store={store}>
         <BrowserRouter>
-            <React.StrictMode>
-                <SnackbarProvider maxSnack={3}>
-                    <App/>
-                </SnackbarProvider>
-            </React.StrictMode>
+            <SnackbarProvider maxSnack={3}>
+                <App/>
+            </SnackbarProvider>
         </BrowserRouter>
     </Provider>
 );

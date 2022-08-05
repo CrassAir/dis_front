@@ -15,7 +15,7 @@ import ListItemText from '@mui/material/ListItemText';
 import {navList} from '../../App';
 import {useLocation, useNavigate} from "react-router-dom";
 import {useState} from "react";
-import {Avatar, Box, Card, CardActionArea, CardMedia} from "@mui/material";
+import {Avatar, Box, Card, CardActionArea, CardMedia, LinearProgress, Slide, useScrollTrigger} from "@mui/material";
 import {useAppDispatch, useAppSelector} from "../../hooks/redux";
 import {logout} from "../../store/actions/auth";
 import Logo from "../../assets/logo.png";
@@ -92,60 +92,75 @@ const Drawer = styled(MuiDrawer, {shouldForwardProp: (prop) => prop !== 'open'})
     }),
 );
 
+const HideOnScroll = (props: any) => {
+    const {children, window} = props;
+    // Note that you normally won't need to set the window ref as useScrollTrigger
+    // will default to window.
+    // This is only being set here because the demo is in an iframe.
+    const trigger = useScrollTrigger({
+        target: window ? window() : undefined,
+    });
+
+    return (
+        <Slide appear={false} direction="down" in={!trigger}>
+            {children}
+        </Slide>
+    );
+};
+
 const Navbar: React.FC = () => {
     const navigate = useNavigate()
     const location = useLocation()
     const dispatch = useAppDispatch()
-    const {user} = useAppSelector(state => state.authReducer)
+    const {user, isLoading} = useAppSelector(state => state.authReducer)
     const [open, setOpen] = useState(false)
 
-    const handleDrawerOpen = () => {
-        setOpen(true)
-    }
-
-    const handleDrawerClose = () => {
-        setOpen(false)
+    const handleDrawer = () => {
+        setOpen(!open)
     }
 
     return (<>
-            <AppBar position="fixed" open={open}>
-                <Toolbar>
-                    <IconButton
-                        color="inherit"
-                        aria-label="open drawer"
-                        onClick={handleDrawerOpen}
-                        edge="start"
-                        sx={{
-                            marginRight: 5, ...(open && {display: 'none'}),
-                        }}
-                    >
-                        <MenuIcon/>
-                    </IconButton>
-                    <Card elevation={0}>
-                        <CardActionArea
-                            onClick={() => navigate('/', {replace: true})}
+            <HideOnScroll>
+                <AppBar position="fixed" open={open}>
+                    <Toolbar>
+                        <IconButton
+                            color="inherit"
+                            aria-label="open drawer"
+                            onClick={handleDrawer}
+                            edge="start"
+                            sx={{
+                                marginRight: 5, ...(open && {display: 'none'}),
+                            }}
                         >
-                            <CardMedia
-                                sx={{p: 1}}
-                                component="img"
-                                height="50"
-                                image={Logo}
-                                alt="dis logo"
-                            />
-                        </CardActionArea>
-                    </Card>
-                    <Box flexGrow={1}/>
-                    {user?.full_name && <Avatar {...stringAvatar(user.full_name)}/>}
-                    <IconButton edge='end' onClick={() => dispatch(logout())}>
-                        <LogoutIcon/>
-                    </IconButton>
-                </Toolbar>
-            </AppBar>
+                            <MenuIcon/>
+                        </IconButton>
+                        <Card elevation={0}>
+                            <CardActionArea
+                                onClick={() => navigate('/', {replace: true})}
+                            >
+                                <CardMedia
+                                    sx={{p: 1}}
+                                    component="img"
+                                    height="50"
+                                    image={Logo}
+                                    alt="dis logo"
+                                />
+                            </CardActionArea>
+                        </Card>
+                        <Box flexGrow={1}/>
+                        {user?.full_name && <Avatar {...stringAvatar(user.full_name)}/>}
+                        <IconButton edge='end' onClick={() => dispatch(logout())}>
+                            <LogoutIcon/>
+                        </IconButton>
+                    </Toolbar>
+                    {isLoading && <LinearProgress color={'secondary'}/>}
+                </AppBar>
+            </HideOnScroll>
             <Drawer variant="permanent" open={open}>
                 <DrawerHeader>
                     {/*<div style={{backgroundColor: 'red', width: 20, height: 20}}/>*/}
-                    <IconButton onClick={handleDrawerClose}>
-                        <ChevronLeftIcon/>
+                    <IconButton onClick={handleDrawer} sx={{justifyContent: 'center'}}>
+                        {open ? <ChevronLeftIcon/> : <MenuIcon/>}
                     </IconButton>
                 </DrawerHeader>
                 <List>

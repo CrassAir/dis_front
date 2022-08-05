@@ -1,8 +1,8 @@
-import axios, {AxiosError} from "axios";
+import axios from "axios";
 import {IAccount, IAuth} from "../../models/IAuth";
 import {apiUrl, restAuthUrl} from "../../api/urls";
 import {createAsyncThunk} from "@reduxjs/toolkit";
-import api, {apiError} from "../../api/api";
+import api, {apiError, IApiError} from "../../api/api";
 
 export const login = createAsyncThunk(
     'login',
@@ -46,7 +46,7 @@ export const checkToken = createAsyncThunk(
     'checkToken',
     async (_, thunkAPI) => {
         const token = localStorage.getItem('token');
-        const user = JSON.parse(localStorage.getItem('username') || '{}') ;
+        const user = JSON.parse(localStorage.getItem('user') || '{}') ;
         if (token) {
             try {
                 await axios.post(apiUrl + 'check_token/', {token: token})
@@ -56,7 +56,9 @@ export const checkToken = createAsyncThunk(
                 })
                 return user
             } catch (e) {
-                return thunkAPI.rejectWithValue(apiError(e))
+                const error: IApiError = apiError(e)
+                if (error.code === 401) thunkAPI.dispatch(logout())
+                return thunkAPI.rejectWithValue(error)
             }
         } else if (token === undefined) {
             thunkAPI.dispatch(logout());

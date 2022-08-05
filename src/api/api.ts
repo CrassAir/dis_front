@@ -8,12 +8,17 @@ const api = axios.create({
     responseType: "json",
 });
 
-export const apiError = (e: any) => {
+export interface IApiError {
+    code: number
+    message: string
+}
+
+export const apiError = (e: any): IApiError => {
     if (axios.isAxiosError(e)) {
         // @ts-ignore
-        return e.response.data.detail || e.message
+        return {code: e.response.status, message: e.response.data.detail || e.message}
     }
-    return e.message
+    return{code: 0, message: e.message}
 }
 // api.interceptors.request.use((config) => {
 //     config.headers["X-CSRFToken"] = Cookies.get("csrftoken");
