@@ -5,8 +5,8 @@ export interface IAuth {
 }
 
 export interface IAccount {
+    id: number
     username: string
     token: string
-    avatar: string
     full_name: string
 }

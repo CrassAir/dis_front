@@ -1,6 +1,8 @@
+import {stringify} from "querystring";
+
 const actualUrl = {
-    // 'test': {hostname: '192.168.252.140', port: '8000', protocol: 'http:', ws: 'ws'},
-    'test': {hostname: '192.168.252.191', port: '9009', protocol: 'http:', ws: 'ws'},
+    'test': {hostname: '192.168.252.140', port: '8000', protocol: 'http:', ws: 'ws'},
+    // 'test': {hostname: '192.168.252.191', port: '9009', protocol: 'http:', ws: 'ws'},
     'main': {
         hostname: window.location.hostname,
         port: window.location.port,
@@ -24,3 +26,13 @@ export function getWsLiveDataUrl() {
 export const apiUrl = `${getHostname()}/api/`
 export const restAuthUrl = `${getHostname()}/rest-auth/`
 
+interface acc {
+    key: string
+    user: {
+        id: number
+        username: string
+        full_name: string
+        team_name: string
+        organization_name: string
+    }
+}

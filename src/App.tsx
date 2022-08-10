@@ -5,18 +5,20 @@ import HomePage from "./pages/HomePage/HomePage";
 import {Navigate, Route, Routes, useLocation} from "react-router-dom";
 import {checkToken, logout} from "./store/actions/auth";
 import {useAppDispatch, useAppSelector} from "./hooks/redux";
-import {createTheme, CssBaseline, ThemeProvider} from '@mui/material';
+import {Box, Card, CardMedia, createTheme, CssBaseline, ThemeProvider} from '@mui/material';
 import LoginPage from "./pages/LoginPage/LoginPage";
 import {useSnackbar} from "notistack";
 import AddLocationIcon from '@mui/icons-material/AddLocation';
 import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
 import DashboardRoundedIcon from '@mui/icons-material/DashboardRounded';
+import Parameter from "./pages/Catalogs/Parameter/Parameter";
+import Logo from "./assets/logo_footer.png";
 
 const theme = createTheme({
     palette: {
         // mode: 'dark',
         background: {
-            default: '#d7edf1',
+            // default: '#d7edf1',
             paper: '#f5f8f8'
         },
         primary: {
@@ -35,7 +37,7 @@ const theme = createTheme({
                         backgroundColor: 'rgba(44,109,106, 0.7)',
 
                         'svg, span': {
-                             color: '#f5f8f8'
+                            color: '#f5f8f8'
                         }
                     }
                 }
@@ -55,7 +57,7 @@ export const navList = [
         name: 'Dashboard',
         icon: <DashboardRoundedIcon/>,
         path: '/dashboard',
-        component: <div style={{height: 100, width: 100, backgroundColor: 'green'}}/>
+        component: <Parameter/>
     },
     {
         name: '3',
@@ -95,15 +97,29 @@ const App: React.FC = () => {
                 </Routes>
             )
         }
+        if (user) {
+            return (
+                <Routes>
+                    <Route path="login" element={<Navigate to={'/'}/>}/>
+                    <Route path="change_password" element={<Navigate to={'/'}/>}/>
+                    <Route path="/" element={<HomePage/>}>
+                        {navList.map(navItem => <Route key={navItem.name} path={navItem.path}
+                                                       element={navItem.component}/>)}
+                    </Route>
+                </Routes>
+            )
+        }
         return (
-            <Routes>
-                <Route path="login" element={<Navigate to={'/'}/>}/>
-                <Route path="change_password" element={<Navigate to={'/'}/>}/>
-                <Route path="/" element={<HomePage/>}>
-                    {navList.map(navItem => <Route key={navItem.name} path={navItem.path}
-                                                   element={navItem.component}/>)}
-                </Route>
-            </Routes>
+            <Box className={'login-container'}>
+                <Card elevation={0} sx={{maxWidth: 300, p: 3}}>
+                    <CardMedia
+                        component="img"
+                        height="100"
+                        image={Logo}
+                        alt="dis logo"
+                    />
+                </Card>
+            </Box>
         )
     }
 

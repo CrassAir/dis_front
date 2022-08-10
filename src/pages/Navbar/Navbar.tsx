@@ -14,12 +14,13 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import {navList} from '../../App';
 import {useLocation, useNavigate} from "react-router-dom";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {Avatar, Box, Card, CardActionArea, CardMedia, LinearProgress, Slide, useScrollTrigger} from "@mui/material";
 import {useAppDispatch, useAppSelector} from "../../hooks/redux";
 import {logout} from "../../store/actions/auth";
 import Logo from "../../assets/logo.png";
 import {stringAvatar} from "../utils";
+import authReducer from "../../store/reducers/AuthReducer";
 
 const drawerWidth = 240;
 
@@ -47,7 +48,7 @@ const closedMixin = (theme: Theme): CSSObject => ({
 export const DrawerHeader = styled('div')(({theme}) => ({
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'flex-end',
+    justifyContent: 'center',
     padding: theme.spacing(0, 1),
     // necessary for content to be below app bar
     ...theme.mixins.toolbar,
@@ -158,8 +159,7 @@ const Navbar: React.FC = () => {
             </HideOnScroll>
             <Drawer variant="permanent" open={open}>
                 <DrawerHeader>
-                    {/*<div style={{backgroundColor: 'red', width: 20, height: 20}}/>*/}
-                    <IconButton onClick={handleDrawer} sx={{justifyContent: 'center'}}>
+                    <IconButton onClick={handleDrawer}>
                         {open ? <ChevronLeftIcon/> : <MenuIcon/>}
                     </IconButton>
                 </DrawerHeader>

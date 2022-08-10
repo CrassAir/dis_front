@@ -10,10 +10,10 @@ export const login = createAsyncThunk(
         try {
             const {data} = await axios.post(restAuthUrl + 'login/', post)
             const account: IAccount = {
-                username: data.account.username,
+                id: data.user.id,
+                username: data.user.username,
                 token: data.key,
-                full_name: data.account.full_name,
-                avatar: data.account.avatar
+                full_name: data.user.full_name,
             }
             localStorage.setItem('user', JSON.stringify(account))
             localStorage.setItem('token', data.key)

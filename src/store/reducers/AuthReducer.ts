@@ -1,16 +1,16 @@
-import {AnyAction, createSlice, isPending, isRejected} from "@reduxjs/toolkit";
+import {AnyAction, createSlice, isFulfilled, isPending, isRejected} from "@reduxjs/toolkit";
 import {checkToken, login, logout} from "../actions/auth";
 import {IAccount} from "../../models/IAuth";
 import {IApiError} from "../../api/api";
 
 
-interface AuthState {
+interface IAuthState {
     user: IAccount | null
     isLoading: boolean
     error: IApiError | null
 }
 
-const initialState: AuthState = {
+const initialState: IAuthState = {
     user: null,
     isLoading: false,
     error: null
@@ -26,7 +26,6 @@ export const authSlice = createSlice({
             state.user = payload
             state.isLoading = false
             state.error = null
-
         })
         builder.addCase(checkToken.fulfilled, (state, {payload}) => {
             state.user = payload || null
@@ -39,6 +38,10 @@ export const authSlice = createSlice({
             state.error = null
         })
 
+        builder.addMatcher(isFulfilled, (state) => {
+            state.isLoading = false
+            state.error = null
+        })
         builder.addMatcher(isPending, (state) => {
             state.isLoading = true
         })
