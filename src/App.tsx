@@ -5,14 +5,15 @@ import HomePage from "./pages/HomePage/HomePage";
 import {Navigate, Route, Routes, useLocation} from "react-router-dom";
 import {checkToken, logout} from "./store/actions/auth";
 import {useAppDispatch, useAppSelector} from "./hooks/redux";
-import {Box, Card, CardMedia, createTheme, CssBaseline, ThemeProvider} from '@mui/material';
+import {Box, Card, CardMedia, createTheme, CssBaseline, TextField, ThemeProvider} from '@mui/material';
 import LoginPage from "./pages/LoginPage/LoginPage";
 import {useSnackbar} from "notistack";
 import AddLocationIcon from '@mui/icons-material/AddLocation';
 import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
 import DashboardRoundedIcon from '@mui/icons-material/DashboardRounded';
-import Parameter from "./pages/Catalogs/Parameter/Parameter";
+// import Parameter from "./pages/Catalogs/Parameter/Parameter";
 import Logo from "./assets/logo_footer.png";
+import Parameter from './pages/Catalogs/Parameter/Parameter';
 
 const theme = createTheme({
     palette: {
@@ -51,7 +52,7 @@ export const navList = [
         name: 'Home',
         icon: <HomeRoundedIcon/>,
         path: '/',
-        component: <div style={{height: '120vh', width: 100, backgroundColor: 'red'}}></div>
+        component: <TextField/>
     },
     {
         name: 'Dashboard',

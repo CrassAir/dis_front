@@ -4,11 +4,14 @@ import {apiUrl, restAuthUrl} from "../../api/urls";
 import {createAsyncThunk} from "@reduxjs/toolkit";
 import api, {apiError, IApiError} from "../../api/api";
 
+let interceptor = 0;
+
 export const login = createAsyncThunk(
     'login',
     async (post: IAuth, thunkAPI) => {
         try {
             const {data} = await axios.post(restAuthUrl + 'login/', post)
+            console.log(data.key)
             const account: IAccount = {
                 id: data.user.id,
                 username: data.user.username,
@@ -17,7 +20,7 @@ export const login = createAsyncThunk(
             }
             localStorage.setItem('user', JSON.stringify(account))
             localStorage.setItem('token', data.key)
-            api.interceptors.request.use((config: any) => {
+            interceptor = api.interceptors.request.use((config: any) => {
                 config.headers["Authorization"] = `Token ${data.key}`;
                 return config
             })
@@ -35,6 +38,7 @@ export const logout = createAsyncThunk(
         localStorage.removeItem('user');
         try {
             await api.post(restAuthUrl + "logout/", {})
+            api.interceptors.request.eject(interceptor)
             return {}
         } catch (e) {
             return thunkAPI.rejectWithValue(apiError(e))
@@ -50,7 +54,7 @@ export const checkToken = createAsyncThunk(
         if (token) {
             try {
                 await axios.post(apiUrl + 'check_token/', {token: token})
-                api.interceptors.request.use((config: any) => {
+                interceptor = api.interceptors.request.use((config: any) => {
                     config.headers["Authorization"] = `Token ${token}`;
                     return config
                 })

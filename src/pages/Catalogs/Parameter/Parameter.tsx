@@ -1,196 +1,140 @@
 import React, {useEffect, useMemo, useState} from 'react';
-import {Box, IconButton, Paper, Tooltip, Typography} from "@mui/material";
-import MaterialReactTable, {MRT_Cell, MRT_ColumnDef, MRT_Row} from 'material-react-table';
-import AddBoxIcon from '@mui/icons-material/AddBox'
+import MaterialTable, {Column} from "material-table";
 import {useAppDispatch, useAppSelector} from "../../../hooks/redux";
-import {getParameters} from "../../../store/actions/catalog";
+import {
+    createParameter, deleteParameter,
+    getLockThread,
+    getLockType,
+    getParameters, getPipeType,
+    getSizeRange,
+    getStrengthGroup, updateParameter
+} from "../../../store/actions/catalog";
+import {IParameter} from "../../../models/ICatalog";
+import {convertListToObject, localizationMT} from "../../utils";
 
-type Person = {
-    id: string,
-    name: {
-        firstName: string;
-        lastName: string;
-    };
-    address: string;
-    city: string;
-    state: string;
-};
 
-const data: Person[] = [
-    {
-        id: 'John',
-        name: {
-            firstName: 'John',
-            lastName: 'Doe',
-        },
-        address: '261 Erdman Ford',
-        city: 'East Daphne',
-        state: 'Kentucky',
-    },
-    {
-        id: 'Jane',
-        name: {
-            firstName: 'Jane',
-            lastName: 'Doe',
-        },
-        address: '769 Dominic Grove',
-        city: 'Columbus',
-        state: 'Ohio',
-    },
-    {
-        id: 'Joe',
-        name: {
-            firstName: 'Joe',
-            lastName: 'Doe',
-        },
-        address: '566 Brakus Inlet',
-        city: 'South Linda',
-        state: 'West Virginia',
-    },
-    {
-        id: 'Kevin',
-        name: {
-            firstName: 'Kevin',
-            lastName: 'Vandy',
-        },
-        address: '722 Emie Stream',
-        city: 'Lincoln',
-        state: 'Nebraska',
-    },
-    {
-        id: 'Joshua',
-        name: {
-            firstName: 'Joshua',
-            lastName: 'Rolluffs',
-        },
-        address: '32188 Larkin Turnpike',
-        city: 'Omaha',
-        state: 'Nebraska',
-    },
-];
-
-const Parameter: React.FC = () => {
-    const [ndata, setNdata] = useState(data)
-    const [create, setCreate] = useState(false)
+const Parameter = () => {
+    const [data, setData] = useState<IParameter[]>([])
     const dispatch = useAppDispatch()
-    const {parameters} = useAppSelector(state => state.catalogReducer)
+    const {
+        parameters,
+        strength_group,
+        size_range,
+        lock_type,
+        lock_thread,
+        pipe_type
+    } = useAppSelector(state => state.catalogReducer)
 
+    let columns = useMemo<Column<IParameter>[]>(() => ([
+        {
+            title: 'nominal pipe diameter', field: 'nominal_pipe_diameter', type: 'numeric',
+            validate: rowData => !!rowData.nominal_pipe_diameter && isFinite(rowData.nominal_pipe_diameter),
+            cellStyle: {backgroundColor: 'rgba(0,0,0,0.05)', textAlign: 'center'}
+        },
+        {
+            title: 'weight_foot', field: 'weight_foot', type: 'numeric',
+            validate: rowData => !!rowData.weight_foot && isFinite(rowData.weight_foot),
+            cellStyle: {textAlign: 'center'}
+        },
+        {
+            title: 'reinforcement',
+            field: 'reinforcement',
+            type: 'boolean',
+            cellStyle: {backgroundColor: 'rgba(0,0,0,0.05)', textAlign: 'center'}
+        },
+        {
+            title: 'internal_coating',
+            field: 'internal_coating',
+            type: 'boolean',
+            cellStyle: {textAlign: 'center'}
+        },
+        {
+            title: 'pipe_inner_diameter', field: 'pipe_inner_diameter', type: 'numeric',
+            validate: rowData => !!rowData.pipe_inner_diameter && isFinite(rowData.pipe_inner_diameter),
+            cellStyle: {backgroundColor: 'rgba(0,0,0,0.05)', textAlign: 'center'}
+        },
+        {
+            title: 'lock_outside_diameter', field: 'lock_outside_diameter', type: 'numeric',
+            validate: rowData => !!rowData.lock_outside_diameter && isFinite(rowData.lock_outside_diameter),
+            cellStyle: {textAlign: 'center'}
+        },
+        {
+            title: 'lock_inner_diameter', field: 'lock_inner_diameter', type: 'numeric',
+            validate: rowData => !!rowData.lock_inner_diameter && isFinite(rowData.lock_inner_diameter),
+            cellStyle: {backgroundColor: 'rgba(0,0,0,0.05)', textAlign: 'center'}
+        },
+        {
+            title: 'weight', field: 'weight', type: 'numeric',
+            validate: rowData => !!rowData.weight && isFinite(rowData.weight),
+            cellStyle: {textAlign: 'center'}
+        },
+        {
+            title: 'wall_thickness', field: 'wall_thickness', type: 'numeric',
+            validate: rowData => !!rowData.wall_thickness && isFinite(rowData.wall_thickness),
+            cellStyle: {backgroundColor: 'rgba(0,0,0,0.05)', textAlign: 'center'}
+        },
+        {
+            title: 'length', field: 'length', type: 'numeric',
+            validate: rowData => !!rowData.length && isFinite(rowData.length),
+            cellStyle: {textAlign: 'center'}
+        },
+        {
+            title: 'strength_group',
+            field: 'strength_group',
+            lookup: strength_group && convertListToObject(strength_group),
+            validate: rowData => !!rowData.strength_group,
+            cellStyle: {backgroundColor: 'rgba(0,0,0,0.05)', textAlign: 'center'}
+        },
+        {
+            title: 'size_range', field: 'size_range', lookup: size_range && convertListToObject(size_range),
+            validate: rowData => !!rowData.size_range,
+            cellStyle: {textAlign: 'center'}
+        },
+        {
+            title: 'lock_thread', field: 'lock_thread', lookup: lock_type && convertListToObject(lock_type),
+            validate: rowData => !!rowData.lock_type,
+            cellStyle: {backgroundColor: 'rgba(0,0,0,0.05)', textAlign: 'center'}
+        },
+        {
+            title: 'lock_type', field: 'lock_type', lookup: lock_thread && convertListToObject(lock_thread),
+            validate: rowData => !!rowData.lock_thread,
+            cellStyle: {textAlign: 'center'}
+        },
+        {
+            title: 'pipe_type', field: 'pipe_type', lookup: pipe_type && convertListToObject(pipe_type),
+            validate: rowData => !!rowData.pipe_type,
+            cellStyle: {backgroundColor: 'rgba(0,0,0,0.05)', textAlign: 'center'}
+        },
+    ]), [parameters, strength_group, size_range, lock_type, lock_thread, pipe_type])
 
     useEffect(() => {
         dispatch(getParameters())
+        dispatch(getStrengthGroup())
+        dispatch(getSizeRange())
+        dispatch(getLockThread())
+        dispatch(getLockType())
+        dispatch(getPipeType())
     }, [])
 
-    console.log(parameters)
+    useEffect(() => {
+        if (parameters) setData(parameters.map(par => ({...par, tableData: {}})))
+    }, [parameters])
 
-    const columns = useMemo<MRT_ColumnDef<Person>[]>(
-        () => [
-            {
-                accessorKey: 'name.firstName',
-                header: 'First Name',
-            },
-            {
-                accessorKey: 'name.lastName',
-                header: 'Last Name',
-            },
-            {
-                accessorKey: 'address',
-                header: 'Address',
-            },
-            {
-                accessorKey: 'city',
-                header: 'City',
-            },
-            {
-                accessorKey: 'state',
-                header: 'State',
-            },
-        ], [],
-    );
 
     return (
-        <MaterialReactTable
+        <MaterialTable
+            title="Editable Preview"
+            options={{
+                pageSize: 8,
+            }}
+            localization={localizationMT}
+            style={{display: 'grid'}}
             columns={columns}
-            data={ndata}
-            muiTableBodyRowProps={({row}) => ({
-                onClick: (e) => {
-                    if (row.original.id === 'new') {
-                        let target = e.target
-                        for (let i = 0; i < 3; i++) {
-                            // @ts-ignore
-                            if (target.type === 'button' && target.attributes['aria-label'].value) {
-                                setNdata(prevState => {
-                                    prevState.shift()
-                                    return [...prevState]
-                                })
-                                setCreate(false)
-                                return
-                            }
-                            // @ts-ignore
-                            target = target.parentNode
-                        }
-                    } else if (create) {
-                        setNdata(prevState => {
-                            prevState.shift()
-                            return [...prevState]
-                        })
-                        setCreate(false)
-
-                    }
-                }
-            })}
-            onEditRowSubmit={({row, table}) => {
-                console.log(row)
-                console.log(table)
-            }}
-            initialState={{
-                pagination: {pageSize: 25, pageIndex: 0},
-                density: 'compact',
-            }}
-            muiTableTopToolbarProps={{
-                sx: {
-                    borderRadius: '10px'
-                }
-            }}
-            muiTableBottomToolbarProps={{
-                sx: {
-                    borderRadiusBottom: '10px'
-                }
-            }}
-            // enableRowSelection //enable some features
-            enableHiding={false}
-            enableColumnOrdering={false}
-            enableColumnActions={false}
-            enableColumnDragging={false}
-            enableEditing
-            renderTopToolbarCustomActions={({table}) => {
-                const handleCreateNewUser = () => {
-                    if (!create) {
-                        setCreate(true)
-                        setNdata(prevState => [{
-                            id: 'new',
-                            name: {
-                                firstName: '',
-                                lastName: '',
-                            },
-                            address: '',
-                            city: '',
-                            state: '',
-                        }, ...prevState,])
-                        // @ts-ignore
-                        table.setCurrentEditingRow(table.getRow('0'))
-                    }
-                };
-
-                return (
-                    <Box sx={{display: 'flex'}}>
-                        <Typography variant="h4">Table Title</Typography>
-                        <Tooltip arrow title="Create New User">
-                            <IconButton onClick={handleCreateNewUser}>
-                                <AddBoxIcon/>
-                            </IconButton>
-                        </Tooltip>
-                    </Box>
-                );
+            data={data}
+            editable={{
+                onRowAdd: newData => dispatch(createParameter(newData)),
+                onRowUpdate: (newData, oldData) => dispatch(updateParameter(newData)),
+                onRowDelete: oldData => dispatch(deleteParameter(oldData))
             }}
         />
     )
