@@ -1,3 +1,5 @@
+import {IParameter} from "../models/ICatalog";
+
 const stringToColor = (string: string) => {
     let hash = 0;
     let i;
@@ -78,4 +80,21 @@ export const convertListToObject = (list: any[]) => {
         acc[cur.id] = cur.name;
         return acc;
     }, {})
+}
+
+export const updateElementInList = (list: any[], newEl: any) => {
+    return list.map(el => {
+        if (el.id === newEl.id) return newEl
+        return el
+    })
+}
+
+export const deleteElementFromList = (list: any[], id: number) => {
+    const newList: any[] = [];
+    list.forEach(el => {
+        if (el.id !== id) {
+            newList.push(el)
+        }
+    })
+    return newList
 }

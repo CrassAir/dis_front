@@ -5,15 +5,22 @@ import HomePage from "./pages/HomePage/HomePage";
 import {Navigate, Route, Routes, useLocation} from "react-router-dom";
 import {checkToken, logout} from "./store/actions/auth";
 import {useAppDispatch, useAppSelector} from "./hooks/redux";
-import {Box, Card, CardMedia, createTheme, CssBaseline, TextField, ThemeProvider} from '@mui/material';
+import {
+    Box,
+    createTheme,
+    CssBaseline,
+    SvgIcon,
+    TextField,
+    ThemeProvider
+} from '@mui/material';
 import LoginPage from "./pages/LoginPage/LoginPage";
 import {useSnackbar} from "notistack";
 import AddLocationIcon from '@mui/icons-material/AddLocation';
 import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
 import DashboardRoundedIcon from '@mui/icons-material/DashboardRounded';
-// import Parameter from "./pages/Catalogs/Parameter/Parameter";
-import Logo from "./assets/logo_footer.png";
-import Parameter from './pages/Catalogs/Parameter/Parameter';
+import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
+import {ReactComponent as svgLogo} from "./assets/dis_log_without_text2.svg"
+import Catalog from "./pages/Catalogs/Catalog";
 
 const theme = createTheme({
     palette: {
@@ -49,16 +56,16 @@ const theme = createTheme({
 
 export const navList = [
     {
-        name: 'Home',
+        name: 'Главная',
         icon: <HomeRoundedIcon/>,
         path: '/',
         component: <TextField/>
     },
     {
-        name: 'Dashboard',
-        icon: <DashboardRoundedIcon/>,
+        name: 'Справочник',
+        icon: <LibraryBooksIcon/>,
         path: '/dashboard',
-        component: <Parameter/>
+        component: <Catalog/>
     },
     {
         name: '3',
@@ -112,14 +119,7 @@ const App: React.FC = () => {
         }
         return (
             <Box className={'login-container'}>
-                <Card elevation={0} sx={{maxWidth: 300, p: 3}}>
-                    <CardMedia
-                        component="img"
-                        height="100"
-                        image={Logo}
-                        alt="dis logo"
-                    />
-                </Card>
+                <SvgIcon className={'logo_anim'} component={svgLogo} sx={{width: 100, height: 100}} viewBox="-5.019615315404735E-6 -0.3768116120910392 99.89627206933781 100.37680334753924"/>
             </Box>
         )
     }

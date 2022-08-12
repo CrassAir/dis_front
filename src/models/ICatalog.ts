@@ -1,3 +1,5 @@
+import {RcFile} from "antd/es/upload/interface";
+
 export interface ISubParameter {
     id: number
     name: string
@@ -47,3 +49,30 @@ export const BlankParameter: IParameter = {
     lock_type: undefined,
     pipe_type: undefined,
 }
+
+export interface ITools {
+    id: number
+    name: string
+    serial_number: string
+    date_last_verification: string
+    date_next_verification: string
+}
+
+export interface IOrganization {
+    id: number
+    name: string
+    full_name: string
+    comment?: string
+    location?: string
+    administrative: boolean
+}
+
+export interface IContract {
+    id: number
+    number: string
+    name: string
+    organization: number
+    doc?: string | RcFile
+    active: boolean
+}
+
