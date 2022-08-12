@@ -15,7 +15,6 @@ import {IconButton, Tooltip} from "@mui/material";
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import FileOpenIcon from '@mui/icons-material/FileOpen';
 import type {RcFile} from 'antd/es/upload/interface';
-import ArticleIcon from "@mui/icons-material/Article";
 
 
 const Contract = () => {
@@ -46,7 +45,7 @@ const Contract = () => {
                 title: 'Скан договора', field: 'doc',
                 render: rowData => (
                     <Tooltip title={rowData.doc ? 'Просмотреть договор' : 'Договор не загружен'}>
-                        <a href={`${rowData.doc}`} target={'_blank'}>
+                        <a href={`${rowData.doc}`} target={'_blank'} rel={'noopener noreferrer'}>
                             <IconButton color="primary" disabled={!rowData.doc}><FileOpenIcon/></IconButton>
                         </a>
                     </Tooltip>

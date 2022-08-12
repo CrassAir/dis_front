@@ -1,5 +1,3 @@
-import {IParameter} from "../models/ICatalog";
-
 const stringToColor = (string: string) => {
     let hash = 0;
     let i;

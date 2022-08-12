@@ -14,13 +14,12 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import {navList} from '../../App';
 import {useLocation, useNavigate} from "react-router-dom";
-import {useEffect, useState} from "react";
+import {useState} from "react";
 import {Avatar, Box, Card, CardActionArea, CardMedia, LinearProgress, Slide, useScrollTrigger} from "@mui/material";
 import {useAppDispatch, useAppSelector} from "../../hooks/redux";
 import {logout} from "../../store/actions/auth";
 import Logo from "../../assets/logo.png";
 import {stringAvatar} from "../utils";
-import authReducer from "../../store/reducers/AuthReducer";
 
 const drawerWidth = 240;
 

@@ -49,7 +49,7 @@ const Contract = () => {
                 title: 'Скан паспорта', field: 'passport',
                 render: rowData => (
                     <Tooltip title={rowData.passport ? 'Просмотреть договор' : 'Договор не загружен'}>
-                        <a href={`${rowData.passport}`} target={'_blank'}>
+                        <a href={`${rowData.passport}`} target={'_blank'} rel={'noopener noreferrer'}>
                             <IconButton color="primary" disabled={!rowData.passport}><FileOpenIcon/></IconButton>
                         </a>
                     </Tooltip>

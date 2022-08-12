@@ -10,14 +10,13 @@ import {
     createTheme,
     CssBaseline,
     SvgIcon,
-    TextField,
     ThemeProvider
 } from '@mui/material';
 import LoginPage from "./pages/LoginPage/LoginPage";
 import {useSnackbar} from "notistack";
 import AddLocationIcon from '@mui/icons-material/AddLocation';
-import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
-import DashboardRoundedIcon from '@mui/icons-material/DashboardRounded';
+// import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
+// import DashboardRoundedIcon from '@mui/icons-material/DashboardRounded';
 import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
 import {ReactComponent as svgLogo} from "./assets/dis_log_without_text2.svg"
