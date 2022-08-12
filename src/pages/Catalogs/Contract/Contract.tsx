@@ -14,7 +14,8 @@ import Upload from "antd/lib/upload/Upload";
 import {IconButton, Tooltip} from "@mui/material";
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import FileOpenIcon from '@mui/icons-material/FileOpen';
-import type { RcFile } from 'antd/es/upload/interface';
+import type {RcFile} from 'antd/es/upload/interface';
+import ArticleIcon from "@mui/icons-material/Article";
 
 
 const Contract = () => {

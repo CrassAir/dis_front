@@ -18,9 +18,11 @@ import {useSnackbar} from "notistack";
 import AddLocationIcon from '@mui/icons-material/AddLocation';
 import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
 import DashboardRoundedIcon from '@mui/icons-material/DashboardRounded';
+import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
 import {ReactComponent as svgLogo} from "./assets/dis_log_without_text2.svg"
 import Catalog from "./pages/Catalogs/Catalog";
+import Kits from "./pages/Kits/Kits";
 
 const theme = createTheme({
     palette: {
@@ -55,11 +57,17 @@ const theme = createTheme({
 });
 
 export const navList = [
+    // {
+    //     name: 'Главная',
+    //     icon: <HomeRoundedIcon/>,
+    //     path: '/',
+    //     component: <Kits/>
+    // },
     {
-        name: 'Главная',
-        icon: <HomeRoundedIcon/>,
+        name: 'Бригады',
+        icon: <PeopleAltIcon/>,
         path: '/',
-        component: <TextField/>
+        component: <Kits/>
     },
     {
         name: 'Справочник',
