@@ -1,9 +1,9 @@
 import {RcFile} from "antd/es/upload/interface";
 
-export interface IKits {
+export interface IKit {
     id: number
     amount: number
-    parameters: number
+    parameter: number
     pipes?: any[]
     manufacturer_name?: string
     passport?: string | RcFile
@@ -24,4 +24,11 @@ export const pipe_class_choose = {
     'premium': 'Премиум',
     'class_2': 'Класс 2',
     'class_3': 'Класс 3',
+}
+
+export interface ITeamKit {
+    id: number
+    name: string
+    team: number
+    kits: IKit[]
 }

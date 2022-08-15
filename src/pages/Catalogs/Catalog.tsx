@@ -10,10 +10,10 @@ const Catalog = () => {
             <Grid xs={12}>
                 <Parameter/>
             </Grid>
-            <Grid xs={6}>
+            <Grid xs={12} lg={6}>
                 <Tools/>
             </Grid>
-            <Grid xs={6}>
+            <Grid xs={12} lg={6}>
                 <Contract/>
             </Grid>
         </Grid>

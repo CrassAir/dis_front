@@ -13,6 +13,7 @@ export interface IPipeType {
 
 export interface IParameter {
     id: number
+    name: string
     nominal_pipe_diameter?: number
     weight_foot?: number
     reinforcement: boolean
@@ -33,6 +34,7 @@ export interface IParameter {
 
 export const BlankParameter: IParameter = {
     id: -1,
+    name: '',
     nominal_pipe_diameter: undefined,
     weight_foot: undefined,
     reinforcement: true,

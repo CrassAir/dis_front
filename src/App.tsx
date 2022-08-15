@@ -21,7 +21,7 @@ import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
 import {ReactComponent as svgLogo} from "./assets/dis_log_without_text2.svg"
 import Catalog from "./pages/Catalogs/Catalog";
-import Kits from "./pages/Kits/Kits";
+import TeamKits from "./pages/Kits/TeamKits";
 
 const theme = createTheme({
     palette: {
@@ -66,7 +66,7 @@ export const navList = [
         name: 'Бригады',
         icon: <PeopleAltIcon/>,
         path: '/',
-        component: <Kits/>
+        component: <TeamKits/>
     },
     {
         name: 'Справочник',

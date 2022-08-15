@@ -5,27 +5,29 @@ import {IconButton, Tooltip} from "@mui/material";
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import FileOpenIcon from '@mui/icons-material/FileOpen';
 import type {RcFile} from 'antd/es/upload/interface';
-import {general_state_choose, IKits, pipe_class_choose} from "../../models/IKits";
+import {general_state_choose, IKit, pipe_class_choose} from "../../models/IKit";
 import {useAppDispatch, useAppSelector} from "../../hooks/redux";
 import {convertListToObject, localizationMT} from "../utils";
-import {getKits} from "../../store/actions/kits";
+import {createKit, deleteKit, getKits, updateKit} from "../../store/actions/kits";
 import {getParameters} from "../../store/actions/catalog";
 import ArticleIcon from '@mui/icons-material/Article';
 
+type KitsProps = {
+    kits: IKit[]
+}
 
-const Contract = () => {
-    const [data, setData] = useState<IKits[]>([])
+const Kits = ({kits}: KitsProps) => {
+    const [data, setData] = useState<IKit[]>([])
     const dispatch = useAppDispatch()
-    const {kits} = useAppSelector(state => state.kitReducer)
     const {parameters} = useAppSelector(state => state.catalogReducer)
     const {isLoading} = useAppSelector(state => state.authReducer)
     const [file, setFile] = useState<RcFile | null>(null)
 
-    let columns = useMemo<Column<IKits>[]>(() => ([
+    let columns = useMemo<Column<IKit>[]>(() => ([
             {
-                title: 'Параметры', field: 'parameters',
+                title: 'Параметры', field: 'parameter',
                 lookup: parameters && convertListToObject(parameters),
-                validate: rowData => !!rowData.parameters,
+                validate: rowData => !!rowData.parameter,
             },
             {
                 title: 'Производитель', field: 'manufacturer_name',
@@ -99,19 +101,19 @@ const Contract = () => {
                     onClick: (event, rowData) => alert("You saved")
                 })
             ]}
-            // editable={{
-            //     onRowAdd: newData => {
-            //         if (file) newData.doc = file
-            //         return dispatch(createContract(newData))
-            //     },
-            //     onRowUpdate: (newData) => {
-            //         if (file) newData.doc = file
-            //         return dispatch(updateContract(newData))
-            //     },
-            //     onRowDelete: oldData => dispatch(deleteContract(oldData))
-            // }}
+            editable={{
+                onRowAdd: newData => {
+                    if (file) newData.passport = file
+                    return dispatch(createKit(newData))
+                },
+                onRowUpdate: (newData) => {
+                    if (file) newData.passport = file
+                    return dispatch(updateKit(newData))
+                },
+                onRowDelete: oldData => dispatch(deleteKit(oldData))
+            }}
         />
     )
 }
 
-export default Contract
+export default Kits

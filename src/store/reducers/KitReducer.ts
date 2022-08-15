@@ -1,15 +1,17 @@
 import {createSlice} from "@reduxjs/toolkit";
-import {IKits} from "../../models/IKits";
-import {getKits} from "../actions/kits";
+import {IKit, ITeamKit} from "../../models/IKit";
+import {createKit, deleteKit, getKits, getTeamKits, updateKit} from "../actions/kits";
+import {deleteElementFromList, updateElementInList} from "../../pages/utils";
 
 
 interface IKitState {
-    kits: IKits[]
-
+    kits: IKit[]
+    teamKits: ITeamKit[]
 }
 
 const initialState: IKitState = {
-    kits: []
+    kits: [],
+    teamKits: []
 }
 
 export const kitSlice = createSlice({
@@ -19,6 +21,18 @@ export const kitSlice = createSlice({
     extraReducers: (builder) => {
         builder.addCase(getKits.fulfilled, (state, {payload}) => {
             state.kits = payload
+        })
+        builder.addCase(createKit.fulfilled, (state, {payload}) => {
+            state.kits = [...state.kits, payload]
+        })
+        builder.addCase(updateKit.fulfilled, (state, {payload}) => {
+            state.kits = updateElementInList(state.kits, payload)
+        })
+        builder.addCase(deleteKit.fulfilled, (state, {payload}) => {
+            state.kits = deleteElementFromList(state.kits, payload)
+        })
+        builder.addCase(getTeamKits.fulfilled, (state, {payload}) => {
+            state.teamKits = payload
         })
     }
 })
