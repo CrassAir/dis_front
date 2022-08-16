@@ -24,6 +24,21 @@ const Contract = () => {
     const {isLoading} = useAppSelector(state => state.authReducer)
     const [file, setFile] = useState<RcFile | null>(null)
 
+    const scanDoc = (rowData: IContract) => {
+        if (rowData.doc) {
+            return <Tooltip title={'Просмотреть договор'}>
+                <a href={`${rowData.doc}`} target={'_blank'} rel={'noopener noreferrer'}>
+                    <IconButton color="primary"><FileOpenIcon/></IconButton>
+                </a>
+            </Tooltip>
+        }
+        return <Tooltip title={'Договор не загружен'}>
+             <span>
+                <IconButton color="primary" disabled={true}><FileOpenIcon/></IconButton>
+             </span>
+        </Tooltip>
+    }
+
     let columns = useMemo<Column<IContract>[]>(() => ([
             {
                 title: 'Номер договора', field: 'number',
@@ -43,13 +58,7 @@ const Contract = () => {
             },
             {
                 title: 'Скан договора', field: 'doc',
-                render: rowData => (
-                    <Tooltip title={rowData.doc ? 'Просмотреть договор' : 'Договор не загружен'}>
-                        <a href={`${rowData.doc}`} target={'_blank'} rel={'noopener noreferrer'}>
-                            <IconButton color="primary" disabled={!rowData.doc}><FileOpenIcon/></IconButton>
-                        </a>
-                    </Tooltip>
-                ),
+                render: rowData => scanDoc(rowData),
                 editComponent: props => (
                     <Upload
                         maxCount={1}

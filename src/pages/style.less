@@ -1,2 +1,21 @@
 @import "LoginPage/LoginPage.less";
-@import "Catalogs/Parameter/Parameter.less";
+
+.MuiTableBody-root {
+  td {
+    padding-top: 2px;
+    padding-bottom: 2px;
+    text-align: center;
+    min-width: 100px;
+  }
+
+  td:nth-child(2n) {
+    background-color: rgba(0,0,0,0.05);
+  }
+}
+
+.MuiTableHead-root {
+  th {
+    font-weight: bold;
+    text-align: center;
+  }
+}

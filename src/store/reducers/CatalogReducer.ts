@@ -4,7 +4,7 @@ import {
     createContract,
     createParameter, createTool, deleteContract, deleteParameter, deleteTool, getContracts,
     getLockThread,
-    getLockType, getOrganizations,
+    getLockType, getManufacturers, getOrganizations,
     getParameters,
     getPipeType,
     getSizeRange,
@@ -23,6 +23,7 @@ interface ICatalogState {
     tools: ITools[]
     contracts: IContract[]
     organizations: IOrganization[]
+    manufacturers: ISubParameter[]
 }
 
 const initialState: ICatalogState = {
@@ -35,6 +36,7 @@ const initialState: ICatalogState = {
     tools: [],
     contracts: [],
     organizations: [],
+    manufacturers: [],
 }
 
 export const catalogSlice = createSlice({
@@ -81,7 +83,7 @@ export const catalogSlice = createSlice({
         builder.addCase(deleteTool.fulfilled, (state, {payload}) => {
             state.tools = deleteElementFromList(state.tools, payload)
         })
-         builder.addCase(getContracts.fulfilled, (state, {payload}) => {
+        builder.addCase(getContracts.fulfilled, (state, {payload}) => {
             state.contracts = payload
         })
         builder.addCase(createContract.fulfilled, (state, {payload}) => {
@@ -95,6 +97,9 @@ export const catalogSlice = createSlice({
         })
          builder.addCase(getOrganizations.fulfilled, (state, {payload}) => {
             state.organizations = payload
+        })
+        builder.addCase(getManufacturers.fulfilled, (state, {payload}) => {
+            state.manufacturers = payload
         })
     }
 })

@@ -13,7 +13,7 @@ const LoginPage: React.FC = () => {
     return (
         <Box className={'login-back-image'}>
             <Box className={'login-container'}>
-                <Paper sx={{p: '20px 50px 10px 50px'}} className={'login-paper'}>
+                <Paper sx={{p: '20px 50px 10px 50px'}} className={'form-paper'}>
                     <Card elevation={0} sx={{maxWidth: 230, p: 1}}>
                         <CardMedia
                             component="img"
@@ -30,7 +30,7 @@ const LoginPage: React.FC = () => {
                                 form.resetFields()
                                 // console.log(values)
                             }}
-                            className={'login-paper'}
+                            className={'form-paper'}
                             initialValues={{username: '', password: ''}}
                         >
                             <Form.Item

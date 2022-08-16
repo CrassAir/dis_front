@@ -226,3 +226,15 @@ export const getOrganizations = createAsyncThunk(
         }
     }
 )
+
+export const getManufacturers = createAsyncThunk(
+    'getManufacturers',
+    async (_, thunkAPI) => {
+        try {
+            const {data} = await api.get<ISubParameter[]>(apiUrl + 'manufacturer/')
+            return data
+        } catch (e) {
+            return thunkAPI.rejectWithValue(apiError(e))
+        }
+    }
+)

@@ -1,17 +1,17 @@
 import {createSlice} from "@reduxjs/toolkit";
-import {IKit, ITeamKit} from "../../models/IKit";
-import {createKit, deleteKit, getKits, getTeamKits, updateKit} from "../actions/kits";
+import {IOrganizationTK, ITeamKit} from "../../models/IKit";
+import {createKit, createTeam, deleteKit, getOrganizationsTK, updateKit} from "../actions/kits";
 import {deleteElementFromList, updateElementInList} from "../../pages/utils";
 
 
 interface IKitState {
-    kits: IKit[]
     teamKits: ITeamKit[]
+    organizationsTK: IOrganizationTK[]
 }
 
 const initialState: IKitState = {
-    kits: [],
-    teamKits: []
+    teamKits: [],
+    organizationsTK: []
 }
 
 export const kitSlice = createSlice({
@@ -19,20 +19,53 @@ export const kitSlice = createSlice({
     initialState,
     reducers: {},
     extraReducers: (builder) => {
-        builder.addCase(getKits.fulfilled, (state, {payload}) => {
-            state.kits = payload
+        // builder.addCase(getKits.fulfilled, (state, {payload}) => {
+        //     state.kits = payload
+        // })
+        // builder.addCase(getTeamKits.fulfilled, (state, {payload}) => {
+        //     state.teamKits = payload
+        // })
+        builder.addCase(getOrganizationsTK.fulfilled, (state, {payload}) => {
+            state.organizationsTK = payload
+        })
+        builder.addCase(createTeam.fulfilled, (state, {payload}) => {
+            state.organizationsTK = state.organizationsTK.map(org => {
+                org.teams = [...org.teams, payload]
+                return org
+            })
         })
         builder.addCase(createKit.fulfilled, (state, {payload}) => {
-            state.kits = [...state.kits, payload]
+            state.organizationsTK = state.organizationsTK.map(org => {
+                org.teams.map(team => {
+                    if (team.team_kit.id === payload.team_kit) {
+                        team.team_kit.kits = [...team.team_kit.kits, payload]
+                    }
+                    return team
+                })
+                return org
+            })
         })
         builder.addCase(updateKit.fulfilled, (state, {payload}) => {
-            state.kits = updateElementInList(state.kits, payload)
+            state.organizationsTK = state.organizationsTK.map(org => {
+                org.teams.map(team => {
+                    if (team.team_kit.id === payload.team_kit) {
+                        team.team_kit.kits = updateElementInList(team.team_kit.kits, payload)
+                    }
+                    return team
+                })
+                return org
+            })
         })
         builder.addCase(deleteKit.fulfilled, (state, {payload}) => {
-            state.kits = deleteElementFromList(state.kits, payload)
-        })
-        builder.addCase(getTeamKits.fulfilled, (state, {payload}) => {
-            state.teamKits = payload
+            state.organizationsTK = state.organizationsTK.map(org => {
+                org.teams.map(team => {
+                    if (team.team_kit.id === payload.team_kit) {
+                        team.team_kit.kits = deleteElementFromList(team.team_kit.kits, payload.id)
+                    }
+                    return team
+                })
+                return org
+            })
         })
     }
 })

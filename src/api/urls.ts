@@ -16,10 +16,10 @@ export function getHostname() {
     return `${protocol}//${hostname}${port ? ':' + port : ''}`
 }
 
-export function getWsLiveDataUrl() {
-    const {hostname, port, ws} = actualUrl[server]
-    return `${ws}://${hostname}${port ? ':' + port : ''}/liveData`;
-}
+// export function getWsLiveDataUrl() {
+//     const {hostname, port, ws} = actualUrl[server]
+//     return `${ws}://${hostname}${port ? ':' + port : ''}/liveData`;
+// }
 
 export const apiUrl = `${getHostname()}/api/`
 export const restAuthUrl = `${getHostname()}/rest-auth/`

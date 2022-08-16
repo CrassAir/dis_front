@@ -5,11 +5,12 @@ export interface IKit {
     amount: number
     parameter: number
     pipes?: any[]
-    manufacturer_name?: string
+    manufacturer?: number
     passport?: string | RcFile
     general_state: string
     pipe_class: string
     pipe_version_name: string
+    team_kit?: number
 }
 
 export const general_state_choose = {
@@ -31,4 +32,23 @@ export interface ITeamKit {
     name: string
     team: number
     kits: IKit[]
+}
+
+export interface ITeam {
+    id: number
+    name: string
+    location_name: string
+    organization: number
+    location?: string
+    team_kit: ITeamKit
+}
+
+export interface IOrganizationTK {
+    id: number
+    name: string
+    full_name: string
+    location: string
+    comment?: string
+    administrative: boolean
+    teams: ITeam[]
 }

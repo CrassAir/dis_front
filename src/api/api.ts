@@ -31,28 +31,28 @@ export const apiError = (e: any): IApiError => {
 //     return config;
 // }
 
-export const tryPrintTabel = (tabel_id: number) => {
-    api.get(`${apiUrl}tabel/${tabel_id}/get_excel/`, {responseType: 'blob'})
-        .then(res => {
-            const url = window.URL.createObjectURL(new Blob([res.data]));
-            const link = document.createElement('a');
-            link.href = url;
-            link.setAttribute('download', 'tabel.xlsx');
-            document.body.appendChild(link);
-            link.click();
-        }).catch(err => console.log(err))
-}
-
-export const tryPrintOrder = (order_id: number) => {
-    api.get(`${apiUrl}remote/order/order/${order_id}/get_excel/`, {responseType: 'blob'})
-        .then(res => {
-            const url = window.URL.createObjectURL(new Blob([res.data]));
-            const link = document.createElement('a');
-            link.href = url;
-            link.setAttribute('download', 'order.xlsx');
-            document.body.appendChild(link);
-            link.click();
-        }).catch(err => console.log(err))
-}
+// export const tryPrintTabel = (tabel_id: number) => {
+//     api.get(`${apiUrl}tabel/${tabel_id}/get_excel/`, {responseType: 'blob'})
+//         .then(res => {
+//             const url = window.URL.createObjectURL(new Blob([res.data]));
+//             const link = document.createElement('a');
+//             link.href = url;
+//             link.setAttribute('download', 'tabel.xlsx');
+//             document.body.appendChild(link);
+//             link.click();
+//         }).catch(err => console.log(err))
+// }
+//
+// export const tryPrintOrder = (order_id: number) => {
+//     api.get(`${apiUrl}remote/order/order/${order_id}/get_excel/`, {responseType: 'blob'})
+//         .then(res => {
+//             const url = window.URL.createObjectURL(new Blob([res.data]));
+//             const link = document.createElement('a');
+//             link.href = url;
+//             link.setAttribute('download', 'order.xlsx');
+//             document.body.appendChild(link);
+//             link.click();
+//         }).catch(err => console.log(err))
+// }
 
 export default api;

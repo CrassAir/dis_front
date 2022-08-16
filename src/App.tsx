@@ -1,10 +1,10 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, lazy, Suspense} from 'react';
 import './App.less';
-
-import HomePage from "./pages/HomePage/HomePage";
 import {Navigate, Route, Routes, useLocation} from "react-router-dom";
 import {checkToken, logout} from "./store/actions/auth";
 import {useAppDispatch, useAppSelector} from "./hooks/redux";
+import LoginPage from "./pages/LoginPage/LoginPage";
+import HomePage from "./pages/HomePage/HomePage";
 import {
     Box,
     createTheme,
@@ -12,18 +12,21 @@ import {
     SvgIcon,
     ThemeProvider
 } from '@mui/material';
-import LoginPage from "./pages/LoginPage/LoginPage";
 import {useSnackbar} from "notistack";
-import AddLocationIcon from '@mui/icons-material/AddLocation';
-// import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
-// import DashboardRoundedIcon from '@mui/icons-material/DashboardRounded';
+import LocalShippingIcon from '@mui/icons-material/LocalShipping';
 import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
+import ContentPasteIcon from '@mui/icons-material/ContentPaste';
 import {ReactComponent as svgLogo} from "./assets/dis_log_without_text2.svg"
-import Catalog from "./pages/Catalogs/Catalog";
-import TeamKits from "./pages/Kits/TeamKits";
+
+const Catalog = lazy(() => import("./pages/Catalogs/Catalog"))
+const TeamKits = lazy(() => import("./pages/Kits/OrganizationsTeamKits"))
+
 
 const theme = createTheme({
+    typography: {
+        fontFamily: 'Arial',
+    },
     palette: {
         // mode: 'dark',
         background: {
@@ -69,16 +72,22 @@ export const navList = [
         component: <TeamKits/>
     },
     {
+        name: 'Перемещение труб',
+        icon: <LocalShippingIcon/>,
+        path: '/moving',
+        component: <div/>
+    },
+    {
         name: 'Справочник',
         icon: <LibraryBooksIcon/>,
-        path: '/dashboard',
+        path: '/catalog',
         component: <Catalog/>
     },
     {
-        name: '3',
-        icon: <AddLocationIcon/>,
+        name: 'Дефектоскопия',
+        icon: <ContentPasteIcon/>,
         path: '/3',
-        component: <div style={{height: 100, width: 100, backgroundColor: 'yellow'}}/>
+        component: <div/>
     },
 ]
 
@@ -118,15 +127,26 @@ const App: React.FC = () => {
                     <Route path="login" element={<Navigate to={'/'}/>}/>
                     <Route path="change_password" element={<Navigate to={'/'}/>}/>
                     <Route path="/" element={<HomePage/>}>
-                        {navList.map(navItem => <Route key={navItem.name} path={navItem.path}
-                                                       element={navItem.component}/>)}
+                        {navList.map(navItem => (
+                            <Route key={navItem.name} path={navItem.path}
+                                   element={
+                                       <Suspense fallback={<Box className={'login-container'}>
+                                           <SvgIcon className={'logo_anim'} component={svgLogo}
+                                                    sx={{width: 100, height: 100}}
+                                                    viewBox="-5.019615315404735E-6 -0.3768116120910392 99.89627206933781 100.37680334753924"/>
+                                       </Box>}>
+                                           {navItem.component}
+                                       </Suspense>
+                                   }/>
+                        ))}
                     </Route>
                 </Routes>
             )
         }
         return (
             <Box className={'login-container'}>
-                <SvgIcon className={'logo_anim'} component={svgLogo} sx={{width: 100, height: 100}} viewBox="-5.019615315404735E-6 -0.3768116120910392 99.89627206933781 100.37680334753924"/>
+                <SvgIcon className={'logo_anim'} component={svgLogo} sx={{width: 100, height: 100}}
+                         viewBox="-5.019615315404735E-6 -0.3768116120910392 99.89627206933781 100.37680334753924"/>
             </Box>
         )
     }

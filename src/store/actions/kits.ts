@@ -1,9 +1,21 @@
 import {createAsyncThunk} from "@reduxjs/toolkit";
 import api, {apiError} from "../../api/api";
 import {apiUrl} from "../../api/urls";
-import {IKit, ITeamKit} from "../../models/IKit";
-import {IParameter} from "../../models/ICatalog";
+import {IKit, IOrganizationTK, ITeam} from "../../models/IKit";
 
+
+
+// export const getTeamKits = createAsyncThunk(
+//     'getTeamKits',
+//     async (_, thunkAPI) => {
+//         try {
+//             const {data} = await api.get<ITeamKit[]>(apiUrl + 'team_kit/')
+//             return data
+//         } catch (e) {
+//             return thunkAPI.rejectWithValue(apiError(e))
+//         }
+//     }
+// )
 
 export const getKits = createAsyncThunk(
     'getKits',
@@ -16,6 +28,32 @@ export const getKits = createAsyncThunk(
         }
     }
 )
+
+
+export const getOrganizationsTK = createAsyncThunk(
+    'getOrganizationsTK',
+    async (_, thunkAPI) => {
+        try {
+            const {data} = await api.get<IOrganizationTK[]>(apiUrl + 'organization_team_kit/')
+            return data
+        } catch (e) {
+            return thunkAPI.rejectWithValue(apiError(e))
+        }
+    }
+)
+
+export const createTeam = createAsyncThunk(
+    'createTeam',
+    async (post: ITeam, thunkAPI) => {
+        try {
+            const {data} = await api.post<ITeam>(apiUrl + 'team/', post)
+            return data
+        } catch (e) {
+            return thunkAPI.rejectWithValue(apiError(e))
+        }
+    }
+)
+
 
 export const createKit = createAsyncThunk(
     'createKit',
@@ -54,19 +92,7 @@ export const deleteKit = createAsyncThunk(
     async (post: IKit, thunkAPI) => {
         try {
             await api.delete<IKit>(apiUrl + `kit/${post.id}/`)
-            return post.id
-        } catch (e) {
-            return thunkAPI.rejectWithValue(apiError(e))
-        }
-    }
-)
-
-export const getTeamKits = createAsyncThunk(
-    'getTeamKits',
-    async (_, thunkAPI) => {
-        try {
-            const {data} = await api.get<ITeamKit[]>(apiUrl + 'team_kit/')
-            return data
+            return post
         } catch (e) {
             return thunkAPI.rejectWithValue(apiError(e))
         }

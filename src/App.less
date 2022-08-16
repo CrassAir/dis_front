@@ -16,12 +16,28 @@ body {
   background-color: #d7edf1;
 }
 
+.form-paper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  min-width: 20em;
+
+  .ant-form-item {
+    padding: 10px 0 10px 0;
+    width: 100%;
+  }
+}
+
 .logo_anim {
   animation: rotate 2s linear infinite;
   transform-origin: 50px 60px;
 }
-@keyframes rotate{
-  to{ transform: rotate(360deg); }
+
+@keyframes rotate {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .custom-gutter-horizontal {

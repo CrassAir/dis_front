@@ -1,4 +1,5 @@
 import {RcFile} from "antd/es/upload/interface";
+import {getManufacturers} from "../store/actions/catalog";
 
 export interface ISubParameter {
     id: number
@@ -77,4 +78,3 @@ export interface IContract {
     doc?: string | RcFile
     active: boolean
 }
-
