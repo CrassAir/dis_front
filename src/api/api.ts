@@ -1,5 +1,4 @@
 import axios from "axios";
-// import Cookies from "js-cookie";
 import {apiUrl} from "./urls";
 
 
@@ -13,12 +12,12 @@ export interface IApiError {
     message: string
 }
 
-export const apiError = (e: any): IApiError => {
+export const apiError = (e: any) => {
     if (axios.isAxiosError(e)) {
         // @ts-ignore
         return {code: e.response.status, message: e.response.data.detail || e.message}
     }
-    return{code: 0, message: e.message}
+    return {code: 0, message: e.message}
 }
 // api.interceptors.request.use((config) => {
 //     config.headers["X-CSRFToken"] = Cookies.get("csrftoken");

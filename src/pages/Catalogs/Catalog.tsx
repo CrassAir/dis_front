@@ -3,6 +3,8 @@ import Parameter from "./Parameter/Parameter";
 import Grid from '@mui/material/Unstable_Grid2';
 import Tools from "./Tools/Tools";
 import Contract from "./Contract/Contract";
+import {useLocation} from "react-router-dom";
+import {navList} from "../../App";
 
 const Catalog = () => {
     return (

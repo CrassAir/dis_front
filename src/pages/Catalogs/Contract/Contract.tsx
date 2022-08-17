@@ -2,7 +2,7 @@ import React, {useEffect, useMemo, useState} from 'react';
 import MaterialTable, {Column} from "material-table";
 import {useAppDispatch, useAppSelector} from "../../../hooks/redux";
 import {IContract} from "../../../models/ICatalog";
-import {convertListToObject, localizationMT} from "../../utils";
+import {convertListToObject, localizationMT, validateEditAccess} from "../../utils";
 import {
     createContract,
     deleteContract,
@@ -21,8 +21,10 @@ const Contract = () => {
     const [data, setData] = useState<IContract[]>([])
     const dispatch = useAppDispatch()
     const {contracts, organizations} = useAppSelector(state => state.catalogReducer)
-    const {isLoading} = useAppSelector(state => state.authReducer)
+    const {user, isLoading} = useAppSelector(state => state.authReducer)
     const [file, setFile] = useState<RcFile | null>(null)
+
+    const edit = useMemo(() => validateEditAccess(user!, 'to_directory'), [user])
 
     const scanDoc = (rowData: IContract) => {
         if (rowData.doc) {
@@ -96,7 +98,7 @@ const Contract = () => {
             isLoading={isLoading}
             columns={columns}
             data={data}
-            editable={{
+            editable={edit ? {
                 onRowAdd: newData => {
                     if (file) newData.doc = file
                     return dispatch(createContract(newData))
@@ -106,7 +108,7 @@ const Contract = () => {
                     return dispatch(updateContract(newData))
                 },
                 onRowDelete: oldData => dispatch(deleteContract(oldData))
-            }}
+            }: {}}
         />
     )
 }

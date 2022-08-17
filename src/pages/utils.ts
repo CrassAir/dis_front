@@ -1,3 +1,6 @@
+import {IAccount} from "../models/IAuth";
+import {INavItem} from "../App";
+
 const stringToColor = (string: string) => {
     let hash = 0;
     let i;
@@ -96,3 +99,23 @@ export const deleteElementFromList = (list: any[], id: number) => {
     })
     return newList
 }
+
+export const changeNavListValidate = (user: IAccount, navList: INavItem[]) => {
+    navList.forEach(nav => {
+        // if (user.is_superuser) {
+        //     nav.read = true
+        //     return
+        // }
+        // @ts-ignore
+        if (['edit_read', 'read'].includes(user.role[nav.validate])) {
+            nav.read = true
+        }
+    })
+}
+
+export const validateEditAccess = (user: IAccount, valField: string) => {
+    // if (user.is_superuser) return true
+    // @ts-ignore
+    return user.role[valField] === 'edit_read'
+}
+

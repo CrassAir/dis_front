@@ -177,7 +177,7 @@ const Navbar: React.FC = () => {
                     </IconButton>
                 </DrawerHeader>
                 <List>
-                    {navList.map((navItem: any) => (
+                    {navList.map((navItem: any) => (navItem.read &&
                         <ListItem key={navItem?.name} disablePadding sx={{display: 'block'}}
                                   selected={navItem.path === location.pathname}
                                   onClick={() => {

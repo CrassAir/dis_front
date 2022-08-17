@@ -2,7 +2,7 @@ import React, {useEffect, useMemo, useState} from 'react';
 import MaterialTable, {Column} from "material-table";
 import {useAppDispatch, useAppSelector} from "../../../hooks/redux";
 import {ITools} from "../../../models/ICatalog";
-import {localizationMT} from "../../utils";
+import {localizationMT, validateEditAccess} from "../../utils";
 import {createTool, deleteTool, getTools, updateTool} from "../../../store/actions/catalog";
 import {TextField} from "@mui/material";
 import {ru} from 'date-fns/locale'
@@ -15,7 +15,9 @@ const Tools = () => {
     const [data, setData] = useState<ITools[]>([])
     const dispatch = useAppDispatch()
     const {tools} = useAppSelector(state => state.catalogReducer)
-    const {isLoading} = useAppSelector(state => state.authReducer)
+    const {user, isLoading} = useAppSelector(state => state.authReducer)
+
+    const edit = useMemo(() => validateEditAccess(user!, 'to_directory'), [user])
 
     let columns = useMemo<Column<ITools>[]>(() => ([
         {
@@ -73,11 +75,11 @@ const Tools = () => {
             isLoading={isLoading}
             columns={columns}
             data={data}
-            editable={{
+            editable={edit ? {
                 onRowAdd: newData => dispatch(createTool(newData)),
                 onRowUpdate: (newData, oldData) => dispatch(updateTool(newData)),
                 onRowDelete: oldData => dispatch(deleteTool(oldData))
-            }}
+            } : {}}
         />
     )
 }

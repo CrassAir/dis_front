@@ -1,4 +1,4 @@
-import React, {useEffect, lazy, Suspense} from 'react';
+import React, {useEffect, lazy, Suspense, ReactElement, useState, useMemo} from 'react';
 import './App.less';
 import {Navigate, Route, Routes, useLocation} from "react-router-dom";
 import {checkToken, logout} from "./store/actions/auth";
@@ -17,7 +17,9 @@ import LocalShippingIcon from '@mui/icons-material/LocalShipping';
 import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
 import ContentPasteIcon from '@mui/icons-material/ContentPaste';
-import {ReactComponent as svgLogo} from "./assets/dis_log_without_text2.svg"
+import {ReactComponent as svgLogo} from "./assets/dis_log_without_text3.svg"
+import MovingForm from "./pages/Moving/MovingForm";
+import {changeNavListValidate} from "./pages/utils";
 
 const Catalog = lazy(() => import("./pages/Catalogs/Catalog"))
 const TeamKits = lazy(() => import("./pages/Kits/OrganizationsTeamKits"))
@@ -58,7 +60,16 @@ const theme = createTheme({
     }
 });
 
-export const navList = [
+export interface INavItem {
+    name: string
+    icon: ReactElement
+    path: string
+    validate: string
+    read: boolean
+    component: ReactElement
+}
+
+export const navList: INavItem[] = [
     // {
     //     name: 'Главная',
     //     icon: <HomeRoundedIcon/>,
@@ -69,24 +80,33 @@ export const navList = [
         name: 'Бригады',
         icon: <PeopleAltIcon/>,
         path: '/',
-        component: <TeamKits/>
+        validate: 'to_team',
+        read: false,
+        component: <TeamKits/>,
     },
     {
         name: 'Перемещение труб',
         icon: <LocalShippingIcon/>,
-        path: '/moving',
-        component: <div/>
+        path: '/delivery',
+        validate: 'to_delivery',
+        read: false,
+        component: <MovingForm onClose={() => {
+        }}/>
     },
     {
         name: 'Справочник',
         icon: <LibraryBooksIcon/>,
-        path: '/catalog',
+        path: '/directory',
+        validate: 'to_directory',
+        read: false,
         component: <Catalog/>
     },
     {
         name: 'Дефектоскопия',
         icon: <ContentPasteIcon/>,
         path: '/3',
+        validate: 'to_defectoscopy',
+        read: false,
         component: <div/>
     },
 ]
@@ -95,7 +115,7 @@ const App: React.FC = () => {
     const location = useLocation()
     const dispatch = useAppDispatch()
     const {enqueueSnackbar} = useSnackbar()
-    const {user, error} = useAppSelector(state => state.authReducer)
+    const {user, token, error} = useAppSelector(state => state.authReducer)
 
     useEffect(() => {
         if (error?.message) {
@@ -107,13 +127,18 @@ const App: React.FC = () => {
         dispatch(checkToken())
     }, [])
 
+    useMemo(() => {
+        if (user) changeNavListValidate(user, navList)
+    }, [user])
+
+
     const routes = () => {
         let sToken = localStorage.getItem('token')
         if (location.pathname === '/logout') {
             dispatch(logout())
             return <Navigate replace to={'login'}/>
         }
-        if (!user?.token && !sToken) {
+        if (!token && !sToken) {
             return (
                 <Routes>
                     <Route path={'*'} element={<Navigate replace to={'login'}/>}/>
@@ -127,13 +152,13 @@ const App: React.FC = () => {
                     <Route path="login" element={<Navigate to={'/'}/>}/>
                     <Route path="change_password" element={<Navigate to={'/'}/>}/>
                     <Route path="/" element={<HomePage/>}>
-                        {navList.map(navItem => (
+                        {navList.map(navItem => (navItem.read &&
                             <Route key={navItem.name} path={navItem.path}
                                    element={
                                        <Suspense fallback={<Box className={'login-container'}>
                                            <SvgIcon className={'logo_anim'} component={svgLogo}
-                                                    sx={{width: 100, height: 100}}
-                                                    viewBox="-5.019615315404735E-6 -0.3768116120910392 99.89627206933781 100.37680334753924"/>
+                                                    sx={{width: 150, height: 150}}
+                                                    viewBox="-1.2989280492092803E-5 -2.8421709430404007E-13 128.08380126953125 128.46115112304688"/>
                                        </Box>}>
                                            {navItem.component}
                                        </Suspense>
@@ -145,8 +170,8 @@ const App: React.FC = () => {
         }
         return (
             <Box className={'login-container'}>
-                <SvgIcon className={'logo_anim'} component={svgLogo} sx={{width: 100, height: 100}}
-                         viewBox="-5.019615315404735E-6 -0.3768116120910392 99.89627206933781 100.37680334753924"/>
+                <SvgIcon className={'logo_anim'} component={svgLogo} sx={{width: 150, height: 150}}
+                         viewBox="-1.2989280492092803E-5 -2.8421709430404007E-13 128.08380126953125 128.46115112304688"/>
             </Box>
         )
     }

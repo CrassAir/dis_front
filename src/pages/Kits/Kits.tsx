@@ -1,20 +1,23 @@
 import React, {useEffect, useMemo, useState} from 'react';
 import MaterialTable, {Column} from "material-table";
 import Upload from "antd/lib/upload/Upload";
-import {IconButton, MenuItem, TextField, Tooltip} from "@mui/material";
+import {Dialog, IconButton, MenuItem, TextField, Tooltip} from "@mui/material";
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import FileOpenIcon from '@mui/icons-material/FileOpen';
 import type {RcFile} from 'antd/es/upload/interface';
 import {general_state_choose, IKit, ITeamKit, pipe_class_choose} from "../../models/IKit";
 import {useAppDispatch, useAppSelector} from "../../hooks/redux";
-import {convertListToObject, localizationMT} from "../utils";
+import {convertListToObject, localizationMT, validateEditAccess} from "../utils";
 import {createKit, deleteKit, getKits, updateKit} from "../../store/actions/kits";
 import {getManufacturers, getParameters} from "../../store/actions/catalog";
 import ArticleIcon from '@mui/icons-material/Article';
 import LocalShippingIcon from '@mui/icons-material/LocalShipping';
+import LocalShippingOutlinedIcon from '@mui/icons-material/LocalShippingOutlined';
+import MovingForm from "../Moving/MovingForm";
+
 
 type KitsProps = {
-    teamKit: ITeamKit
+    teamKit: ITeamKit,
 }
 
 const Kits = ({teamKit}: KitsProps) => {
@@ -22,8 +25,27 @@ const Kits = ({teamKit}: KitsProps) => {
     const dispatch = useAppDispatch()
     const {kits} = teamKit
     const {parameters, manufacturers} = useAppSelector(state => state.catalogReducer)
-    const {isLoading} = useAppSelector(state => state.authReducer)
+    const {user, isLoading} = useAppSelector(state => state.authReducer)
     const [file, setFile] = useState<RcFile | null>(null)
+    const [openMoving, setOpenMoving] = useState<IKit | null>(null)
+
+    const edit = useMemo(() => validateEditAccess(user!, 'to_team'), [user])
+    const editDelivery = useMemo(() => validateEditAccess(user!, 'to_delivery'), [user])
+
+    const detailMoving = () => {
+        const handleClose = () => {
+            setOpenMoving(null)
+        }
+
+        return (
+            <Dialog
+                open={!!openMoving}
+                onClose={handleClose}
+            >
+                <MovingForm editData={openMoving} onClose={handleClose}/>
+            </Dialog>
+        )
+    }
 
     const scanPassport = (rowData: IKit) => {
         if (rowData.passport) {
@@ -110,43 +132,50 @@ const Kits = ({teamKit}: KitsProps) => {
 
 
     return (
-        <MaterialTable
-            title="Комплекты труб"
-            options={{
-                pageSize: 5,
-                rowStyle: rowData => colorCell[rowData.general_state]
-            }}
-            localization={localizationMT}
-            style={{display: 'grid'}}
-            isLoading={isLoading}
-            columns={columns}
-            data={data}
-            actions={[
-                rowData => ({
-                    icon: () => <ArticleIcon/>,
-                    tooltip: 'Трубы в комплекте',
-                    disabled: rowData.pipes?.length === 0,
-                    onClick: (event, rowData) => alert("You saved")
-                }),
-                rowData => ({
-                    icon: () => <LocalShippingIcon/>,
-                    tooltip: 'Перемещение комплекта',
-                    onClick: (event, rowData) => alert("You saved")
-                })
-            ]}
-            editable={{
-                onRowAdd: newData => {
-                    if (file) newData.passport = file
-                    newData.team_kit = teamKit.id
-                    return dispatch(createKit(newData))
-                },
-                onRowUpdate: (newData) => {
-                    if (file) newData.passport = file
-                    return dispatch(updateKit(newData))
-                },
-                onRowDelete: oldData => dispatch(deleteKit(oldData))
-            }}
-        />
+        <>
+            <MaterialTable
+                title="Комплекты труб"
+                options={{
+                    pageSize: 5,
+                    rowStyle: rowData => colorCell[rowData.general_state]
+                }}
+                localization={localizationMT}
+                style={{display: 'grid'}}
+                isLoading={isLoading}
+                columns={columns}
+                data={data}
+                actions={[
+                    rowData => ({
+                        icon: () => <ArticleIcon/>,
+                        tooltip: 'Трубы в комплекте',
+                        disabled: rowData.pipes?.length === 0,
+                        onClick: (event, rowData) => alert("You saved")
+                    }),
+                    rowData => ({
+                        icon: () => rowData.id % 2 === 0 ? <LocalShippingIcon/> : <LocalShippingOutlinedIcon/>,
+                        tooltip: 'Перемещение комплекта' + (rowData.id % 2 === 0 ? '(в пути)' : ''),
+                        disabled: !editDelivery,
+                        onClick: (event, rowData) => {
+                            // @ts-ignore
+                            setOpenMoving(rowData)
+                        }
+                    })
+                ]}
+                editable={edit ? {
+                    onRowAdd: newData => {
+                        if (file) newData.passport = file
+                        newData.team_kit = teamKit.id
+                        return dispatch(createKit(newData))
+                    },
+                    onRowUpdate: (newData) => {
+                        if (file) newData.passport = file
+                        return dispatch(updateKit(newData))
+                    },
+                    onRowDelete: oldData => dispatch(deleteKit(oldData))
+                } : {}}
+            />
+            {detailMoving()}
+        </>
     )
 }
 

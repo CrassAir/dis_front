@@ -3,6 +3,7 @@ import {RcFile} from "antd/es/upload/interface";
 export interface IKit {
     id: number
     amount: number
+    name: string
     parameter: number
     pipes?: any[]
     manufacturer?: number

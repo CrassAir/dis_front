@@ -10,7 +10,7 @@ import {
     getStrengthGroup, updateParameter
 } from "../../../store/actions/catalog";
 import {IParameter} from "../../../models/ICatalog";
-import {convertListToObject, localizationMT} from "../../utils";
+import {convertListToObject, localizationMT, validateEditAccess} from "../../utils";
 
 
 const Parameter = () => {
@@ -24,7 +24,9 @@ const Parameter = () => {
         lock_thread,
         pipe_type
     } = useAppSelector(state => state.catalogReducer)
-    const {isLoading} = useAppSelector(state => state.authReducer)
+    const {user, isLoading} = useAppSelector(state => state.authReducer)
+
+    const edit = useMemo(() => validateEditAccess(user!, 'to_directory'), [user])
 
     let columns = useMemo<Column<IParameter>[]>(() => ([
         {
@@ -76,14 +78,15 @@ const Parameter = () => {
             type: 'boolean',
         },
         {
-            title: 'Тип замка', field: 'lock_type', lookup: lock_thread && convertListToObject(lock_thread),
-            validate: rowData => !!rowData.lock_thread,
+            title: 'Тип замка', field: 'lock_type',
+            lookup: lock_type && convertListToObject(lock_type),
+            validate: rowData => !!rowData.lock_type,
         },
         {
             title: 'Резьба замкового соединения',
             field: 'lock_thread',
-            lookup: lock_type && convertListToObject(lock_type),
-            validate: rowData => !!rowData.lock_type,
+            lookup: lock_thread && convertListToObject(lock_thread),
+            validate: rowData => !!rowData.lock_thread,
         },
         {
             title: 'Наружний диаметр замка', field: 'lock_outside_diameter', type: 'numeric',
@@ -121,11 +124,11 @@ const Parameter = () => {
             isLoading={isLoading}
             columns={columns}
             data={data}
-            editable={{
+            editable={edit ? {
                 onRowAdd: newData => dispatch(createParameter(newData)),
                 onRowUpdate: (newData, oldData) => dispatch(updateParameter(newData)),
                 onRowDelete: oldData => dispatch(deleteParameter(oldData))
-            }}
+            } : {}}
         />
     )
 }

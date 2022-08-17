@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useMemo, useState} from 'react';
 import {
     Accordion,
     AccordionDetails,
@@ -17,13 +17,17 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import GroupAddIcon from '@mui/icons-material/GroupAdd';
 import {Form} from "antd";
 import {ITeam} from "../../models/IKit";
+import {validateEditAccess} from "../utils";
 
 
 const OrganizationsTeamKits = () => {
     const dispatch = useAppDispatch()
     const {organizationsTK} = useAppSelector(state => state.kitReducer)
+    const {user} = useAppSelector(state => state.authReducer)
     const [openTeamFormDialog, setOpenTeamFormDialog] = useState<number | null>(null)
     const [form] = Form.useForm();
+
+    const edit = useMemo(() => validateEditAccess(user!, 'to_team'), [user])
 
 
     useEffect(() => {
@@ -109,11 +113,12 @@ const OrganizationsTeamKits = () => {
                                                 letterSpacing={'2px'}>{name}</Typography>
                                 </Grid>
                                 <Grid item xs={2} textAlign={'end'}>
-                                    <Tooltip title={'Создать бригаду'}>
-                                        <IconButton onClick={() => setOpenTeamFormDialog(id)}>
-                                            <GroupAddIcon/>
-                                        </IconButton>
-                                    </Tooltip>
+                                    {edit &&
+                                        <Tooltip title={'Создать бригаду'}>
+                                            <IconButton onClick={() => setOpenTeamFormDialog(id)}>
+                                                <GroupAddIcon/>
+                                            </IconButton>
+                                        </Tooltip>}
                                 </Grid>
                             </Grid>
                         </Paper>
