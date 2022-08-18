@@ -1,7 +1,6 @@
 import {createSlice} from "@reduxjs/toolkit";
 import {IOrganizationTK, ITeamKit} from "../../models/IKit";
-import {createKit, createTeam, deleteKit, getOrganizationsTK, updateKit} from "../actions/kits";
-import {deleteElementFromList, updateElementInList} from "../../pages/utils";
+import {createTeam, getOrganizationsTK} from "../actions/kits";
 
 
 interface IKitState {
@@ -30,40 +29,9 @@ export const kitSlice = createSlice({
         })
         builder.addCase(createTeam.fulfilled, (state, {payload}) => {
             state.organizationsTK = state.organizationsTK.map(org => {
-                org.teams = [...org.teams, payload]
-                return org
-            })
-        })
-        builder.addCase(createKit.fulfilled, (state, {payload}) => {
-            state.organizationsTK = state.organizationsTK.map(org => {
-                org.teams.map(team => {
-                    if (team.team_kit.id === payload.team_kit) {
-                        team.team_kit.kits = [...team.team_kit.kits, payload]
-                    }
-                    return team
-                })
-                return org
-            })
-        })
-        builder.addCase(updateKit.fulfilled, (state, {payload}) => {
-            state.organizationsTK = state.organizationsTK.map(org => {
-                org.teams.map(team => {
-                    if (team.team_kit.id === payload.team_kit) {
-                        team.team_kit.kits = updateElementInList(team.team_kit.kits, payload)
-                    }
-                    return team
-                })
-                return org
-            })
-        })
-        builder.addCase(deleteKit.fulfilled, (state, {payload}) => {
-            state.organizationsTK = state.organizationsTK.map(org => {
-                org.teams.map(team => {
-                    if (team.team_kit.id === payload.team_kit) {
-                        team.team_kit.kits = deleteElementFromList(team.team_kit.kits, payload.id)
-                    }
-                    return team
-                })
+                if (org.id === payload.organization) {
+                    org.teams = [...org.teams, payload]
+                }
                 return org
             })
         })

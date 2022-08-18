@@ -4,13 +4,17 @@ export interface IAuth {
     source: string
 }
 
+export interface IAccessModel {
+    id: number
+    name: string
+    name_plural: string
+}
+
 export interface IRole {
     id: number
     name: string
-    to_team: string
-    to_delivery: string
-    to_directory: string
-    to_defectoscopy: string
+    edit: IAccessModel[]
+    read: IAccessModel[]
 }
 
 export interface IAccount {

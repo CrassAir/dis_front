@@ -4,7 +4,6 @@ import {apiUrl} from "../../api/urls";
 import {IKit, IOrganizationTK, ITeam} from "../../models/IKit";
 
 
-
 // export const getTeamKits = createAsyncThunk(
 //     'getTeamKits',
 //     async (_, thunkAPI) => {
@@ -59,12 +58,12 @@ export const createKit = createAsyncThunk(
     'createKit',
     async (post: IKit, thunkAPI) => {
         try {
-            const {data} = await api.post<IKit>(apiUrl + 'kit/', post, {
+            await api.post<IKit>(apiUrl + 'kit/', post, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }
             })
-            return data
+            return thunkAPI.dispatch(getOrganizationsTK())
         } catch (e) {
             return thunkAPI.rejectWithValue(apiError(e))
         }
@@ -75,12 +74,12 @@ export const updateKit = createAsyncThunk(
     'updateKit',
     async (post: IKit, thunkAPI) => {
         try {
-            const {data} = await api.put<IKit>(apiUrl + `kit/${post.id}/`, post, {
+            await api.put<IKit>(apiUrl + `kit/${post.id}/`, post, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }
             })
-            return data
+            return thunkAPI.dispatch(getOrganizationsTK())
         } catch (e) {
             return thunkAPI.rejectWithValue(apiError(e))
         }
@@ -92,7 +91,7 @@ export const deleteKit = createAsyncThunk(
     async (post: IKit, thunkAPI) => {
         try {
             await api.delete<IKit>(apiUrl + `kit/${post.id}/`)
-            return post
+            return thunkAPI.dispatch(getOrganizationsTK())
         } catch (e) {
             return thunkAPI.rejectWithValue(apiError(e))
         }

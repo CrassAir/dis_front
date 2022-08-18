@@ -26,7 +26,7 @@ const Parameter = () => {
     } = useAppSelector(state => state.catalogReducer)
     const {user, isLoading} = useAppSelector(state => state.authReducer)
 
-    const edit = useMemo(() => validateEditAccess(user!, 'to_directory'), [user])
+    const edit = useMemo(() => validateEditAccess(user!, 'directory'), [user])
 
     let columns = useMemo<Column<IParameter>[]>(() => ([
         {

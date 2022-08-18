@@ -11,14 +11,6 @@ export const login = createAsyncThunk(
     async (post: IAuth, thunkAPI) => {
         try {
             const {data} = await axios.post<IAuthResponse>(restAuthUrl + 'login/', post)
-            data.user['role'] = {
-                id: 1,
-                name: 'asd',
-                to_team: 'read',
-                to_directory: 'read',
-                to_delivery: 'edit_read',
-                to_defectoscopy: 'close'
-            }
             localStorage.setItem('user', JSON.stringify(data.user))
             localStorage.setItem('token', data.key)
             interceptor = api.interceptors.request.use((config: any) => {

@@ -27,7 +27,7 @@ const OrganizationsTeamKits = () => {
     const [openTeamFormDialog, setOpenTeamFormDialog] = useState<number | null>(null)
     const [form] = Form.useForm();
 
-    const edit = useMemo(() => validateEditAccess(user!, 'to_team'), [user])
+    const edit = useMemo(() => validateEditAccess(user!, 'teams'), [user])
 
 
     useEffect(() => {

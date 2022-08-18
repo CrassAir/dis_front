@@ -1,7 +1,7 @@
 import React, {useEffect, useMemo, useState} from 'react';
 import MaterialTable, {Column} from "material-table";
 import Upload from "antd/lib/upload/Upload";
-import {Dialog, IconButton, MenuItem, TextField, Tooltip} from "@mui/material";
+import {IconButton, MenuItem, TextField, Tooltip} from "@mui/material";
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import FileOpenIcon from '@mui/icons-material/FileOpen';
 import type {RcFile} from 'antd/es/upload/interface';
@@ -29,23 +29,8 @@ const Kits = ({teamKit}: KitsProps) => {
     const [file, setFile] = useState<RcFile | null>(null)
     const [openMoving, setOpenMoving] = useState<IKit | null>(null)
 
-    const edit = useMemo(() => validateEditAccess(user!, 'to_team'), [user])
-    const editDelivery = useMemo(() => validateEditAccess(user!, 'to_delivery'), [user])
-
-    const detailMoving = () => {
-        const handleClose = () => {
-            setOpenMoving(null)
-        }
-
-        return (
-            <Dialog
-                open={!!openMoving}
-                onClose={handleClose}
-            >
-                <MovingForm editData={openMoving} onClose={handleClose}/>
-            </Dialog>
-        )
-    }
+    const edit = useMemo(() => validateEditAccess(user!, 'teams'), [user])
+    const editDelivery = useMemo(() => validateEditAccess(user!, 'delivery'), [user])
 
     const scanPassport = (rowData: IKit) => {
         if (rowData.passport) {
@@ -61,6 +46,10 @@ const Kits = ({teamKit}: KitsProps) => {
              </span>
         </Tooltip>
     }
+
+    const movingForm = useMemo(() => (
+        <MovingForm editData={openMoving} onClose={() => setOpenMoving(null)}/>
+    ), [openMoving])
 
     const colorCell: any = {
         '2': {borderLeft: '8px solid red', backgroundColor: 'rgba(255,187,187,0.5)'},
@@ -174,7 +163,7 @@ const Kits = ({teamKit}: KitsProps) => {
                     onRowDelete: oldData => dispatch(deleteKit(oldData))
                 } : {}}
             />
-            {detailMoving()}
+            {movingForm}
         </>
     )
 }

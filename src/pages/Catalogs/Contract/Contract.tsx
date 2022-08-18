@@ -24,7 +24,7 @@ const Contract = () => {
     const {user, isLoading} = useAppSelector(state => state.authReducer)
     const [file, setFile] = useState<RcFile | null>(null)
 
-    const edit = useMemo(() => validateEditAccess(user!, 'to_directory'), [user])
+    const edit = useMemo(() => validateEditAccess(user!, 'directory'), [user])
 
     const scanDoc = (rowData: IContract) => {
         if (rowData.doc) {

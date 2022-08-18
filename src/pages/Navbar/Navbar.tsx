@@ -12,9 +12,9 @@ import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import {navList} from '../../App';
+import {defaultNavList} from '../../App';
 import {useLocation, useNavigate} from "react-router-dom";
-import {useState} from "react";
+import {useMemo, useState} from "react";
 import {
     Avatar,
     Box,
@@ -123,12 +123,38 @@ const Navbar: React.FC = () => {
     const navigate = useNavigate()
     const location = useLocation()
     const dispatch = useAppDispatch()
-    const {user, isLoading} = useAppSelector(state => state.authReducer)
+    const {user, navList, isLoading} = useAppSelector(state => state.authReducer)
     const [open, setOpen] = useState(false)
 
     const handleDrawer = () => {
         setOpen(!open)
     }
+
+    const navigationList = useMemo(() => (<List>
+        {navList.map((navItem: any) => (
+            <ListItem key={navItem?.name} disablePadding sx={{display: 'block'}}
+                      selected={navItem.path === location.pathname}
+                      onClick={() => {
+                          navigate(navItem.path)
+                      }}>
+                <ListItemButton
+                    sx={{
+                        minHeight: 48,
+                        px: 2.5,
+                    }}
+                >
+                    <ListItemIcon
+                        sx={{
+                            minWidth: 0, mr: 3, justifyContent: 'center',
+                        }}
+                    >
+                        {navItem?.icon}
+                    </ListItemIcon>
+                    <ListItemText primary={navItem?.name}
+                                  sx={{opacity: open ? 1 : 0, transition: '200ms'}}/>
+                </ListItemButton>
+            </ListItem>))}
+    </List>), [navList, location])
 
     return (<>
             <HideOnScroll>
@@ -161,7 +187,7 @@ const Navbar: React.FC = () => {
                         <Box flexGrow={1}/>
                         <Stack spacing={1} direction={'row'}>
                             {user?.full_name && <Avatar {...stringAvatar(user.full_name)}/>}
-                            <Notifications />
+                            <Notifications/>
                             <IconButton edge='end' onClick={() => dispatch(logout())}>
                                 <LogoutIcon/>
                             </IconButton>
@@ -176,31 +202,7 @@ const Navbar: React.FC = () => {
                         {open ? <ChevronLeftIcon/> : <MenuIcon/>}
                     </IconButton>
                 </DrawerHeader>
-                <List>
-                    {navList.map((navItem: any) => (navItem.read &&
-                        <ListItem key={navItem?.name} disablePadding sx={{display: 'block'}}
-                                  selected={navItem.path === location.pathname}
-                                  onClick={() => {
-                                      navigate(navItem.path)
-                                  }}>
-                            <ListItemButton
-                                sx={{
-                                    minHeight: 48,
-                                    px: 2.5,
-                                }}
-                            >
-                                <ListItemIcon
-                                    sx={{
-                                        minWidth: 0, mr: 3, justifyContent: 'center',
-                                    }}
-                                >
-                                    {navItem?.icon}
-                                </ListItemIcon>
-                                <ListItemText primary={navItem?.name}
-                                              sx={{opacity: open ? 1 : 0, transition: '200ms'}}/>
-                            </ListItemButton>
-                        </ListItem>))}
-                </List>
+                {navigationList}
             </Drawer>
         </>
     );

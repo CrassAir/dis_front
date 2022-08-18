@@ -100,22 +100,18 @@ export const deleteElementFromList = (list: any[], id: number) => {
     return newList
 }
 
-export const changeNavListValidate = (user: IAccount, navList: INavItem[]) => {
-    navList.forEach(nav => {
-        // if (user.is_superuser) {
-        //     nav.read = true
-        //     return
-        // }
-        // @ts-ignore
-        if (['edit_read', 'read'].includes(user.role[nav.validate])) {
-            nav.read = true
-        }
-    })
+
+export const changeNavListOnValidate = (user: IAccount, navList: INavItem[]) => {
+    if (!user) return []
+    if (user.is_superuser) return navList
+    if (!user.role) return []
+    return navList.filter(nav => user.role.read.some(val => val.name_plural === nav.validate))
 }
 
-export const validateEditAccess = (user: IAccount, valField: string) => {
-    // if (user.is_superuser) return true
-    // @ts-ignore
-    return user.role[valField] === 'edit_read'
+export const validateEditAccess = (user: IAccount, valName: string) => {
+    if (!user) return []
+    if (user.is_superuser) return true
+    if (!user.role) return false
+    return user.role.edit.some(val => val.name_plural === valName)
 }
 
