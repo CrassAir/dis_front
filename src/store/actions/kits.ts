@@ -1,7 +1,7 @@
 import {createAsyncThunk} from "@reduxjs/toolkit";
 import api, {apiError} from "../../api/api";
 import {apiUrl} from "../../api/urls";
-import {IKit, IOrganizationTK, ITeam} from "../../models/IKit";
+import {IKit, IMoving, IOrganizationTK, ITeam} from "../../models/IKit";
 
 
 // export const getTeamKits = createAsyncThunk(
@@ -92,6 +92,66 @@ export const deleteKit = createAsyncThunk(
         try {
             await api.delete<IKit>(apiUrl + `kit/${post.id}/`)
             return thunkAPI.dispatch(getOrganizationsTK())
+        } catch (e) {
+            return thunkAPI.rejectWithValue(apiError(e))
+        }
+    }
+)
+
+export const getMoving = createAsyncThunk(
+    'getMoving',
+    async (_, thunkAPI) => {
+        try {
+            const {data} = await api.get<IMoving[]>(apiUrl + 'moving_kit/')
+            return data
+        } catch (e) {
+            return thunkAPI.rejectWithValue(apiError(e))
+        }
+    }
+)
+
+export const changeStatusMoving = createAsyncThunk(
+    'changeStatusMoving',
+    async (post: any, thunkAPI) => {
+        try {
+            const {data} = await api.post<IMoving>(apiUrl + `moving_kit/${post.id}/${post.status}/`, post.data)
+            return data
+        } catch (e) {
+            return thunkAPI.rejectWithValue(apiError(e))
+        }
+    }
+)
+
+export const createMoving = createAsyncThunk(
+    'createMoving',
+    async (post: any, thunkAPI) => {
+        try {
+            const {data} = await api.post<IMoving>(apiUrl + 'moving_kit/', post)
+            return data
+        } catch (e) {
+            return thunkAPI.rejectWithValue(apiError(e))
+        }
+    }
+)
+
+export const updateMoving = createAsyncThunk(
+    'updateMoving',
+    async (post: any, thunkAPI) => {
+        try {
+            const {data} = await api.put<IMoving>(apiUrl + `moving_kit/${post.id}/`, post)
+            return data
+        } catch (e) {
+            return thunkAPI.rejectWithValue(apiError(e))
+        }
+    }
+)
+
+export const deleteMoving = createAsyncThunk(
+    'deleteMoving',
+    async (post: IMoving, thunkAPI) => {
+        try {
+            await api.delete<IMoving>(apiUrl + `moving_kit/${post.id}/`)
+            return post.id
         } catch (e) {
             return thunkAPI.rejectWithValue(apiError(e))
         }

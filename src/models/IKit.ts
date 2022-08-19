@@ -53,3 +53,32 @@ export interface IOrganizationTK {
     administrative: boolean
     teams: ITeam[]
 }
+
+export const moving_status = {
+    create: {status: 'Новый', color: {backgroundColor: 'secondary.light'}},
+    sent: {status: 'В пути', color: {backgroundColor: 'warning.light'}},
+    received: {status: 'Получен', color: {backgroundColor: 'success.light'}},
+    back: {status: 'Возврат', color: {backgroundColor: ''}},
+    cancellation: {status: 'Отменен', color: {backgroundColor: 'error.light'}},
+}
+
+export interface IMoving {
+    id: number
+    date_create: string
+    amount: number
+    from_kit: number
+    to_team: number
+    new_kit: number | null
+    delivery_date_time: string
+    delivery_initiator: string | null
+    creator: number
+    creator_name: string
+    recipient: number | null
+    recipient_name: string | null
+    last_status_name: string
+    from_kit_name: string
+    from_team_kit_name: string
+    from_organization_name: string
+    to_team_kit_name: string
+    to_organization_name: string
+}

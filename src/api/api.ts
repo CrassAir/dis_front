@@ -15,7 +15,7 @@ export interface IApiError {
 export const apiError = (e: any) => {
     if (axios.isAxiosError(e)) {
         // @ts-ignore
-        return {code: e.response.status, message: e.response.data.detail || e.message}
+        return {code: e.response.status, message: e.response.data ? e.response.data : e.message}
     }
     return {code: 0, message: e.message}
 }

@@ -134,12 +134,12 @@ const Kits = ({teamKit}: KitsProps) => {
                 columns={columns}
                 data={data}
                 actions={[
-                    rowData => ({
-                        icon: () => <ArticleIcon/>,
-                        tooltip: 'Трубы в комплекте',
-                        disabled: rowData.pipes?.length === 0,
-                        onClick: (event, rowData) => alert("You saved")
-                    }),
+                    // rowData => ({
+                    //     icon: () => <ArticleIcon/>,
+                    //     tooltip: 'Трубы в комплекте',
+                    //     disabled: rowData.pipes?.length === 0,
+                    //     onClick: (event, rowData) => alert("You saved")
+                    // }),
                     rowData => ({
                         icon: () => rowData.id % 2 === 0 ? <LocalShippingIcon/> : <LocalShippingOutlinedIcon/>,
                         tooltip: 'Перемещение комплекта' + (rowData.id % 2 === 0 ? '(в пути)' : ''),

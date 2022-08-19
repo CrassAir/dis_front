@@ -1,5 +1,5 @@
 import React, {useEffect, useMemo, useState} from 'react';
-import {IKit, ITeam} from "../../models/IKit";
+import {IKit} from "../../models/IKit";
 import {
     Button, Dialog,
     DialogActions, DialogContent,
@@ -10,7 +10,7 @@ import {
 } from "@mui/material";
 import {Form} from "antd";
 import {useAppDispatch, useAppSelector} from "../../hooks/redux";
-import {getOrganizationsTK} from "../../store/actions/kits";
+import {createMoving, getOrganizationsTK, updateMoving} from "../../store/actions/kits";
 import {LocalizationProvider} from "@mui/x-date-pickers/LocalizationProvider";
 import {ru} from "date-fns/locale";
 import {AdapterDateFns} from "@mui/x-date-pickers/AdapterDateFns";
@@ -18,24 +18,29 @@ import {DatePicker} from "@mui/x-date-pickers/DatePicker";
 import moment from "moment/moment";
 
 type MovingFormProps = {
-    editData?: IKit | null
+    editData?: any | null
     onClose: () => void
+    moveId?: number
 }
 
-const MovingForm = ({editData, onClose}: MovingFormProps) => {
+const MovingForm = ({editData, moveId, onClose}: MovingFormProps) => {
     const [form] = Form.useForm()
     const dispatch = useAppDispatch()
     const {organizationsTK} = useAppSelector(state => state.kitReducer)
-    const [selectKitId, setSelectKitId] = useState<number | null>(editData?.id || null)
+    const {user} = useAppSelector(state => state.authReducer)
+    const [selectKitId, setSelectKitId] = useState<number | null>(null)
+    const [selectDate, setSelectDate] = useState<any | null>()
 
-    const formData = useMemo(() => {
-        if (!!editData) setSelectKitId(editData.id)
-        return {
-            from_kit: editData ? editData.id : '',
-            amount: '',
-            to_team: '',
-            delivery_date_time: moment()
+    useEffect(() => {
+        const newData = {
+            from_kit: editData?.id ? editData?.id : '',
+            amount: editData?.amount ? editData?.amount : 0,
+            to_team: editData?.to_team ? editData?.to_team : '',
+            delivery_date_time: editData?.delivery_date_time ? moment(editData?.delivery_date_time) : moment(),
         }
+        setSelectKitId(newData.from_kit)
+        setSelectDate(newData.delivery_date_time)
+        form.setFieldsValue(newData)
     }, [editData])
 
     useEffect(() => {
@@ -45,9 +50,6 @@ const MovingForm = ({editData, onClose}: MovingFormProps) => {
     const handleClose = () => {
         onClose()
         form.resetFields()
-    }
-
-    const handleChange = (event: any) => {
     }
 
     return (
@@ -60,11 +62,23 @@ const MovingForm = ({editData, onClose}: MovingFormProps) => {
             <Form
                 form={form}
                 onFinish={(values) => {
-                    values.delivery_date_time = values.delivery_date_time._d
-                    console.log(values)
+                    values.delivery_date_time = selectDate
+                    values.amount = Number(values.amount)
+                    values.creator = user!.id
+                    if (moveId) {
+                        values.id = moveId
+                        dispatch(updateMoving(values))
+                    } else {
+                        dispatch(createMoving(values))
+                    }
                     handleClose()
                 }}
-                initialValues={formData}
+                initialValues={{
+                    from_kit: '',
+                    amount: 0,
+                    to_team: '',
+                    delivery_date_time: moment()
+                }}
             >
                 <DialogTitle>{'Перемещение комплекта'}</DialogTitle>
                 <DialogContent className={'form-paper'}>
@@ -75,7 +89,7 @@ const MovingForm = ({editData, onClose}: MovingFormProps) => {
                         <TextField
                             required
                             select
-                            value={formData.from_kit}
+                            value={editData?.id}
                             onChange={e => setSelectKitId(Number(e.target.value))}
                             label="Комплкект"
                             fullWidth
@@ -98,8 +112,7 @@ const MovingForm = ({editData, onClose}: MovingFormProps) => {
                         <TextField
                             required
                             label="Количество"
-                            value={formData.amount}
-                            onChange={handleChange}
+                            value={editData?.amount}
                             type={'number'}
                             fullWidth
                         />
@@ -112,8 +125,7 @@ const MovingForm = ({editData, onClose}: MovingFormProps) => {
                             required
                             select
                             label="Кому(Бригада)"
-                            value={formData.to_team}
-                            onChange={handleChange}
+                            value={editData?.to_team}
                             fullWidth
                         >
                             {organizationsTK.map(org => {
@@ -133,20 +145,19 @@ const MovingForm = ({editData, onClose}: MovingFormProps) => {
                         <LocalizationProvider adapterLocale={ru} dateAdapter={AdapterDateFns}>
                             <DatePicker
                                 label='Дата доставки'
-                                value={formData.delivery_date_time}
+                                value={selectDate}
                                 minDate={new Date('2022-01-01')}
-                                onChange={handleChange}
+                                onChange={(e) => setSelectDate(e)}
                                 renderInput={(params: any) => <TextField fullWidth required {...params}/>}
                             />
                         </LocalizationProvider>
                     </Form.Item>
-
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleClose}>Отмена</Button>
                     <Form.Item>
                         <Button type={'submit'}>
-                            {editData?.id ? 'Изменить' : 'Создать'}
+                            Отправить
                         </Button>
                     </Form.Item>
                 </DialogActions>

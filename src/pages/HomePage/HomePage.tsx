@@ -7,7 +7,7 @@ const HomePage: React.FC = () => {
     return <div>
         <Box sx={{display: 'flex'}}>
             <Navbar/>
-            <Box component="main" sx={{flexGrow: 1, p: 3}}>
+            <Box component="main" sx={{flexGrow: 1, p: {xs: '5px', md: 3}}}>
                 <DrawerHeader/>
                 <Outlet/>
             </Box>

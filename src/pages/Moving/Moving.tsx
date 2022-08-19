@@ -1,5 +1,5 @@
-import React, {useMemo, useState} from 'react';
-import {Box, Button, MenuItem, Paper, Stack, TextField, Typography} from "@mui/material";
+import React, {useEffect, useMemo, useState} from 'react';
+import {Box, Button, MenuItem, Paper, Stack, TextField} from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2";
 import {DatePicker} from "@mui/x-date-pickers/DatePicker";
 import AddBoxIcon from '@mui/icons-material/AddBox';
@@ -8,17 +8,32 @@ import {ru} from "date-fns/locale";
 import {AdapterDateFns} from "@mui/x-date-pickers/AdapterDateFns";
 import moment from 'moment';
 import MovingForm from "./MovingForm";
+import MovingItem from "./MovingItem";
+import {useAppDispatch, useAppSelector} from "../../hooks/redux";
+import {getMoving} from "../../store/actions/kits";
+import {moving_status} from "../../models/IKit";
+
 
 const Moving = () => {
     const [selectDate, setSelectDate] = useState(moment())
     const [editData, setEditData] = useState<any | null>(null)
+    const dispatch = useAppDispatch()
+    const {movingList} = useAppSelector(state => state.kitReducer)
+
+    useEffect(() => {
+        dispatch(getMoving())
+    }, [])
 
     const movingForm = useMemo(() => (
         <MovingForm onClose={() => setEditData(null)} editData={editData}/>
     ), [editData])
 
+    const movingItems = useMemo(() => {
+        return movingList.map(item => <MovingItem key={item.id} moving={item}/>)
+    }, [movingList])
+
     return (
-        <>
+        <Box sx={{display: 'flex', justifyContent: 'center'}}>
             <Stack spacing={2}>
                 <Grid container spacing={2} justifyContent={{xs: "center", sm: "flex-start"}}>
                     <Grid sm={'auto'} xs={'auto'}>
@@ -43,50 +58,24 @@ const Moving = () => {
                                 defaultValue={'all'}
                             >
                                 <MenuItem value={'all'}>Все</MenuItem>
-                                <MenuItem value={1}>Создан</MenuItem>
-                                <MenuItem value={2}>В пути</MenuItem>
-                                <MenuItem value={3}>Доставлен</MenuItem>
+                                {Object.keys(moving_status).map(key => (
+                                    <MenuItem key={key} value={key}>
+                                        {moving_status[key as keyof typeof moving_status].status}
+                                    </MenuItem>))}
                             </TextField>
                         </Paper>
                     </Grid>
                     <Grid sm={'auto'} xs={'auto'}>
                         <Button sx={{height: '40px'}} variant={'contained'} startIcon={<AddBoxIcon/>}
-                                onClick={() => setEditData({})}
-
-                        >Создать</Button>
+                                onClick={() => setEditData({})}>
+                            Создать
+                        </Button>
                     </Grid>
                 </Grid>
-                <Paper sx={{p: 1}}>
-                    <Grid container spacing={2}>
-                        <Grid xs={12} md={10}>
-                            <Stack spacing={1} direction={'row'}>
-                                <Typography color={'text.secondary'}>Дата создания:</Typography>
-                                <Typography>01-02-2022</Typography>
-                            </Stack>
-                        </Grid>
-                        <Grid xs={12} md={2}>
-                            <Box display={'flex'} justifyContent={'flex-end'}>
-                                <Button sx={{height: '40px'}} variant={'contained'}
-                                        startIcon={<AddBoxIcon/>}>Создать</Button>
-                            </Box>
-                        </Grid>
-                        <Grid xs={12} md={6}>
-                            <Stack spacing={1} direction={'row'}>
-                                <Typography color={'text.secondary'}>Бригада отправитель:</Typography>
-                                <Typography>Тест</Typography>
-                            </Stack>
-                        </Grid>
-                        <Grid xs={12} md={6}>
-                            <Stack spacing={1} direction={'row'}>
-                                <Typography color={'text.secondary'}>Бригада получатель:</Typography>
-                                <Typography>Тест</Typography>
-                            </Stack>
-                        </Grid>
-                    </Grid>
-                </Paper>
+                {movingItems}
             </Stack>
             {movingForm}
-        </>
+        </Box>
     )
 }
 

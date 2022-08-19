@@ -135,6 +135,7 @@ const Navbar: React.FC = () => {
             <ListItem key={navItem?.name} disablePadding sx={{display: 'block'}}
                       selected={navItem.path === location.pathname}
                       onClick={() => {
+                          if(window.innerWidth < 600) setOpen(false)
                           navigate(navItem.path)
                       }}>
                 <ListItemButton
@@ -148,13 +149,12 @@ const Navbar: React.FC = () => {
                             minWidth: 0, mr: 3, justifyContent: 'center',
                         }}
                     >
-                        {navItem?.icon}
+                        {navItem.icon}
                     </ListItemIcon>
-                    <ListItemText primary={navItem?.name}
-                                  sx={{opacity: open ? 1 : 0, transition: '200ms'}}/>
+                    <ListItemText primary={navItem.name} sx={{opacity: open ? 1 : 0, transition: '200ms'}}/>
                 </ListItemButton>
             </ListItem>))}
-    </List>), [navList, location])
+    </List>), [navList, location, open])
 
     return (<>
             <HideOnScroll>
@@ -176,7 +176,7 @@ const Navbar: React.FC = () => {
                                 onClick={() => navigate('/', {replace: true})}
                             >
                                 <CardMedia
-                                    sx={{p: 1}}
+                                    sx={{p: 1, width: {xs: '128px', md: 'auto'}, objectPosition: 'left'}}
                                     component="img"
                                     height="50"
                                     image={Logo}
@@ -196,7 +196,7 @@ const Navbar: React.FC = () => {
                     {isLoading && <LinearProgress color={'secondary'}/>}
                 </AppBar>
             </HideOnScroll>
-            <Drawer variant="permanent" open={open}>
+            <Drawer variant="permanent" open={open} sx={{display: {md: 'block', xs: open ? 'block' : 'none'}}}>
                 <DrawerHeader>
                     <IconButton onClick={handleDrawer}>
                         {open ? <ChevronLeftIcon/> : <MenuIcon/>}
