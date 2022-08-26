@@ -12,6 +12,7 @@ export interface IKit {
     pipe_class: string
     pipe_version_name: string
     team_kit?: number
+    last_status_name: string
     last_returnable?: boolean
     last_moving_id?: number
 }
@@ -60,8 +61,10 @@ export const moving_status = {
     create: {status: 'Новый', color: {backgroundColor: 'secondary.light'}},
     sent: {status: 'В пути', color: {backgroundColor: 'warning.light'}},
     received: {status: 'Получен', color: {backgroundColor: 'success.light'}},
-    back: {status: 'Возврат', color: {backgroundColor: ''}},
-    cancellation: {status: 'Отменен', color: {backgroundColor: 'error.light'}},
+    not_received: {status: 'Не получен', color: {backgroundColor: 'error.light'}},
+    back: {status: 'Возврат', color: {backgroundColor: 'warning.light'}},
+    back_received: {status: 'Возврат получен', color: {backgroundColor: 'success.light'}},
+    not_back_received: {status: 'Возврат не получен', color: {backgroundColor: 'error.light'}},
 }
 
 export interface IMoving {
@@ -70,7 +73,7 @@ export interface IMoving {
     amount: number
     from_kit: number
     to_team: number
-    sent_kit: number | null
+    send_kit: number | null
     delivery_date_time: string
     delivery_initiator: string | null
     transfer_basis: string
@@ -79,10 +82,11 @@ export interface IMoving {
     recipient: number | null
     recipient_name: string | null
     last_status_name: string
+    complete: boolean
     returnable: boolean
-    from_kit_name: string
-    from_team_kit_name: string
+    send_kit_name: string
+    from_team_name: string
     from_organization_name: string
-    to_team_kit_name: string
+    to_team_name: string
     to_organization_name: string
 }

@@ -117,17 +117,23 @@ export const validateEditAccess = (user: IAccount, valName: string) => {
 }
 
 
-export const disabledByStatus = (user: IAccount, moving:IMoving, valAction: string) => {
-    switch (valAction){
-        case 'sent':
-            return !(user.is_superuser || user?.team_name === moving.from_team_kit_name)
-        case 'received':
-            return !(user.is_superuser || (validateEditAccess(user!, 'delivery') && user?.team_name === moving.to_team_kit_name))
-        case 'back':
-            return !(user.is_superuser || (validateEditAccess(user!, 'delivery') && user?.team_name === moving.to_team_kit_name))
-        // case 'cancellation':
-        //     return !(user.is_superuser || user?.id === moving?.creator)
-        default:
-            return true
+export const disableByMovingStatus = (user: IAccount, moving: IMoving, btn: string) => {
+    if (user.is_superuser) return false
+    if (moving.last_status_name === 'sent') {
+        if (btn === 'accept') {
+            return !(validateEditAccess(user!, 'delivery') && user?.team_name === moving.to_team_name)
+        }
+        if (btn === 'cancel') {
+            return !(validateEditAccess(user!, 'delivery') && (user?.id === moving.creator || user?.team_name === moving.to_team_name))
+        }
     }
+    if (moving.last_status_name === 'back') {
+        if (btn === 'accept') {
+            return !(validateEditAccess(user!, 'delivery') && user?.id === moving.creator)
+        }
+        if (btn === 'cancel') {
+            return !(validateEditAccess(user!, 'delivery') && (user?.id === moving.recipient || user?.id === moving.creator))
+        }
+    }
+    return true
 }

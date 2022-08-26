@@ -22,6 +22,7 @@ const Moving = () => {
 
     useEffect(() => {
         dispatch(getMoving())
+        window.scrollTo(0, 0)
     }, [])
 
     const movingForm = useMemo(() => (

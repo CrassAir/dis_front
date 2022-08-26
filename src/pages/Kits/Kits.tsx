@@ -5,16 +5,15 @@ import {IconButton, MenuItem, TextField, Tooltip} from "@mui/material";
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import FileOpenIcon from '@mui/icons-material/FileOpen';
 import type {RcFile} from 'antd/es/upload/interface';
-import {general_state_choose, IKit, ITeamKit, pipe_class_choose} from "../../models/IKit";
+import {general_state_choose, IKit, ITeamKit, moving_status, pipe_class_choose} from "../../models/IKit";
 import {useAppDispatch, useAppSelector} from "../../hooks/redux";
 import {convertListToObject, localizationMT, validateEditAccess} from "../utils";
 import {changeStatusMoving, createKit, deleteKit, getKits, updateKit} from "../../store/actions/kits";
-import {getManufacturers, getParameters} from "../../store/actions/catalog";
-import ArticleIcon from '@mui/icons-material/Article';
 import LocalShippingIcon from '@mui/icons-material/LocalShipping';
 import LocalShippingOutlinedIcon from '@mui/icons-material/LocalShippingOutlined';
 import ReplyIcon from '@mui/icons-material/Reply';
 import MovingForm from "../Moving/MovingForm";
+import {useNavigate} from "react-router-dom";
 
 
 type KitsProps = {
@@ -24,6 +23,7 @@ type KitsProps = {
 const Kits = ({teamKit}: KitsProps) => {
     const [data, setData] = useState<IKit[]>([])
     const dispatch = useAppDispatch()
+    const navigation = useNavigate()
     const {kits} = teamKit
     const {parameters, manufacturers} = useAppSelector(state => state.catalogReducer)
     const {user, isLoading} = useAppSelector(state => state.authReducer)
@@ -31,7 +31,6 @@ const Kits = ({teamKit}: KitsProps) => {
     const [openMoving, setOpenMoving] = useState<IKit | null>(null)
 
     const edit = useMemo(() => validateEditAccess(user!, 'teams'), [user])
-    const editDelivery = useMemo(() => validateEditAccess(user!, 'delivery'), [user])
 
     const scanPassport = (rowData: IKit) => {
         if (rowData.passport) {
@@ -114,7 +113,6 @@ const Kits = ({teamKit}: KitsProps) => {
         if (kits) setData(kits.map(kit => ({...kit, tableData: {}})))
     }, [kits])
 
-
     return (
         <>
             <MaterialTable
@@ -136,16 +134,16 @@ const Kits = ({teamKit}: KitsProps) => {
                     //     onClick: (event, rowData) => alert("You saved")
                     // }),
                     rowData => ({
-                        icon: () => rowData.last_returnable ? <ReplyIcon/> : <LocalShippingIcon/>, //: <LocalShippingOutlinedIcon/>,
-                        tooltip: rowData.last_returnable ? 'Вернуть комплект' : 'Созадать перемещение',
-                        disabled: !editDelivery,
+                        icon: () => [null, 'create', 'sent'].includes(rowData.last_status_name) ? <LocalShippingIcon/> : <ReplyIcon/>, //: <LocalShippingOutlinedIcon/>,
+                        tooltip: rowData.last_status_name ?  moving_status[rowData.last_status_name as keyof typeof moving_status].status : 'Созадать перемещение',
+                        disabled: ['sent', 'back'].includes(rowData.last_status_name),
                         hidden: teamKit?.name !== user!.team_name,
                         onClick: (event) => {
-                            if (rowData.last_returnable) {
+                            if (['received', 'not_received'].includes(rowData.last_status_name)) {
                                 dispatch(changeStatusMoving({
                                     id: rowData.last_moving_id,
-                                    forward: false
-                                }))
+                                    forward: true
+                                })).then(() => navigation('delivery'))
                             } else {
                                 setOpenMoving(rowData)
                             }

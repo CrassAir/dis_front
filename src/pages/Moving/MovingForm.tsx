@@ -1,5 +1,4 @@
-import React, {useEffect, useMemo, useState} from 'react';
-import {IKit} from "../../models/IKit";
+import React, {useEffect, useState} from 'react';
 import {
     Button, Dialog,
     DialogActions, DialogContent,
@@ -32,6 +31,7 @@ const MovingForm = ({editData, moveId, onClose}: MovingFormProps) => {
     const {organizationsTK} = useAppSelector(state => state.kitReducer)
     const {user} = useAppSelector(state => state.authReducer)
     const [selectKitId, setSelectKitId] = useState<number | null>(null)
+    const [switchVal, setSwitchVal] = useState(true)
     const [selectDate, setSelectDate] = useState<any | null>()
 
     useEffect(() => {
@@ -44,8 +44,10 @@ const MovingForm = ({editData, moveId, onClose}: MovingFormProps) => {
         }
         setSelectKitId(newData.from_kit)
         setSelectDate(newData.delivery_date_time)
+        setSwitchVal(editData?.returnable ? editData?.returnable : true)
         form.setFieldsValue(newData)
     }, [editData])
+
 
     useEffect(() => {
         if (organizationsTK.length === 0) dispatch(getOrganizationsTK())
@@ -69,6 +71,7 @@ const MovingForm = ({editData, moveId, onClose}: MovingFormProps) => {
                     values.delivery_date_time = selectDate
                     values.amount = Number(values.amount)
                     values.creator = user!.id
+                    values.returnable = switchVal
                     if (moveId) {
                         values.id = moveId
                         dispatch(updateMoving(values))
@@ -76,7 +79,7 @@ const MovingForm = ({editData, moveId, onClose}: MovingFormProps) => {
                         dispatch(createMoving(values))
                     }
                     handleClose()
-                    if (location.pathname !== 'delivery/') navigation('delivery')
+                    if (location.pathname !== '/delivery') navigation('delivery', {replace: true})
                 }}
                 initialValues={{
                     from_kit: '',
@@ -160,15 +163,16 @@ const MovingForm = ({editData, moveId, onClose}: MovingFormProps) => {
                     </Form.Item>
 
 
-                        <Form.Item
-                            name="returnable"
-                            required={true}
-                        >
-                             <Stack minWidth={'auto'} spacing={2} direction={'row'}>
+                    <Form.Item
+                        name="returnable"
+                        required={true}
+                    >
+                        <Stack minWidth={'auto'} spacing={2} direction={'row'}>
                             <Typography>С возвратом?</Typography>
-                            <Switch inputProps={{'aria-label': 'С возвратом?'}} defaultChecked/>
-                                 </Stack>
-                        </Form.Item>
+                            <Switch inputProps={{'aria-label': 'С возвратом?'}} value={switchVal}
+                                    onChange={(_, checked) => setSwitchVal(checked)} defaultChecked/>
+                        </Stack>
+                    </Form.Item>
 
                 </DialogContent>
                 <DialogActions>

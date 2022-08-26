@@ -8,11 +8,11 @@ import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import DeleteIcon from '@mui/icons-material/Delete';
 import SendIcon from '@mui/icons-material/Send';
 import ReplyIcon from '@mui/icons-material/Reply';
-// import CancelIcon from '@mui/icons-material/Cancel';
+import CancelIcon from '@mui/icons-material/Cancel';
 import {useAppDispatch, useAppSelector} from "../../hooks/redux";
 import MovingForm from "./MovingForm";
 import {changeStatusMoving, deleteMoving} from "../../store/actions/kits";
-import {disabledByStatus} from "../utils";
+import {disableByMovingStatus} from "../utils";
 
 
 type MovingItemProps = {
@@ -35,20 +35,18 @@ const MovingItem = ({moving}: MovingItemProps) => {
         const listBtn = []
         if (user?.id === moving?.creator) {
             if (moving.last_status_name === 'create') {
-                listBtn.push(<Tooltip key={'edit'} title={"Редактировать"}>
-                    <IconButton onClick={() => setEditData({
-                        kit: {
-                            id: moving.sent_kit ? moving.sent_kit : moving.from_kit,
-                            amount: moving.amount,
-                            to_team: moving.to_team,
-                            delivery_date_time: moving.delivery_date_time,
-                            returnable: moving.returnable
-                        },
-                        moveId: moving.id
-                    })}><EditIcon/></IconButton>
-                </Tooltip>)
-            }
-            if (['create', 'cancellation'].includes(moving.last_status_name)) {
+                // listBtn.push(<Tooltip key={'edit'} title={"Редактировать"}>
+                //     <IconButton onClick={() => setEditData({
+                //         kit: {
+                //             id: moving.send_kit ? moving.send_kit : moving.from_kit,
+                //             amount: moving.amount,
+                //             to_team: moving.to_team,
+                //             delivery_date_time: moving.delivery_date_time,
+                //             returnable: moving.returnable
+                //         },
+                //         moveId: moving.id
+                //     })}><EditIcon/></IconButton>
+                // </Tooltip>)
                 listBtn.push(<Tooltip key={'delete'} title={"Удалить"}>
                     <IconButton onClick={() => dispatch(deleteMoving(moving))}><DeleteIcon/></IconButton>
                 </Tooltip>)
@@ -61,7 +59,7 @@ const MovingItem = ({moving}: MovingItemProps) => {
         const listBtn = []
         if (moving.last_status_name === 'create') {
             listBtn.push(<Button key={'send'} variant={'contained'} startIcon={<SendIcon/>}
-                                 disabled={disabledByStatus(user!, moving, 'sent')}
+                                 disabled={!(user!.is_superuser || user!.id === moving.creator)}
                                  onClick={() => dispatch(changeStatusMoving({
                                      id: moving.id,
                                      forward: true
@@ -69,19 +67,10 @@ const MovingItem = ({moving}: MovingItemProps) => {
             >
                 Отправить
             </Button>)
-            // listBtn.push(<Button key={'cancellation'} variant={'contained'} color={'error'} startIcon={<CancelIcon/>}
-            //                      disabled={disabledByStatus(user!, moving, 'cancellation')}
-            //                      onClick={() => dispatch(changeStatusMoving({
-            //                          id: moving.id,
-            //                          status: 'in_cancellation'
-            //                      }))}
-            // >
-            //     Отменить
-            // </Button>)
         }
-        if (moving.last_status_name === 'sent') {
-            listBtn.push(<Button key={'received'} variant={'contained'} startIcon={<CheckBoxIcon/>}
-                                 disabled={disabledByStatus(user!, moving, 'received')}
+        if (['sent', 'back'].includes(moving.last_status_name)) {
+            listBtn.push(<Button key={'received'} variant={'contained'} color={'success'} startIcon={<CheckBoxIcon/>}
+                                 disabled={disableByMovingStatus(user!, moving, 'accept')}
                                  onClick={() => dispatch(changeStatusMoving({
                                      id: moving.id,
                                      forward: true
@@ -89,13 +78,22 @@ const MovingItem = ({moving}: MovingItemProps) => {
             >
                 Принять
             </Button>)
-        }
-        if (['received', 'sent'].includes(moving.last_status_name)) {
-            listBtn.push(<Button key={'back'} variant={'contained'} color={'error'} startIcon={<ReplyIcon/>}
-                                 disabled={disabledByStatus(user!, moving, 'back')}
+            listBtn.push(<Button key={'not_received'} variant={'contained'} color={'error'} startIcon={<CancelIcon/>}
+                                 disabled={disableByMovingStatus(user!, moving, 'cancel')}
                                  onClick={() => dispatch(changeStatusMoving({
                                      id: moving.id,
                                      forward: false
+                                 }))}
+            >
+                Отклонить
+            </Button>)
+        }
+        if (['received', 'not_received', 'back_received', 'not_back_received'].includes(moving.last_status_name) && !moving.complete) {
+            listBtn.push(<Button key={'back'} variant={'contained'} startIcon={<ReplyIcon/>}
+                                 disabled={!(user!.is_superuser || user!.id === moving.creator || user!.id === moving.recipient)}
+                                 onClick={() => dispatch(changeStatusMoving({
+                                     id: moving.id,
+                                     forward: true
                                  }))}
             >
                 Вернуть
@@ -146,7 +144,7 @@ const MovingItem = ({moving}: MovingItemProps) => {
                         </Stack>
                         <Stack spacing={1} direction={"row"}>
                             <Typography color={"text.secondary"}>Бригада:</Typography>
-                            <Typography>{moving.from_team_kit_name}</Typography>
+                            <Typography>{moving.from_team_name}</Typography>
                         </Stack>
                         <Stack spacing={1} direction={"row"}>
                             <Typography color={"text.secondary"}>Создал:</Typography>
@@ -164,7 +162,7 @@ const MovingItem = ({moving}: MovingItemProps) => {
                         </Stack>
                         <Stack spacing={1} direction={"row"}>
                             <Typography color={"text.secondary"}>Бригада:</Typography>
-                            <Typography>{moving.to_team_kit_name}</Typography>
+                            <Typography>{moving.to_team_name}</Typography>
                         </Stack>
                         <Stack spacing={1} direction={"row"}>
                             <Typography color={"text.secondary"}>Получил:</Typography>
@@ -176,7 +174,7 @@ const MovingItem = ({moving}: MovingItemProps) => {
                 <Grid xs={12} md={4}>
                     <Stack spacing={1} direction={"row"} alignItems={'center'}>
                         <Typography color={"text.secondary"}>Комплект:</Typography>
-                        <Typography variant={'h6'} fontSize={'bold'}>{moving.from_kit_name}</Typography>
+                        <Typography variant={'h6'} fontSize={'bold'}>{moving.send_kit_name}</Typography>
                     </Stack>
                 </Grid>
                 <Grid xs={12} md={3}>
