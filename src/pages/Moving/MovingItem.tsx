@@ -1,6 +1,7 @@
 import {Box, Button, Divider, IconButton, Paper, Stack, Tooltip, Typography} from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2";
 import EditIcon from "@mui/icons-material/Edit";
+import ArticleIcon from '@mui/icons-material/Article';
 import React, {useMemo, useState} from "react";
 import {IMoving, moving_status} from "../../models/IKit";
 import moment from "moment";
@@ -11,7 +12,7 @@ import ReplyIcon from '@mui/icons-material/Reply';
 import CancelIcon from '@mui/icons-material/Cancel';
 import {useAppDispatch, useAppSelector} from "../../hooks/redux";
 import MovingForm from "./MovingForm";
-import {changeStatusMoving, deleteMoving} from "../../store/actions/kits";
+import {changeStatusMoving, deleteMoving, getStatus} from "../../store/actions/kits";
 import {disableByMovingStatus} from "../utils";
 
 
@@ -33,6 +34,9 @@ const MovingItem = ({moving}: MovingItemProps) => {
 
     const actionHeadButton = useMemo(() => {
         const listBtn = []
+        listBtn.push(<Tooltip key={'detail'} title={"Статусы"}>
+            <IconButton onClick={() => dispatch(getStatus({mov_id: moving.id}))}><ArticleIcon/></IconButton>
+        </Tooltip>)
         if (user?.id === moving?.creator) {
             if (moving.last_status_name === 'create') {
                 // listBtn.push(<Tooltip key={'edit'} title={"Редактировать"}>
@@ -105,7 +109,7 @@ const MovingItem = ({moving}: MovingItemProps) => {
     return (
         <Paper sx={{maxWidth: '1200px'}}>
             <Paper elevation={4}
-                   sx={{...color, p: 1, position: 'relative'}}>
+                   sx={{backgroundColor: color, p: 1, position: 'relative'}}>
                 <Box sx={{position: 'absolute', right: '0', top: '0'}}>
                     {actionHeadButton}
                 </Box>

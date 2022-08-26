@@ -1,12 +1,12 @@
 import {createSlice} from "@reduxjs/toolkit";
-import {IMoving, IOrganizationTK, ITeamKit} from "../../models/IKit";
+import {IMoving, IOrganizationTK, IStatusMoving, ITeamKit} from "../../models/IKit";
 import {
     changeStatusMoving,
     createMoving,
     createTeam,
     deleteMoving,
     getMoving,
-    getOrganizationsTK,
+    getOrganizationsTK, getStatus,
     updateMoving
 } from "../actions/kits";
 import {deleteElementFromList, updateElementInList} from "../../pages/utils";
@@ -16,19 +16,23 @@ interface IKitState {
     teamKits: ITeamKit[]
     organizationsTK: IOrganizationTK[]
     movingList: IMoving[]
+    statusList: IStatusMoving[]
 }
 
 const initialState: IKitState = {
     teamKits: [],
     organizationsTK: [],
-    movingList: []
+    movingList: [],
+    statusList: [],
 }
 
 export const kitSlice = createSlice({
     name: 'catalog',
     initialState,
     reducers: {
-        // openDialogMoving: (state, action) => {}
+        clearStatusList: (state) => {
+            state.statusList = []
+        }
     },
     extraReducers: (builder) => {
         // builder.addCase(getKits.fulfilled, (state, {payload}) => {
@@ -42,6 +46,9 @@ export const kitSlice = createSlice({
         })
         builder.addCase(getMoving.fulfilled, (state, {payload}) => {
             state.movingList = payload
+        })
+        builder.addCase(getStatus.fulfilled, (state, {payload}) => {
+            state.statusList = payload
         })
         builder.addCase(createMoving.fulfilled, (state, {payload}) => {
             state.movingList = [...state.movingList, payload]
@@ -65,5 +72,7 @@ export const kitSlice = createSlice({
         })
     }
 })
+
+export const {clearStatusList} = kitSlice.actions
 
 export default kitSlice.reducer

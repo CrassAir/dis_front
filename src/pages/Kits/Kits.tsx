@@ -8,7 +8,7 @@ import type {RcFile} from 'antd/es/upload/interface';
 import {general_state_choose, IKit, ITeamKit, moving_status, pipe_class_choose} from "../../models/IKit";
 import {useAppDispatch, useAppSelector} from "../../hooks/redux";
 import {convertListToObject, localizationMT, validateEditAccess} from "../utils";
-import {changeStatusMoving, createKit, deleteKit, getKits, updateKit} from "../../store/actions/kits";
+import {changeStatusMoving, createKit, deleteKit, updateKit} from "../../store/actions/kits";
 import LocalShippingIcon from '@mui/icons-material/LocalShipping';
 import LocalShippingOutlinedIcon from '@mui/icons-material/LocalShippingOutlined';
 import ReplyIcon from '@mui/icons-material/Reply';
@@ -135,7 +135,7 @@ const Kits = ({teamKit}: KitsProps) => {
                     // }),
                     rowData => ({
                         icon: () => [null, 'create', 'sent'].includes(rowData.last_status_name) ? <LocalShippingIcon/> : <ReplyIcon/>, //: <LocalShippingOutlinedIcon/>,
-                        tooltip: rowData.last_status_name ?  moving_status[rowData.last_status_name as keyof typeof moving_status].status : 'Созадать перемещение',
+                        tooltip: rowData.last_status_name ? moving_status[rowData.last_status_name as keyof typeof moving_status].status : 'Созадать перемещение',
                         disabled: ['sent', 'back'].includes(rowData.last_status_name),
                         hidden: teamKit?.name !== user!.team_name,
                         onClick: (event) => {

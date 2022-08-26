@@ -58,14 +58,24 @@ export interface IOrganizationTK {
 }
 
 export const moving_status = {
-    create: {status: 'Новый', color: {backgroundColor: 'secondary.light'}},
-    sent: {status: 'В пути', color: {backgroundColor: 'warning.light'}},
-    received: {status: 'Получен', color: {backgroundColor: 'success.light'}},
-    not_received: {status: 'Не получен', color: {backgroundColor: 'error.light'}},
-    back: {status: 'Возврат', color: {backgroundColor: 'warning.light'}},
-    back_received: {status: 'Возврат получен', color: {backgroundColor: 'success.light'}},
-    not_back_received: {status: 'Возврат не получен', color: {backgroundColor: 'error.light'}},
+    create: {status: 'Новый', color: 'secondary.light'},
+    sent: {status: 'В пути', color: 'warning.light'},
+    received: {status: 'Получен', color: 'success.light'},
+    not_received: {status: 'Не получен', color: 'error.light'},
+    back: {status: 'Возврат', color: 'warning.light'},
+    back_received: {status: 'Возврат получен', color: 'success.light'},
+    not_back_received: {status: 'Возврат не получен', color: 'error.light'},
 }
+
+// export const moving_status = {
+//     create: {status: 'Новый', color: {}},
+//     sent: {status: 'В пути', color: {backgroundColor: 'rgba(255,249,187,0.5)'}},
+//     received: {status: 'Получен', color: {backgroundColor: 'rgba(206,255,187,0.5)'}},
+//     not_received: {status: 'Не получен', color: {backgroundColor: 'rgba(255,187,187,0.5)'}},
+//     back: {status: 'Возврат', color: {backgroundColor: 'rgba(255,249,187,0.5)'}},
+//     back_received: {status: 'Возврат получен', color: {backgroundColor: 'rgba(206,255,187,0.5)'}},
+//     not_back_received: {status: 'Возврат не получен', color: {backgroundColor: 'rgba(255,187,187,0.5)'}},
+// }
 
 export interface IMoving {
     id: number
@@ -89,4 +99,12 @@ export interface IMoving {
     from_organization_name: string
     to_team_name: string
     to_organization_name: string
+}
+
+export interface IStatusMoving {
+    id: number
+    date_create: string
+    status: string
+    creator: number
+    comment: string
 }
