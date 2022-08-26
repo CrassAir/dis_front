@@ -1,5 +1,6 @@
 import {IAccount} from "../models/IAuth";
 import {INavItem} from "../App";
+import {IMoving} from "../models/IKit";
 
 const stringToColor = (string: string) => {
     let hash = 0;
@@ -115,3 +116,18 @@ export const validateEditAccess = (user: IAccount, valName: string) => {
     return user.role.edit.some(val => val.name_plural === valName)
 }
 
+
+export const disabledByStatus = (user: IAccount, moving:IMoving, valAction: string) => {
+    switch (valAction){
+        case 'sent':
+            return !(user.is_superuser || user?.team_name === moving.from_team_kit_name)
+        case 'received':
+            return !(user.is_superuser || (validateEditAccess(user!, 'delivery') && user?.team_name === moving.to_team_kit_name))
+        case 'back':
+            return !(user.is_superuser || (validateEditAccess(user!, 'delivery') && user?.team_name === moving.to_team_kit_name))
+        // case 'cancellation':
+        //     return !(user.is_superuser || user?.id === moving?.creator)
+        default:
+            return true
+    }
+}

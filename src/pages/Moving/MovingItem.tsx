@@ -7,10 +7,12 @@ import moment from "moment";
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import DeleteIcon from '@mui/icons-material/Delete';
 import SendIcon from '@mui/icons-material/Send';
+import ReplyIcon from '@mui/icons-material/Reply';
+// import CancelIcon from '@mui/icons-material/Cancel';
 import {useAppDispatch, useAppSelector} from "../../hooks/redux";
 import MovingForm from "./MovingForm";
 import {changeStatusMoving, deleteMoving} from "../../store/actions/kits";
-import {validateEditAccess} from "../utils";
+import {disabledByStatus} from "../utils";
 
 
 type MovingItemProps = {
@@ -26,7 +28,7 @@ const MovingItem = ({moving}: MovingItemProps) => {
     const [editData, setEditData] = useState<any | null>(null)
 
     const movingForm = useMemo(() => (
-        <MovingForm editData={editData?.kit} moveId={editData?.moveId} onClose={() => setEditData(null)}/>
+        !!editData && <MovingForm editData={editData?.kit} moveId={editData?.moveId} onClose={() => setEditData(null)}/>
     ), [editData])
 
     const actionHeadButton = useMemo(() => {
@@ -36,10 +38,11 @@ const MovingItem = ({moving}: MovingItemProps) => {
                 listBtn.push(<Tooltip key={'edit'} title={"Редактировать"}>
                     <IconButton onClick={() => setEditData({
                         kit: {
-                            id: moving.new_kit ? moving.new_kit : moving.from_kit,
+                            id: moving.sent_kit ? moving.sent_kit : moving.from_kit,
                             amount: moving.amount,
                             to_team: moving.to_team,
-                            delivery_date_time: moving.delivery_date_time
+                            delivery_date_time: moving.delivery_date_time,
+                            returnable: moving.returnable
                         },
                         moveId: moving.id
                     })}><EditIcon/></IconButton>
@@ -56,25 +59,46 @@ const MovingItem = ({moving}: MovingItemProps) => {
 
     const actionButton = useMemo(() => {
         const listBtn = []
-        if (user?.id === moving?.creator && moving.last_status_name === 'create') {
+        if (moving.last_status_name === 'create') {
             listBtn.push(<Button key={'send'} variant={'contained'} startIcon={<SendIcon/>}
+                                 disabled={disabledByStatus(user!, moving, 'sent')}
                                  onClick={() => dispatch(changeStatusMoving({
                                      id: moving.id,
-                                     data: {com: ''},
-                                     status: 'in_delivery'
+                                     forward: true
                                  }))}
             >
                 Отправить
             </Button>)
+            // listBtn.push(<Button key={'cancellation'} variant={'contained'} color={'error'} startIcon={<CancelIcon/>}
+            //                      disabled={disabledByStatus(user!, moving, 'cancellation')}
+            //                      onClick={() => dispatch(changeStatusMoving({
+            //                          id: moving.id,
+            //                          status: 'in_cancellation'
+            //                      }))}
+            // >
+            //     Отменить
+            // </Button>)
         }
-        if (validateEditAccess(user!, 'delivery') && moving.last_status_name === 'sent') {
-            listBtn.push(<Button key={'receivent'} variant={'contained'} startIcon={<CheckBoxIcon/>}>
-                Получить
+        if (moving.last_status_name === 'sent') {
+            listBtn.push(<Button key={'received'} variant={'contained'} startIcon={<CheckBoxIcon/>}
+                                 disabled={disabledByStatus(user!, moving, 'received')}
+                                 onClick={() => dispatch(changeStatusMoving({
+                                     id: moving.id,
+                                     forward: true
+                                 }))}
+            >
+                Принять
             </Button>)
         }
-        if (user?.id === moving?.creator && moving.last_status_name === 'sent') {
-            listBtn.push(<Button key={'delete'} variant={'contained'} color={'error'} startIcon={<DeleteIcon/>}>
-                Отменить
+        if (['received', 'sent'].includes(moving.last_status_name)) {
+            listBtn.push(<Button key={'back'} variant={'contained'} color={'error'} startIcon={<ReplyIcon/>}
+                                 disabled={disabledByStatus(user!, moving, 'back')}
+                                 onClick={() => dispatch(changeStatusMoving({
+                                     id: moving.id,
+                                     forward: false
+                                 }))}
+            >
+                Вернуть
             </Button>)
         }
         return <Stack spacing={1} direction={'row'} justifyContent={'end'}>{listBtn}</Stack>
@@ -82,7 +106,7 @@ const MovingItem = ({moving}: MovingItemProps) => {
 
     return (
         <Paper sx={{maxWidth: '1200px'}}>
-            <Paper elevation={0}
+            <Paper elevation={4}
                    sx={{...color, p: 1, position: 'relative'}}>
                 <Box sx={{position: 'absolute', right: '0', top: '0'}}>
                     {actionHeadButton}
@@ -155,13 +179,17 @@ const MovingItem = ({moving}: MovingItemProps) => {
                         <Typography variant={'h6'} fontSize={'bold'}>{moving.from_kit_name}</Typography>
                     </Stack>
                 </Grid>
-                <Grid xs={12} md={4}>
+                <Grid xs={12} md={3}>
                     <Stack spacing={1} direction={"row"} alignItems={'center'}>
                         <Typography color={"text.secondary"}>Количество:</Typography>
                         <Typography>{moving.amount}</Typography>
                     </Stack>
                 </Grid>
-                <Grid xs={12} md={4}>
+                <Grid xs={6} md={1}>
+                    {moving.transfer_basis === 'rent' &&
+                        <Typography variant={'h6'} fontSize={'bold'}>Арнеда</Typography>}
+                </Grid>
+                <Grid xs={6} md={4}>
                     {actionButton}
                 </Grid>
             </Grid>

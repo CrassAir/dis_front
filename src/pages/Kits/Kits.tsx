@@ -8,11 +8,12 @@ import type {RcFile} from 'antd/es/upload/interface';
 import {general_state_choose, IKit, ITeamKit, pipe_class_choose} from "../../models/IKit";
 import {useAppDispatch, useAppSelector} from "../../hooks/redux";
 import {convertListToObject, localizationMT, validateEditAccess} from "../utils";
-import {createKit, deleteKit, getKits, updateKit} from "../../store/actions/kits";
+import {changeStatusMoving, createKit, deleteKit, getKits, updateKit} from "../../store/actions/kits";
 import {getManufacturers, getParameters} from "../../store/actions/catalog";
 import ArticleIcon from '@mui/icons-material/Article';
 import LocalShippingIcon from '@mui/icons-material/LocalShipping';
 import LocalShippingOutlinedIcon from '@mui/icons-material/LocalShippingOutlined';
+import ReplyIcon from '@mui/icons-material/Reply';
 import MovingForm from "../Moving/MovingForm";
 
 
@@ -48,7 +49,7 @@ const Kits = ({teamKit}: KitsProps) => {
     }
 
     const movingForm = useMemo(() => (
-        <MovingForm editData={openMoving} onClose={() => setOpenMoving(null)}/>
+        !!openMoving && <MovingForm editData={openMoving} onClose={() => setOpenMoving(null)}/>
     ), [openMoving])
 
     const colorCell: any = {
@@ -110,12 +111,6 @@ const Kits = ({teamKit}: KitsProps) => {
     )
 
     useEffect(() => {
-        dispatch(getKits())
-        dispatch(getManufacturers())
-        dispatch(getParameters())
-    }, [])
-
-    useEffect(() => {
         if (kits) setData(kits.map(kit => ({...kit, tableData: {}})))
     }, [kits])
 
@@ -141,12 +136,19 @@ const Kits = ({teamKit}: KitsProps) => {
                     //     onClick: (event, rowData) => alert("You saved")
                     // }),
                     rowData => ({
-                        icon: () => rowData.id % 2 === 0 ? <LocalShippingIcon/> : <LocalShippingOutlinedIcon/>,
-                        tooltip: 'Перемещение комплекта' + (rowData.id % 2 === 0 ? '(в пути)' : ''),
+                        icon: () => rowData.last_returnable ? <ReplyIcon/> : <LocalShippingIcon/>, //: <LocalShippingOutlinedIcon/>,
+                        tooltip: rowData.last_returnable ? 'Вернуть комплект' : 'Созадать перемещение',
                         disabled: !editDelivery,
-                        onClick: (event, rowData) => {
-                            // @ts-ignore
-                            setOpenMoving(rowData)
+                        hidden: teamKit?.name !== user!.team_name,
+                        onClick: (event) => {
+                            if (rowData.last_returnable) {
+                                dispatch(changeStatusMoving({
+                                    id: rowData.last_moving_id,
+                                    forward: false
+                                }))
+                            } else {
+                                setOpenMoving(rowData)
+                            }
                         }
                     })
                 ]}

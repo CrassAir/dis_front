@@ -25,7 +25,7 @@ const Moving = () => {
     }, [])
 
     const movingForm = useMemo(() => (
-        <MovingForm onClose={() => setEditData(null)} editData={editData}/>
+        !!editData && <MovingForm onClose={() => setEditData(null)} editData={editData}/>
     ), [editData])
 
     const movingItems = useMemo(() => {

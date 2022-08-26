@@ -12,6 +12,8 @@ export interface IKit {
     pipe_class: string
     pipe_version_name: string
     team_kit?: number
+    last_returnable?: boolean
+    last_moving_id?: number
 }
 
 export const general_state_choose = {
@@ -68,14 +70,16 @@ export interface IMoving {
     amount: number
     from_kit: number
     to_team: number
-    new_kit: number | null
+    sent_kit: number | null
     delivery_date_time: string
     delivery_initiator: string | null
+    transfer_basis: string
     creator: number
     creator_name: string
     recipient: number | null
     recipient_name: string | null
     last_status_name: string
+    returnable: boolean
     from_kit_name: string
     from_team_kit_name: string
     from_organization_name: string

@@ -18,6 +18,7 @@ import GroupAddIcon from '@mui/icons-material/GroupAdd';
 import {Form} from "antd";
 import {ITeam} from "../../models/IKit";
 import {validateEditAccess} from "../utils";
+import {getManufacturers, getParameters} from "../../store/actions/catalog";
 
 
 const OrganizationsTeamKits = () => {
@@ -32,6 +33,8 @@ const OrganizationsTeamKits = () => {
 
     useEffect(() => {
         dispatch(getOrganizationsTK())
+        dispatch(getManufacturers())
+        dispatch(getParameters())
     }, [])
 
     const TeamFormDialog = (editData: ITeam | null = null) => {

@@ -5,8 +5,8 @@ import {
     DialogActions, DialogContent,
     DialogTitle,
     ListSubheader,
-    MenuItem,
-    TextField
+    MenuItem, Stack, Switch,
+    TextField, Typography
 } from "@mui/material";
 import {Form} from "antd";
 import {useAppDispatch, useAppSelector} from "../../hooks/redux";
@@ -16,6 +16,7 @@ import {ru} from "date-fns/locale";
 import {AdapterDateFns} from "@mui/x-date-pickers/AdapterDateFns";
 import {DatePicker} from "@mui/x-date-pickers/DatePicker";
 import moment from "moment/moment";
+import {useLocation, useNavigate} from "react-router-dom";
 
 type MovingFormProps = {
     editData?: any | null
@@ -26,6 +27,8 @@ type MovingFormProps = {
 const MovingForm = ({editData, moveId, onClose}: MovingFormProps) => {
     const [form] = Form.useForm()
     const dispatch = useAppDispatch()
+    const navigation = useNavigate()
+    const location = useLocation()
     const {organizationsTK} = useAppSelector(state => state.kitReducer)
     const {user} = useAppSelector(state => state.authReducer)
     const [selectKitId, setSelectKitId] = useState<number | null>(null)
@@ -37,6 +40,7 @@ const MovingForm = ({editData, moveId, onClose}: MovingFormProps) => {
             amount: editData?.amount ? editData?.amount : 0,
             to_team: editData?.to_team ? editData?.to_team : '',
             delivery_date_time: editData?.delivery_date_time ? moment(editData?.delivery_date_time) : moment(),
+            returnable: editData?.returnable ? editData?.returnable : true,
         }
         setSelectKitId(newData.from_kit)
         setSelectDate(newData.delivery_date_time)
@@ -72,12 +76,14 @@ const MovingForm = ({editData, moveId, onClose}: MovingFormProps) => {
                         dispatch(createMoving(values))
                     }
                     handleClose()
+                    if (location.pathname !== 'delivery/') navigation('delivery')
                 }}
                 initialValues={{
                     from_kit: '',
                     amount: 0,
                     to_team: '',
-                    delivery_date_time: moment()
+                    delivery_date_time: moment(),
+                    returnable: true
                 }}
             >
                 <DialogTitle>{'Перемещение комплекта'}</DialogTitle>
@@ -152,6 +158,18 @@ const MovingForm = ({editData, moveId, onClose}: MovingFormProps) => {
                             />
                         </LocalizationProvider>
                     </Form.Item>
+
+
+                        <Form.Item
+                            name="returnable"
+                            required={true}
+                        >
+                             <Stack minWidth={'auto'} spacing={2} direction={'row'}>
+                            <Typography>С возвратом?</Typography>
+                            <Switch inputProps={{'aria-label': 'С возвратом?'}} defaultChecked/>
+                                 </Stack>
+                        </Form.Item>
+
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleClose}>Отмена</Button>

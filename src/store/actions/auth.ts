@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, {AxiosError} from "axios";
 import {IAuth, IAuthResponse} from "../../models/IAuth";
 import {apiUrl, restAuthUrl} from "../../api/urls";
 import {createAsyncThunk} from "@reduxjs/toolkit";
@@ -19,7 +19,7 @@ export const login = createAsyncThunk(
             })
             return {user: data.user, token: data.key, interceptor: interceptor}
         } catch (e) {
-            return thunkAPI.rejectWithValue(apiError(e))
+            return thunkAPI.rejectWithValue(apiError(e as Error | AxiosError))
         }
     }
 )
@@ -35,7 +35,7 @@ export const logout = createAsyncThunk(
             return {}
         } catch (e) {
             api.interceptors.request.eject(interceptor)
-            return thunkAPI.rejectWithValue(apiError(e))
+            return thunkAPI.rejectWithValue(apiError(e as Error | AxiosError))
         }
     }
 )
@@ -54,7 +54,7 @@ export const checkToken = createAsyncThunk(
                 })
                 return {user: user, token: token, interceptor: interceptor}
             } catch (e) {
-                return thunkAPI.rejectWithValue(apiError(e))
+                return thunkAPI.rejectWithValue(apiError(e as Error | AxiosError))
             }
         } else if (token === undefined) {
             thunkAPI.dispatch(logout());

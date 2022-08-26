@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, {AxiosError} from "axios";
 import {apiUrl} from "./urls";
 
 
@@ -12,10 +12,11 @@ export interface IApiError {
     message: string
 }
 
-export const apiError = (e: any) => {
+export const apiError = (e: Error | AxiosError) => {
     if (axios.isAxiosError(e)) {
-        // @ts-ignore
-        return {code: e.response.status, message: e.response.data ? e.response.data : e.message}
+        let data = e.response?.data as string
+        if (data && data.length > 100) data = e.message
+        return {code: e.response?.status, message: data}
     }
     return {code: 0, message: e.message}
 }
