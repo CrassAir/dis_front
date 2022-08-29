@@ -1,6 +1,15 @@
-import {Box, Button, Divider, IconButton, Paper, Stack, Tooltip, Typography} from "@mui/material";
+import {
+    Box,
+    Button,
+    Divider, FormControl,
+    IconButton, Input, InputAdornment, InputLabel,
+    Paper,
+    Popover,
+    Stack,
+    Tooltip,
+    Typography
+} from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2";
-import EditIcon from "@mui/icons-material/Edit";
 import ArticleIcon from '@mui/icons-material/Article';
 import React, {useMemo, useState} from "react";
 import {IMoving, moving_status} from "../../models/IKit";
@@ -27,6 +36,8 @@ const MovingItem = ({moving}: MovingItemProps) => {
     const {user} = useAppSelector(state => state.authReducer)
     const dispatch = useAppDispatch()
     const [editData, setEditData] = useState<any | null>(null)
+    const [actionBtnAnchor, setActionBtnAnchor] = useState<any | null>(null)
+    const [comment, setComment] = useState('')
 
     const movingForm = useMemo(() => (
         !!editData && <MovingForm editData={editData?.kit} moveId={editData?.moveId} onClose={() => setEditData(null)}/>
@@ -84,10 +95,7 @@ const MovingItem = ({moving}: MovingItemProps) => {
             </Button>)
             listBtn.push(<Button key={'not_received'} variant={'contained'} color={'error'} startIcon={<CancelIcon/>}
                                  disabled={disableByMovingStatus(user!, moving, 'cancel')}
-                                 onClick={() => dispatch(changeStatusMoving({
-                                     id: moving.id,
-                                     forward: false
-                                 }))}
+                                 onClick={(e) => setActionBtnAnchor(e.currentTarget)}
             >
                 Отклонить
             </Button>)
@@ -103,8 +111,54 @@ const MovingItem = ({moving}: MovingItemProps) => {
                 Вернуть
             </Button>)
         }
-        return <Stack spacing={1} direction={'row'} justifyContent={'end'}>{listBtn}</Stack>
-    }, [moving])
+        return <React.Fragment>
+            <Stack spacing={1} direction={'row'} justifyContent={'end'}>{listBtn}</Stack>
+            <Popover
+                open={!!actionBtnAnchor}
+                anchorEl={actionBtnAnchor}
+                onClose={() => {
+                    setActionBtnAnchor(null)
+                    setComment('')
+                }}
+                anchorOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                }}
+                transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                }}
+            >
+                <FormControl sx={{m: 1, width: '300px'}} variant="standard">
+                    <InputLabel htmlFor="comment-adornment">Укажите причину</InputLabel>
+                    <Input id={'comment-adornment'} required
+                           value={comment}
+                           multiline
+                           maxRows={4}
+                           autoFocus
+                           endAdornment={
+                               <InputAdornment position="end">
+                                   <IconButton
+                                       onClick={() => {
+                                           setActionBtnAnchor(null)
+                                           setComment('')
+                                           dispatch(changeStatusMoving({
+                                               id: moving.id,
+                                               forward: false,
+                                               comment: comment
+                                           }))
+                                       }}
+                                       edge="end"
+                                   >
+                                       <SendIcon/>
+                                   </IconButton>
+                               </InputAdornment>
+                           }
+                           onChange={(e) => setComment(e.target.value)}/>
+                </FormControl>
+            </Popover>
+        </React.Fragment>
+    }, [moving, actionBtnAnchor, comment])
 
     return (
         <Paper sx={{maxWidth: '1200px'}}>

@@ -95,18 +95,27 @@ const Moving = () => {
                 open={statusList.length > 0}
                 onClose={() => dispatch(clearStatusList())}
             >
-                <Box sx={{pt: 7, mb: 2,backgroundColor: 'primary.main'}}/>
+                <Box sx={{pt: 7, mb: 2, backgroundColor: 'primary.main'}}/>
                 <IconButton
                     sx={{position: 'absolute', top: '64px', right: 0}}
                     onClick={() => dispatch(clearStatusList())}
                 ><CloseIcon fontSize={'large'}/></IconButton>
-                <Stack spacing={1} sx={{p: 1, width: {xs: '100vw', md: '400px'}}}>
+                <Stack spacing={1} sx={{p: 1, width: {xs: '100vw', md: '500px'}}}>
                     {statusList.map(status => {
                         const stat = moving_status[status.status as keyof typeof moving_status]
                         return <Box key={status.id} sx={{p: 1, borderLeft: `5px solid`, borderLeftColor: stat.color}}>
-                            <Typography>{moment(status.date_create).format('DD-MM-YYYY')}</Typography>
-                            <Typography>{stat.status}</Typography>
-                            <Typography>{status.comment}</Typography>
+                            <Stack direction={'row'} spacing={2}>
+                                <Typography color={"text.secondary"}>Дата:</Typography>
+                                <Typography>{moment(status.date_create).format('DD-MM-YYYY')}</Typography>
+                                <Typography color={"text.secondary"}>Статус:</Typography>
+                                <Typography>{stat.status}</Typography>
+                            </Stack>
+                            {status.comment &&
+                                <React.Fragment>
+                                    <Typography color={"text.secondary"}>Комментарий:</Typography>
+                                    <Typography>{status.comment}</Typography>
+                                </React.Fragment>
+                            }
                             <Divider variant="middle" sx={{py: 1}}/>
                         </Box>
                     })}

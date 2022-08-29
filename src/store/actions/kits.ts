@@ -127,7 +127,10 @@ export const changeStatusMoving = createAsyncThunk(
     'changeStatusMoving',
     async (post: any, thunkAPI) => {
         try {
-            const {data} = await api.post<IMoving>(apiUrl + `moving_kit/${post.id}/change_status/`, {forward: post.forward})
+            const {data} = await api.post<IMoving>(apiUrl + `moving_kit/${post.id}/change_status/`, {
+                forward: post.forward,
+                comment: post.comment
+            })
             return data
         } catch (e) {
             return thunkAPI.rejectWithValue(apiError(e as Error | AxiosError))
