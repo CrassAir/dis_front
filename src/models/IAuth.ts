@@ -33,3 +33,10 @@ export interface IAuthResponse {
     user: IAccount
 }
 
+export interface INotifications {
+    id: number
+    date_create: string
+    message: string
+    send: boolean
+    user_to: number
+}

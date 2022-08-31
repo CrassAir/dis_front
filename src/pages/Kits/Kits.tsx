@@ -1,16 +1,17 @@
 import React, {useEffect, useMemo, useState} from 'react';
 import MaterialTable, {Column} from "material-table";
 import Upload from "antd/lib/upload/Upload";
-import {IconButton, MenuItem, TextField, Tooltip} from "@mui/material";
+import {Button, IconButton, MenuItem, TextField, Tooltip} from "@mui/material";
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import FileOpenIcon from '@mui/icons-material/FileOpen';
 import type {RcFile} from 'antd/es/upload/interface';
 import {general_state_choose, IKit, ITeamKit, moving_status, pipe_class_choose} from "../../models/IKit";
 import {useAppDispatch, useAppSelector} from "../../hooks/redux";
 import {convertListToObject, localizationMT, validateEditAccess} from "../utils";
-import {changeStatusMoving, createKit, deleteKit, updateKit} from "../../store/actions/kits";
+import {changeStatusMoving, createKit, deleteKit, getOperatingTime, updateKit} from "../../store/actions/kits";
 import LocalShippingIcon from '@mui/icons-material/LocalShipping';
 import LocalShippingOutlinedIcon from '@mui/icons-material/LocalShippingOutlined';
+import MoreTimeIcon from '@mui/icons-material/MoreTime';
 import ReplyIcon from '@mui/icons-material/Reply';
 import MovingForm from "../Moving/MovingForm";
 import {useNavigate} from "react-router-dom";
@@ -26,7 +27,7 @@ const Kits = ({teamKit}: KitsProps) => {
     const navigation = useNavigate()
     const {kits} = teamKit
     const {parameters, manufacturers} = useAppSelector(state => state.catalogReducer)
-    const {user, isLoading} = useAppSelector(state => state.authReducer)
+    const {user} = useAppSelector(state => state.authReducer)
     const [file, setFile] = useState<RcFile | null>(null)
     const [openMoving, setOpenMoving] = useState<IKit | null>(null)
 
@@ -63,6 +64,8 @@ const Kits = ({teamKit}: KitsProps) => {
                 title: 'Параметры', field: 'parameter',
                 lookup: parameters && convertListToObject(parameters),
                 validate: rowData => !!rowData.parameter,
+                cellStyle: {minWidth: '300px'}
+
             },
             {
                 title: 'Производитель', field: 'manufacturer',
@@ -73,7 +76,8 @@ const Kits = ({teamKit}: KitsProps) => {
                         <MenuItem key={''} value={''}>Пусто</MenuItem>
                         {manufacturers.map(man => <MenuItem key={man.id} value={man.id}>{man.name}</MenuItem>)}
                     </TextField>
-                }
+                },
+                cellStyle: {minWidth: '300px'}
             },
             {
                 title: 'Количество', field: 'amount', type: 'numeric',
@@ -109,6 +113,11 @@ const Kits = ({teamKit}: KitsProps) => {
         [parameters, manufacturers]
     )
 
+    let options = useMemo(() => ({
+        pageSize: 5,
+        rowStyle: (rowData: IKit) => colorCell[rowData.general_state]
+    }), [])
+
     useEffect(() => {
         if (kits) setData(kits.map(kit => ({...kit, tableData: {}})))
     }, [kits])
@@ -117,16 +126,18 @@ const Kits = ({teamKit}: KitsProps) => {
         <>
             <MaterialTable
                 title="Комплекты труб"
-                options={{
-                    pageSize: 5,
-                    rowStyle: rowData => colorCell[rowData.general_state]
-                }}
+                options={options}
                 localization={localizationMT}
                 style={{display: 'grid'}}
-                isLoading={isLoading}
                 columns={columns}
                 data={data}
                 actions={[
+                    {
+                        icon: () => <MoreTimeIcon/>,
+                        tooltip: 'Наработка',
+                        isFreeAction: true,
+                        onClick: () => dispatch(getOperatingTime({team_kit: teamKit.id}))
+                    },
                     // rowData => ({
                     //     icon: () => <ArticleIcon/>,
                     //     tooltip: 'Трубы в комплекте',
@@ -134,7 +145,8 @@ const Kits = ({teamKit}: KitsProps) => {
                     //     onClick: (event, rowData) => alert("You saved")
                     // }),
                     rowData => ({
-                        icon: () => [null, 'create', 'sent'].includes(rowData.last_status_name) ? <LocalShippingIcon/> : <ReplyIcon/>, //: <LocalShippingOutlinedIcon/>,
+                        icon: () => [null, 'create', 'sent'].includes(rowData.last_status_name) ? <LocalShippingIcon/> :
+                            <ReplyIcon/>, //: <LocalShippingOutlinedIcon/>,
                         tooltip: rowData.last_status_name ? moving_status[rowData.last_status_name as keyof typeof moving_status].status : 'Созадать перемещение',
                         disabled: ['sent', 'back'].includes(rowData.last_status_name),
                         hidden: teamKit?.name !== user!.team_name,

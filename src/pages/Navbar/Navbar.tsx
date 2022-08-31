@@ -12,24 +12,21 @@ import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import {defaultNavList} from '../../App';
 import {useLocation, useNavigate} from "react-router-dom";
 import {useMemo, useState} from "react";
 import {
-    Avatar,
     Box,
     Card,
     CardActionArea,
     CardMedia,
     LinearProgress,
     Slide,
-    Stack,
+    Typography,
     useScrollTrigger
 } from "@mui/material";
 import {useAppDispatch, useAppSelector} from "../../hooks/redux";
 import {logout} from "../../store/actions/auth";
 import Logo from "../../assets/logo.png";
-import {stringAvatar} from "../utils";
 import Notifications from "./Notifications";
 
 const drawerWidth = 240;
@@ -135,7 +132,7 @@ const Navbar: React.FC = () => {
             <ListItem key={navItem?.name} disablePadding sx={{display: 'block'}}
                       selected={navItem.path === location.pathname}
                       onClick={() => {
-                          if(window.innerWidth < 600) setOpen(false)
+                          if (window.innerWidth < 600) setOpen(false)
                           navigate(navItem.path)
                       }}>
                 <ListItemButton
@@ -185,13 +182,11 @@ const Navbar: React.FC = () => {
                             </CardActionArea>
                         </Card>
                         <Box flexGrow={1}/>
-                        <Stack spacing={1} direction={'row'}>
-                            {user?.full_name && <Avatar {...stringAvatar(user.full_name)}/>}
-                            <Notifications/>
-                            <IconButton edge='end' onClick={() => dispatch(logout())}>
-                                <LogoutIcon/>
-                            </IconButton>
-                        </Stack>
+                        {user?.full_name && <Typography sx={{m: 1, maxWidth: {xs: '100px', sm: '100%'}}} noWrap>{user.full_name}</Typography>}
+                        <Notifications/>
+                        <IconButton sx={{ml: 2}} edge='end' onClick={() => dispatch(logout())}>
+                            <LogoutIcon/>
+                        </IconButton>
                     </Toolbar>
                     {isLoading && <LinearProgress color={'secondary'}/>}
                 </AppBar>

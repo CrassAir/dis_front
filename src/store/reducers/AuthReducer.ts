@@ -1,6 +1,6 @@
 import {AnyAction, createSlice, isFulfilled, isPending, isRejected} from "@reduxjs/toolkit";
-import {checkToken, login, logout} from "../actions/auth";
-import {IAccount} from "../../models/IAuth";
+import {checkToken, getNotifications, login, logout} from "../actions/auth";
+import {IAccount, INotifications} from "../../models/IAuth";
 import api, {IApiError} from "../../api/api";
 import {changeNavListOnValidate} from "../../pages/utils";
 import {INavItem, defaultNavList} from "../../App";
@@ -13,6 +13,7 @@ interface IAuthState {
     isLoading: boolean
     error: IApiError | null
     interceptor: number
+    notifications: INotifications[]
 }
 
 const initialState: IAuthState = {
@@ -21,7 +22,8 @@ const initialState: IAuthState = {
     navList: [],
     isLoading: false,
     error: null,
-    interceptor: 0
+    interceptor: 0,
+    notifications: [],
 }
 
 export const authSlice = createSlice({
@@ -48,6 +50,11 @@ export const authSlice = createSlice({
         builder.addCase(logout.fulfilled, (state) => {
             state.token = null
             state.user = null
+            state.isLoading = false
+            state.error = null
+        })
+        builder.addCase(getNotifications.fulfilled, (state, {payload}) => {
+            state.notifications = payload
             state.isLoading = false
             state.error = null
         })

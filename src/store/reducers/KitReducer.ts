@@ -1,11 +1,11 @@
 import {createSlice} from "@reduxjs/toolkit";
-import {IMoving, IOrganizationTK, IStatusMoving, ITeamKit} from "../../models/IKit";
+import {IMoving, IOperationTime, IOrganizationTK, IStatusMoving, ITeamKit} from "../../models/IKit";
 import {
     changeStatusMoving,
     createMoving,
     createTeam,
     deleteMoving,
-    getMoving,
+    getMoving, getOperatingTime,
     getOrganizationsTK, getStatus,
     updateMoving
 } from "../actions/kits";
@@ -17,6 +17,8 @@ interface IKitState {
     organizationsTK: IOrganizationTK[]
     movingList: IMoving[]
     statusList: IStatusMoving[]
+    operatingTimeList: IOperationTime[]
+    openOperatingTime: boolean
 }
 
 const initialState: IKitState = {
@@ -24,6 +26,8 @@ const initialState: IKitState = {
     organizationsTK: [],
     movingList: [],
     statusList: [],
+    operatingTimeList: [],
+    openOperatingTime: false,
 }
 
 export const kitSlice = createSlice({
@@ -32,6 +36,10 @@ export const kitSlice = createSlice({
     reducers: {
         clearStatusList: (state) => {
             state.statusList = []
+        },
+        clearOperatingTimeList: (state) => {
+            // state.operatingTimeList = []
+            state.openOperatingTime = false
         }
     },
     extraReducers: (builder) => {
@@ -49,6 +57,10 @@ export const kitSlice = createSlice({
         })
         builder.addCase(getStatus.fulfilled, (state, {payload}) => {
             state.statusList = payload
+        })
+        builder.addCase(getOperatingTime.fulfilled, (state, {payload}) => {
+            // state.operatingTimeList = payload
+            state.openOperatingTime = true
         })
         builder.addCase(createMoving.fulfilled, (state, {payload}) => {
             state.movingList = [...state.movingList, payload]
@@ -73,6 +85,6 @@ export const kitSlice = createSlice({
     }
 })
 
-export const {clearStatusList} = kitSlice.actions
+export const {clearStatusList, clearOperatingTimeList} = kitSlice.actions
 
 export default kitSlice.reducer

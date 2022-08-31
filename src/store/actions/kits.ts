@@ -1,7 +1,7 @@
 import {createAsyncThunk} from "@reduxjs/toolkit";
 import api, {apiError} from "../../api/api";
 import {apiUrl} from "../../api/urls";
-import {IKit, IMoving, IOrganizationTK, IStatusMoving, ITeam} from "../../models/IKit";
+import {IKit, IMoving, IOperationTime, IOrganizationTK, IStatusMoving, ITeam} from "../../models/IKit";
 import {AxiosError} from "axios";
 
 
@@ -116,6 +116,18 @@ export const getMoving = createAsyncThunk(
     async (_, thunkAPI) => {
         try {
             const {data} = await api.get<IMoving[]>(apiUrl + 'moving_kit/')
+            return data
+        } catch (e) {
+            return thunkAPI.rejectWithValue(apiError(e as Error | AxiosError))
+        }
+    }
+)
+
+export const getOperatingTime = createAsyncThunk(
+    'getOperatingTime',
+    async (query: any, thunkAPI) => {
+        try {
+            const {data} = await api.get<IOperationTime[]>(apiUrl + 'operating_time/', {params: query})
             return data
         } catch (e) {
             return thunkAPI.rejectWithValue(apiError(e as Error | AxiosError))

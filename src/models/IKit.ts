@@ -108,3 +108,10 @@ export interface IStatusMoving {
     creator: number
     comment: string
 }
+
+export interface IOperationTime {
+    id: number
+    creator: string
+    team_kit: number
+    hours: number
+}

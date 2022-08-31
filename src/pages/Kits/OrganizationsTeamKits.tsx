@@ -3,7 +3,7 @@ import {
     Accordion,
     AccordionDetails,
     AccordionSummary,
-    Box, Button, Dialog, DialogActions, DialogContent, DialogTitle,
+    Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Drawer,
     Grid,
     IconButton,
     Paper,
@@ -19,11 +19,13 @@ import {Form} from "antd";
 import {ITeam} from "../../models/IKit";
 import {validateEditAccess} from "../utils";
 import {getManufacturers, getParameters} from "../../store/actions/catalog";
+import CloseIcon from "@mui/icons-material/Close";
+import {clearOperatingTimeList} from "../../store/reducers/KitReducer";
 
 
 const OrganizationsTeamKits = () => {
     const dispatch = useAppDispatch()
-    const {organizationsTK} = useAppSelector(state => state.kitReducer)
+    const {organizationsTK, openOperatingTime, operatingTimeList} = useAppSelector(state => state.kitReducer)
     const {user} = useAppSelector(state => state.authReducer)
     const [openTeamFormDialog, setOpenTeamFormDialog] = useState<number | null>(null)
     const [form] = Form.useForm();
@@ -37,7 +39,7 @@ const OrganizationsTeamKits = () => {
         dispatch(getParameters())
     }, [])
 
-    const TeamFormDialog = (editData: ITeam | null = null) => {
+    const TeamFormDialog = useMemo((editData: ITeam | null = null) => {
         const initialValues = {name: '', location_name: ''}
         if (!!editData) console.log(editData)
 
@@ -98,14 +100,13 @@ const OrganizationsTeamKits = () => {
                 </Form>
             </Dialog>
         )
-    }
-
+    }, [openTeamFormDialog])
 
     return (
-        <Box>
+        <Box sx={{display: 'flex', justifyContent: 'center'}}>
             <Stack spacing={2}>
                 {organizationsTK.map(({id, name, teams}) => (
-                    <Box key={`org${id}`}>
+                    <Box key={`org${id}`} sx={{maxWidth: '1200px'}}>
                         <Paper sx={{p: 1, mb: 1, borderBottomRightRadius: 0, borderBottomLeftRadius: 0}}>
                             <Grid container spacing={1}>
                                 <Grid item xs={2}>
@@ -126,7 +127,7 @@ const OrganizationsTeamKits = () => {
                             </Grid>
                         </Paper>
                         {teams.map(({team_kit}, index) => (
-                            <Accordion key={team_kit.id} defaultExpanded={index === 0}>
+                            <Accordion key={`team_kit_${team_kit.id}`} defaultExpanded={index === 0}>
                                 <AccordionSummary
                                     expandIcon={<ExpandMoreIcon/>}
                                     aria-controls={`panel${team_kit.id}-content`}
@@ -145,7 +146,21 @@ const OrganizationsTeamKits = () => {
                     </Box>
                 ))}
             </Stack>
-            {TeamFormDialog()}
+            {TeamFormDialog}
+            <Drawer
+                anchor={'right'}
+                open={openOperatingTime}
+                onClose={() => dispatch(clearOperatingTimeList())}
+            >
+                <Box sx={{pt: 7, mb: 2, backgroundColor: 'primary.main'}}/>
+                <IconButton
+                    sx={{position: 'absolute', top: '64px', zIndex: 1202, right: 0}}
+                    onClick={() => dispatch(clearOperatingTimeList())}
+                ><CloseIcon fontSize={'large'}/></IconButton>
+                <Stack spacing={1} sx={{p: 1, width: {xs: '100vw', md: '500px'}}}>
+                    {operatingTimeList.map(oper => `${oper}`)}
+                </Stack>
+            </Drawer>
         </Box>
     )
 };

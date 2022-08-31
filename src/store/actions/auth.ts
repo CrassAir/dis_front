@@ -1,8 +1,9 @@
 import axios, {AxiosError} from "axios";
-import {IAuth, IAuthResponse} from "../../models/IAuth";
+import {IAuth, IAuthResponse, INotifications} from "../../models/IAuth";
 import {apiUrl, restAuthUrl} from "../../api/urls";
 import {createAsyncThunk} from "@reduxjs/toolkit";
 import api, {apiError} from "../../api/api";
+import {IMoving} from "../../models/IKit";
 
 let interceptor = 0;
 
@@ -58,6 +59,18 @@ export const checkToken = createAsyncThunk(
             }
         } else if (token === undefined) {
             thunkAPI.dispatch(logout());
+        }
+    }
+)
+
+export const getNotifications = createAsyncThunk(
+    'getNotifications',
+    async (_, thunkAPI) => {
+        try {
+            const {data} = await api.get<INotifications[]>(apiUrl + 'notifications/')
+            return data
+        } catch (e) {
+            return thunkAPI.rejectWithValue(apiError(e as Error | AxiosError))
         }
     }
 )

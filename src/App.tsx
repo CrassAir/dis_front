@@ -1,6 +1,6 @@
-import React, {useEffect, lazy, Suspense, ReactElement, useState, useMemo} from 'react';
+import React, {useEffect, lazy, Suspense, ReactElement, useMemo} from 'react';
 import './App.less';
-import {Navigate, Route, Routes, useLocation, useNavigate} from "react-router-dom";
+import {Navigate, Route, Routes, useLocation} from "react-router-dom";
 import {checkToken, logout} from "./store/actions/auth";
 import {useAppDispatch, useAppSelector} from "./hooks/redux";
 import LoginPage from "./pages/LoginPage/LoginPage";
@@ -18,10 +18,10 @@ import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
 import ContentPasteIcon from '@mui/icons-material/ContentPaste';
 import {ReactComponent as svgLogo} from "./assets/dis_log_without_text3.svg"
-import Moving from "./pages/Moving/Moving";
 
 const Catalog = lazy(() => import("./pages/Catalogs/Catalog"))
 const TeamKits = lazy(() => import("./pages/Kits/OrganizationsTeamKits"))
+const Moving = lazy(() => import("./pages/Moving/Moving"))
 
 
 const theme = createTheme({
