@@ -69,6 +69,7 @@ const Tools = () => {
             title="Инструменты"
             options={{
                 pageSize: 5,
+                draggable: false,
             }}
             localization={localizationMT}
             style={{display: 'grid'}}

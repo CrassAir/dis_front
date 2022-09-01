@@ -115,6 +115,7 @@ const Kits = ({teamKit}: KitsProps) => {
 
     let options = useMemo(() => ({
         pageSize: 5,
+        draggable: false,
         rowStyle: (rowData: IKit) => colorCell[rowData.general_state]
     }), [])
 

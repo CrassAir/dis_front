@@ -92,6 +92,7 @@ const Contract = () => {
             title="Договоры"
             options={{
                 pageSize: 5,
+                draggable: false,
             }}
             localization={localizationMT}
             style={{display: 'grid'}}

@@ -2,9 +2,9 @@ import {createSlice} from "@reduxjs/toolkit";
 import {IMoving, IOperationTime, IOrganizationTK, IStatusMoving, ITeamKit} from "../../models/IKit";
 import {
     changeStatusMoving,
-    createMoving,
+    createMoving, createOperatingTime,
     createTeam,
-    deleteMoving,
+    deleteMoving, deleteOperatingTime,
     getMoving, getOperatingTime,
     getOrganizationsTK, getStatus,
     updateMoving
@@ -18,7 +18,7 @@ interface IKitState {
     movingList: IMoving[]
     statusList: IStatusMoving[]
     operatingTimeList: IOperationTime[]
-    openOperatingTime: boolean
+    operatingTimeTeamKit: null | number
 }
 
 const initialState: IKitState = {
@@ -27,7 +27,7 @@ const initialState: IKitState = {
     movingList: [],
     statusList: [],
     operatingTimeList: [],
-    openOperatingTime: false,
+    operatingTimeTeamKit: null,
 }
 
 export const kitSlice = createSlice({
@@ -38,8 +38,8 @@ export const kitSlice = createSlice({
             state.statusList = []
         },
         clearOperatingTimeList: (state) => {
-            // state.operatingTimeList = []
-            state.openOperatingTime = false
+            state.operatingTimeList = []
+            state.operatingTimeTeamKit = null
         }
     },
     extraReducers: (builder) => {
@@ -59,8 +59,14 @@ export const kitSlice = createSlice({
             state.statusList = payload
         })
         builder.addCase(getOperatingTime.fulfilled, (state, {payload}) => {
-            // state.operatingTimeList = payload
-            state.openOperatingTime = true
+            state.operatingTimeList = payload.data
+            state.operatingTimeTeamKit = payload.team_kit
+        })
+        builder.addCase(deleteOperatingTime.fulfilled, (state, {payload}) => {
+            state.operatingTimeList = deleteElementFromList(state.operatingTimeList, payload)
+        })
+        builder.addCase(createOperatingTime.fulfilled, (state, {payload}) => {
+            state.operatingTimeList = [payload, ...state.operatingTimeList]
         })
         builder.addCase(createMoving.fulfilled, (state, {payload}) => {
             state.movingList = [...state.movingList, payload]

@@ -112,6 +112,7 @@ export interface IStatusMoving {
 export interface IOperationTime {
     id: number
     creator: string
+    date_create: string
     team_kit: number
     hours: number
 }

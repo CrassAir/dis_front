@@ -128,7 +128,31 @@ export const getOperatingTime = createAsyncThunk(
     async (query: any, thunkAPI) => {
         try {
             const {data} = await api.get<IOperationTime[]>(apiUrl + 'operating_time/', {params: query})
+            return {data, team_kit: query.team_kit}
+        } catch (e) {
+            return thunkAPI.rejectWithValue(apiError(e as Error | AxiosError))
+        }
+    }
+)
+
+export const createOperatingTime = createAsyncThunk(
+    'createOperatingTime',
+    async (post: any, thunkAPI) => {
+        try {
+            const {data} = await api.post<IOperationTime>(apiUrl + 'operating_time/', post)
             return data
+        } catch (e) {
+            return thunkAPI.rejectWithValue(apiError(e as Error | AxiosError))
+        }
+    }
+)
+
+export const deleteOperatingTime = createAsyncThunk(
+    'deleteOperatingTime',
+    async (post: number, thunkAPI) => {
+        try {
+            await api.delete<IOperationTime>(apiUrl + `operating_time/${post}/`)
+            return post
         } catch (e) {
             return thunkAPI.rejectWithValue(apiError(e as Error | AxiosError))
         }

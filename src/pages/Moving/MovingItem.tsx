@@ -6,7 +6,6 @@ import {
     Paper,
     Popover,
     Stack,
-    Tooltip,
     Typography
 } from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2";
@@ -45,9 +44,10 @@ const MovingItem = ({moving}: MovingItemProps) => {
 
     const actionHeadButton = useMemo(() => {
         const listBtn = []
-        listBtn.push(<Tooltip key={'detail'} title={"Статусы"}>
-            <IconButton onClick={() => dispatch(getStatus({mov_id: moving.id}))}><ArticleIcon/></IconButton>
-        </Tooltip>)
+        listBtn.push(<IconButton key={'detail'} title={'Статусы'}
+                                 onClick={() => dispatch(getStatus({mov_id: moving.id}))}>
+            <ArticleIcon/>
+        </IconButton>)
         if (user?.id === moving?.creator) {
             if (moving.last_status_name === 'create') {
                 // listBtn.push(<Tooltip key={'edit'} title={"Редактировать"}>
@@ -62,9 +62,8 @@ const MovingItem = ({moving}: MovingItemProps) => {
                 //         moveId: moving.id
                 //     })}><EditIcon/></IconButton>
                 // </Tooltip>)
-                listBtn.push(<Tooltip key={'delete'} title={"Удалить"}>
-                    <IconButton onClick={() => dispatch(deleteMoving(moving))}><DeleteIcon/></IconButton>
-                </Tooltip>)
+                listBtn.push(<IconButton key={'delete'} title={"Удалить"}
+                                         onClick={() => dispatch(deleteMoving(moving))}><DeleteIcon/></IconButton>)
             }
         }
         return listBtn

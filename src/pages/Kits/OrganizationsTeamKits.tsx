@@ -3,7 +3,7 @@ import {
     Accordion,
     AccordionDetails,
     AccordionSummary,
-    Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Drawer,
+    Box, Button, Dialog, DialogActions, DialogContent, DialogTitle,
     Grid,
     IconButton,
     Paper,
@@ -12,23 +12,26 @@ import {
 } from "@mui/material";
 import Kits from "./Kits";
 import {useAppDispatch, useAppSelector} from "../../hooks/redux";
-import {createTeam, getOrganizationsTK} from "../../store/actions/kits";
+import {
+    createTeam,
+    getOrganizationsTK
+} from "../../store/actions/kits";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import GroupAddIcon from '@mui/icons-material/GroupAdd';
 import {Form} from "antd";
 import {ITeam} from "../../models/IKit";
 import {validateEditAccess} from "../utils";
 import {getManufacturers, getParameters} from "../../store/actions/catalog";
-import CloseIcon from "@mui/icons-material/Close";
-import {clearOperatingTimeList} from "../../store/reducers/KitReducer";
+import OperationTimeDrawer from "./OperationTimeDrawer";
 
 
 const OrganizationsTeamKits = () => {
     const dispatch = useAppDispatch()
-    const {organizationsTK, openOperatingTime, operatingTimeList} = useAppSelector(state => state.kitReducer)
+    const {organizationsTK} = useAppSelector(state => state.kitReducer)
     const {user} = useAppSelector(state => state.authReducer)
     const [openTeamFormDialog, setOpenTeamFormDialog] = useState<number | null>(null)
     const [form] = Form.useForm();
+
 
     const edit = useMemo(() => validateEditAccess(user!, 'teams'), [user])
 
@@ -147,20 +150,7 @@ const OrganizationsTeamKits = () => {
                 ))}
             </Stack>
             {TeamFormDialog}
-            <Drawer
-                anchor={'right'}
-                open={openOperatingTime}
-                onClose={() => dispatch(clearOperatingTimeList())}
-            >
-                <Box sx={{pt: 7, mb: 2, backgroundColor: 'primary.main'}}/>
-                <IconButton
-                    sx={{position: 'absolute', top: '64px', zIndex: 1202, right: 0}}
-                    onClick={() => dispatch(clearOperatingTimeList())}
-                ><CloseIcon fontSize={'large'}/></IconButton>
-                <Stack spacing={1} sx={{p: 1, width: {xs: '100vw', md: '500px'}}}>
-                    {operatingTimeList.map(oper => `${oper}`)}
-                </Stack>
-            </Drawer>
+            <OperationTimeDrawer/>
         </Box>
     )
 };

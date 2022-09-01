@@ -2,15 +2,10 @@ import React, {useEffect, useMemo, useState} from 'react';
 import {
     Box,
     Button,
-    Divider,
-    Drawer,
-    IconButton,
     MenuItem,
     Paper,
-    Slide,
     Stack,
     TextField,
-    Typography
 } from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2";
 import {DatePicker} from "@mui/x-date-pickers/DatePicker";
@@ -24,15 +19,13 @@ import MovingItem from "./MovingItem";
 import {useAppDispatch, useAppSelector} from "../../hooks/redux";
 import {getMoving} from "../../store/actions/kits";
 import {moving_status} from "../../models/IKit";
-import {clearStatusList} from "../../store/reducers/KitReducer";
-import CloseIcon from '@mui/icons-material/Close';
-
+import StatusDrawer from "./StatusDrawer";
 
 const Moving = () => {
     const [selectDate, setSelectDate] = useState(moment())
     const [editData, setEditData] = useState<any | null>(null)
     const dispatch = useAppDispatch()
-    const {movingList, statusList} = useAppSelector(state => state.kitReducer)
+    const {movingList} = useAppSelector(state => state.kitReducer)
 
     useEffect(() => {
         dispatch(getMoving())
@@ -90,37 +83,7 @@ const Moving = () => {
                 {movingItems}
             </Stack>
             {movingForm}
-            <Drawer
-                anchor={'right'}
-                open={statusList.length > 0}
-                onClose={() => dispatch(clearStatusList())}
-            >
-                <Box sx={{pt: 7, mb: 2, backgroundColor: 'primary.main'}}/>
-                <IconButton
-                    sx={{position: 'absolute', top: '64px', right: 0}}
-                    onClick={() => dispatch(clearStatusList())}
-                ><CloseIcon fontSize={'large'}/></IconButton>
-                <Stack spacing={1} sx={{p: 1, width: {xs: '100vw', md: '500px'}}}>
-                    {statusList.map(status => {
-                        const stat = moving_status[status.status as keyof typeof moving_status]
-                        return <Box key={status.id} sx={{p: 1, borderLeft: `5px solid`, borderLeftColor: stat.color}}>
-                            <Stack direction={'row'} spacing={2}>
-                                <Typography color={"text.secondary"}>Дата:</Typography>
-                                <Typography>{moment(status.date_create).format('DD-MM-YYYY')}</Typography>
-                                <Typography color={"text.secondary"}>Статус:</Typography>
-                                <Typography>{stat.status}</Typography>
-                            </Stack>
-                            {status.comment &&
-                                <React.Fragment>
-                                    <Typography color={"text.secondary"}>Комментарий:</Typography>
-                                    <Typography>{status.comment}</Typography>
-                                </React.Fragment>
-                            }
-                            <Divider variant="middle" sx={{py: 1}}/>
-                        </Box>
-                    })}
-                </Stack>
-            </Drawer>
+            <StatusDrawer/>
         </Box>
     )
 }
