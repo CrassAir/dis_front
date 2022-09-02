@@ -33,8 +33,11 @@ const Notifications = () => {
                     horizontal: 'right',
                 }}
             >
-                <IconButton sx={{position: 'sticky', top: 0, right: 0, zIndex: 1202}}><CloseIcon
-                    fontSize={'large'}/></IconButton>
+                <Box sx={{position: 'sticky', top: 0, right: 0, m: 1, backgroundColor: '#f5f8f8'}}>
+                    <Typography variant={'h5'} sx={{p: 1}}>Уведомления</Typography>
+                    <IconButton sx={{position: 'absolute', top: 0, right: 0}}><CloseIcon
+                        fontSize={'large'}/></IconButton>
+                </Box>
                 <Stack spacing={1} sx={{maxHeight: '60vh', m: 1}}>
                     {notifications.map(notif => (
                         <Box key={notif.id} sx={{p: 1,}}>

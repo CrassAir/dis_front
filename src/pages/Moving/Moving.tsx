@@ -1,7 +1,7 @@
 import React, {useEffect, useMemo, useState} from 'react';
 import {
     Box,
-    Button,
+    Button, CircularProgress,
     MenuItem,
     Paper,
     Stack,
@@ -20,15 +20,20 @@ import {useAppDispatch, useAppSelector} from "../../hooks/redux";
 import {getMoving} from "../../store/actions/kits";
 import {moving_status} from "../../models/IKit";
 import StatusDrawer from "./StatusDrawer";
+import InfiniteScroll from 'react-infinite-scroller';
+import {useLocation, useNavigate, useParams} from "react-router-dom";
 
 const Moving = () => {
     const [selectDate, setSelectDate] = useState(moment())
     const [editData, setEditData] = useState<any | null>(null)
+    const location = useLocation()
+    const navigation = useNavigate()
+    const {id} = useParams()
     const dispatch = useAppDispatch()
     const {movingList} = useAppSelector(state => state.kitReducer)
 
     useEffect(() => {
-        dispatch(getMoving())
+        dispatch(getMoving({id: id}))
         window.scrollTo(0, 0)
     }, [])
 
@@ -37,7 +42,7 @@ const Moving = () => {
     ), [editData])
 
     const movingItems = useMemo(() => {
-        return movingList.map(item => <MovingItem key={item.id} moving={item}/>)
+        return movingList.results.map(item => <MovingItem key={item.id} moving={item}/>)
     }, [movingList])
 
     return (
@@ -52,7 +57,11 @@ const Moving = () => {
                                     value={selectDate}
                                     minDate={new Date('2022-01-01')}
                                     maxDate={new Date('2023-12-01')}
-                                    onChange={(e) => setSelectDate(moment(e))}
+                                    onChange={(e) => {
+                                        setSelectDate(moment(e))
+                                        dispatch(getMoving({date: e}))
+                                        if (location.pathname !== '/delivery') navigation('', {replace: true})
+                                    }}
                                     renderInput={(params: any) => <TextField {...params} size={'small'}/>}
                                 />
                             </LocalizationProvider>
@@ -80,7 +89,16 @@ const Moving = () => {
                         </Button>
                     </Grid>
                 </Grid>
-                {movingItems}
+                <InfiniteScroll
+                    pageStart={0}
+                    loadMore={() => dispatch(getMoving(movingList))}
+                    hasMore={!!movingList.next}
+                    loader={<CircularProgress/>}
+                >
+                    <Stack spacing={2}>
+                        {movingItems}
+                    </Stack>
+                </InfiniteScroll>
             </Stack>
             {movingForm}
             <StatusDrawer/>

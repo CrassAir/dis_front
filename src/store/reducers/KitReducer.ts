@@ -1,5 +1,5 @@
 import {createSlice} from "@reduxjs/toolkit";
-import {IMoving, IOperationTime, IOrganizationTK, IStatusMoving, ITeamKit} from "../../models/IKit";
+import {IMoving, IOperationTime, IOrganizationTK, IPagination, IStatusMoving, ITeamKit} from "../../models/IKit";
 import {
     changeStatusMoving,
     createMoving, createOperatingTime,
@@ -9,24 +9,24 @@ import {
     getOrganizationsTK, getStatus,
     updateMoving
 } from "../actions/kits";
-import {deleteElementFromList, updateElementInList} from "../../pages/utils";
+import {deleteElementFromList, updateElementInList, updatePaginationList} from "../../pages/utils";
 
 
 interface IKitState {
     teamKits: ITeamKit[]
     organizationsTK: IOrganizationTK[]
-    movingList: IMoving[]
-    statusList: IStatusMoving[]
-    operatingTimeList: IOperationTime[]
+    movingList: IPagination<IMoving[]>
+    statusList: IPagination<IStatusMoving[]>
+    operatingTimeList: IPagination<IOperationTime[]>
     operatingTimeTeamKit: null | number
 }
 
 const initialState: IKitState = {
     teamKits: [],
     organizationsTK: [],
-    movingList: [],
-    statusList: [],
-    operatingTimeList: [],
+    movingList: {count: 0, next: null, previous: null, results: []},
+    statusList: {count: 0, next: null, previous: null, results: []},
+    operatingTimeList: {count: 0, next: null, previous: null, results: []},
     operatingTimeTeamKit: null,
 }
 
@@ -35,10 +35,10 @@ export const kitSlice = createSlice({
     initialState,
     reducers: {
         clearStatusList: (state) => {
-            state.statusList = []
+            state.statusList = initialState.statusList
         },
         clearOperatingTimeList: (state) => {
-            state.operatingTimeList = []
+            state.operatingTimeList = initialState.operatingTimeList
             state.operatingTimeTeamKit = null
         }
     },
@@ -53,32 +53,32 @@ export const kitSlice = createSlice({
             state.organizationsTK = payload
         })
         builder.addCase(getMoving.fulfilled, (state, {payload}) => {
-            state.movingList = payload
+            state.movingList = updatePaginationList(state.movingList, payload)
         })
         builder.addCase(getStatus.fulfilled, (state, {payload}) => {
-            state.statusList = payload
+            state.statusList = updatePaginationList(state.statusList, payload)
         })
         builder.addCase(getOperatingTime.fulfilled, (state, {payload}) => {
-            state.operatingTimeList = payload.data
-            state.operatingTimeTeamKit = payload.team_kit
+            state.operatingTimeList = updatePaginationList(state.operatingTimeList, payload.data)
+            if (!payload.data.previous) state.operatingTimeTeamKit = payload.team_kit
         })
         builder.addCase(deleteOperatingTime.fulfilled, (state, {payload}) => {
-            state.operatingTimeList = deleteElementFromList(state.operatingTimeList, payload)
+            state.operatingTimeList.results = deleteElementFromList(state.operatingTimeList.results, payload)
         })
         builder.addCase(createOperatingTime.fulfilled, (state, {payload}) => {
-            state.operatingTimeList = [payload, ...state.operatingTimeList]
+            state.operatingTimeList.results = [payload, ...state.operatingTimeList.results]
         })
         builder.addCase(createMoving.fulfilled, (state, {payload}) => {
-            state.movingList = [...state.movingList, payload]
+            state.movingList.results = [payload, ...state.movingList.results]
         })
         builder.addCase(changeStatusMoving.fulfilled, (state, {payload}) => {
-            state.movingList = updateElementInList(state.movingList, payload)
+            state.movingList.results = updateElementInList(state.movingList.results, payload)
         })
         builder.addCase(updateMoving.fulfilled, (state, {payload}) => {
-            state.movingList = updateElementInList(state.movingList, payload)
+            state.movingList.results = updateElementInList(state.movingList.results, payload)
         })
         builder.addCase(deleteMoving.fulfilled, (state, {payload}) => {
-            state.movingList = deleteElementFromList(state.movingList, payload)
+            state.movingList.results = deleteElementFromList(state.movingList.results, payload)
         })
         builder.addCase(createTeam.fulfilled, (state, {payload}) => {
             state.organizationsTK = state.organizationsTK.map(org => {

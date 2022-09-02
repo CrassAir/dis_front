@@ -118,16 +118,25 @@ const App: React.FC = () => {
         let nav = '/'
         const newList = navList.map((navItem, index) => {
             if (index === 0 && navItem.path !== '/') nav = navItem.path
-            return <Route key={navItem.name} path={navItem.path}
-                          element={
-                              <Suspense fallback={<Box className={'login-container'}>
-                                  <SvgIcon className={'logo_anim'} component={svgLogo}
-                                           sx={{width: 150, height: 150}}
-                                           viewBox="-1.2989280492092803E-5 -2.8421709430404007E-13 128.08380126953125 128.46115112304688"/>
-                              </Box>}>
-                                  {navItem.component}
-                              </Suspense>
-                          }/>
+            return <Route
+                key={navItem.name} path={navItem.path}
+                element={
+                    <Suspense fallback={<Box className={'login-container'}>
+                        <SvgIcon className={'logo_anim'} component={svgLogo}
+                                 sx={{width: 150, height: 150}}
+                                 viewBox="-1.2989280492092803E-5 -2.8421709430404007E-13 128.08380126953125 128.46115112304688"/>
+                    </Box>}>
+                        {navItem.component}
+                    </Suspense>
+                }>
+                <Route path={':id'} element={<Suspense fallback={<Box className={'login-container'}>
+                    <SvgIcon className={'logo_anim'} component={svgLogo}
+                             sx={{width: 150, height: 150}}
+                             viewBox="-1.2989280492092803E-5 -2.8421709430404007E-13 128.08380126953125 128.46115112304688"/>
+                </Box>}>
+                    {navItem.component}
+                </Suspense>}/>
+            </Route>
         })
         if (nav !== '/') newList.push(<Route key={'redirect'} path="/" element={<Navigate to={nav}/>}/>)
         return newList

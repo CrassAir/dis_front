@@ -1,10 +1,12 @@
 import React, {useMemo} from 'react';
-import {Box, Divider, Drawer, IconButton, Stack, Typography} from "@mui/material";
+import {Box, Divider, Drawer, IconButton, LinearProgress, Stack, Typography} from "@mui/material";
 import {clearStatusList} from "../../store/reducers/KitReducer";
 import CloseIcon from "@mui/icons-material/Close";
 import {moving_status} from "../../models/IKit";
 import moment from "moment/moment";
 import {useAppDispatch, useAppSelector} from "../../hooks/redux";
+import {getStatus} from "../../store/actions/kits";
+import InfiniteScroll from "react-infinite-scroller";
 
 const StatusDrawer = () => {
     const dispatch = useAppDispatch()
@@ -12,7 +14,7 @@ const StatusDrawer = () => {
 
     const visibilityBox = useMemo(() => document.querySelector('header')!.style.visibility !== 'hidden', [statusList])
 
-    const drawerBody = useMemo(() => statusList.map(status => {
+    const drawerBody = useMemo(() => statusList.results.map(status => {
         const stat = moving_status[status.status as keyof typeof moving_status]
         return <React.Fragment key={status.id}>
             <Divider variant="middle"/>
@@ -45,10 +47,10 @@ const StatusDrawer = () => {
     return (
         <Drawer
             anchor={'right'}
-            open={statusList.length > 0}
+            open={statusList.results.length > 0}
             onClose={() => dispatch(clearStatusList())}
         >
-            <Box sx={{pt: visibilityBox ? 8 : 0}}>
+            <Box sx={{overflow: 'auto', height: '100vh'}}>
                 <Box sx={{
                     position: 'sticky',
                     top: visibilityBox ? '64px' : 0,
@@ -64,9 +66,17 @@ const StatusDrawer = () => {
                         onClick={() => dispatch(clearStatusList())}
                     ><CloseIcon fontSize={'large'}/></IconButton>
                 </Box>
-                <Stack spacing={1} sx={{p: 1, width: {xs: '100vw', md: '500px'}}}>
-                    {drawerBody}
-                </Stack>
+                <InfiniteScroll
+                    pageStart={0}
+                    loadMore={() => dispatch(getStatus(statusList))}
+                    hasMore={!!statusList.next}
+                    loader={<LinearProgress sx={{height: 10}} color={'secondary'}/>}
+                    useWindow={false}
+                >
+                    <Stack spacing={1} sx={{p: 1, width: {xs: '100vw', md: '500px'}}}>
+                        {drawerBody}
+                    </Stack>
+                </InfiniteScroll>
             </Box>
         </Drawer>
     );

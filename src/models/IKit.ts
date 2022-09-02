@@ -1,5 +1,12 @@
 import {RcFile} from "antd/es/upload/interface";
 
+export interface IPagination<Type> {
+    count: number
+    next: string | null
+    previous: string | null
+    results: Type
+}
+
 export interface IKit {
     id: number
     amount: number
@@ -66,16 +73,6 @@ export const moving_status = {
     back_received: {status: 'Возврат получен', color: 'success.light'},
     not_back_received: {status: 'Возврат не получен', color: 'error.light'},
 }
-
-// export const moving_status = {
-//     create: {status: 'Новый', color: {}},
-//     sent: {status: 'В пути', color: {backgroundColor: 'rgba(255,249,187,0.5)'}},
-//     received: {status: 'Получен', color: {backgroundColor: 'rgba(206,255,187,0.5)'}},
-//     not_received: {status: 'Не получен', color: {backgroundColor: 'rgba(255,187,187,0.5)'}},
-//     back: {status: 'Возврат', color: {backgroundColor: 'rgba(255,249,187,0.5)'}},
-//     back_received: {status: 'Возврат получен', color: {backgroundColor: 'rgba(206,255,187,0.5)'}},
-//     not_back_received: {status: 'Возврат не получен', color: {backgroundColor: 'rgba(255,187,187,0.5)'}},
-// }
 
 export interface IMoving {
     id: number

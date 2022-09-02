@@ -1,7 +1,7 @@
 import {createAsyncThunk} from "@reduxjs/toolkit";
 import api, {apiError} from "../../api/api";
 import {apiUrl} from "../../api/urls";
-import {IKit, IMoving, IOperationTime, IOrganizationTK, IStatusMoving, ITeam} from "../../models/IKit";
+import {IKit, IMoving, IOperationTime, IOrganizationTK, IPagination, IStatusMoving, ITeam} from "../../models/IKit";
 import {AxiosError} from "axios";
 
 
@@ -46,7 +46,8 @@ export const getStatus = createAsyncThunk(
     'getStatus',
     async (query: any, thunkAPI) => {
         try {
-            const {data} = await api.get<IStatusMoving[]>(apiUrl + 'status_moving_kit/', {params: query})
+            const url = query?.next ? query.next : apiUrl + 'status_moving_kit/'
+            const {data} = await api.get<IPagination<IStatusMoving[]>>(url, {params: {mov_id: query.mov_id}})
             return data
         } catch (e) {
             return thunkAPI.rejectWithValue(apiError(e as Error | AxiosError))
@@ -113,9 +114,10 @@ export const deleteKit = createAsyncThunk(
 
 export const getMoving = createAsyncThunk(
     'getMoving',
-    async (_, thunkAPI) => {
+    async (query: any, thunkAPI) => {
         try {
-            const {data} = await api.get<IMoving[]>(apiUrl + 'moving_kit/')
+            const url = query?.next ? query.next : apiUrl + 'moving_kit/'
+            const {data} = await api.get<IPagination<IMoving[]>>(url, {params: {id: query.id, date: query.date}})
             return data
         } catch (e) {
             return thunkAPI.rejectWithValue(apiError(e as Error | AxiosError))
@@ -127,7 +129,8 @@ export const getOperatingTime = createAsyncThunk(
     'getOperatingTime',
     async (query: any, thunkAPI) => {
         try {
-            const {data} = await api.get<IOperationTime[]>(apiUrl + 'operating_time/', {params: query})
+            const url = query?.next ? query.next : apiUrl + 'operating_time/'
+            const {data} = await api.get<IPagination<IOperationTime[]>>(url, {params: {team_kit: query.team_kit}})
             return {data, team_kit: query.team_kit}
         } catch (e) {
             return thunkAPI.rejectWithValue(apiError(e as Error | AxiosError))

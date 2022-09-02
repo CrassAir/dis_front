@@ -1,69 +1,77 @@
-import React, {useMemo} from 'react';
+import React, {useEffect, useMemo, useRef, useState} from 'react';
 import {
-    Box, Collapse,
+    Box, CircularProgress, Collapse,
     Divider, Drawer,
-    FormControl,
+    FormControl, Grow,
     IconButton,
     InputAdornment,
-    InputLabel, List, ListItem, ListItemText,
+    InputLabel, LinearProgress, ListItem, ListItemText,
     OutlinedInput,
     Stack,
     Typography
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import {Form} from "antd";
-import {createOperatingTime, deleteOperatingTime} from "../../store/actions/kits";
+import {createOperatingTime, deleteOperatingTime, getOperatingTime} from "../../store/actions/kits";
 import SendIcon from "@mui/icons-material/Send";
 import {TransitionGroup} from "react-transition-group";
 import {useAppDispatch, useAppSelector} from "../../hooks/redux";
 import {clearOperatingTimeList} from "../../store/reducers/KitReducer";
 import moment from "moment/moment";
 import DeleteIcon from "@mui/icons-material/Delete";
+import InfiniteScroll from "react-infinite-scroller";
 
 
 const OperationTimeDrawer = () => {
     const dispatch = useAppDispatch()
     const {operatingTimeTeamKit, operatingTimeList} = useAppSelector(state => state.kitReducer)
-    const {user} = useAppSelector(state => state.authReducer)
+    const {isLoading, user} = useAppSelector(state => state.authReducer)
+    const [stopLoad, setStopLoad] = useState(true)
     const [form2] = Form.useForm();
 
-    const drawerBody = useMemo(() => operatingTimeList.map(oper => (
+    const drawerBody = useMemo(() => operatingTimeList.results.map((oper, index) => (
         <Collapse key={oper.id}>
-            <Divider variant="middle"/>
-            <ListItem
-                secondaryAction={
-                    <IconButton
-                        edge="end"
-                        disabled={!moment().startOf('day').isSame(moment(oper.date_create).startOf('day'))}
-                        aria-label="delete"
-                        title="Удалить наработку"
-                        onClick={() => dispatch(deleteOperatingTime(oper.id))}
-                    >
-                        <DeleteIcon/>
-                    </IconButton>
-                }
-            >
-                <ListItemText
-                    primary={<React.Fragment>
-                        <Typography color={"text.secondary"}>Дата внесения:</Typography>
-                        <Typography color={"text.secondary"}>Часы наработки:</Typography>
-                    </React.Fragment>}
+            <Box>
+                <Divider variant="middle"/>
+                <ListItem
+                    secondaryAction={
+                        <IconButton
+                            edge="end"
+                            disabled={!moment().startOf('day').isSame(moment(oper.date_create).startOf('day'))}
+                            aria-label="delete"
+                            title="Удалить наработку"
+                            onClick={() => dispatch(deleteOperatingTime(oper.id))}
+                        >
+                            <DeleteIcon/>
+                        </IconButton>
+                    }
+                >
+                    <ListItemText
+                        primary={<React.Fragment>
+                            <Typography color={"text.secondary"}>Дата внесения:</Typography>
+                            <Typography color={"text.secondary"}>Часы наработки:</Typography>
+                        </React.Fragment>}
 
-                />
-                <ListItemText
-                    primary={<React.Fragment>
-                        <Typography>{moment(oper.date_create).format('DD-MM-YYYY')}</Typography>
-                        <Typography>{oper.hours}</Typography>
-                    </React.Fragment>}
+                    />
+                    <ListItemText
+                        primary={<React.Fragment>
+                            <Typography>{moment(oper.date_create).format('DD-MM-YYYY')}</Typography>
+                            <Typography>{oper.hours}</Typography>
+                        </React.Fragment>}
 
-                />
-            </ListItem>
+                    />
+                </ListItem>
+            </Box>
         </Collapse>
     )), [operatingTimeList])
 
     const closeDrawer = () => {
         dispatch(clearOperatingTimeList())
     }
+
+    useEffect(() => {
+        setTimeout(() => setStopLoad(false), 500)
+    }, [operatingTimeList])
 
     const visibilityBox = useMemo(() => document.querySelector('header')!.style.visibility !== 'hidden', [operatingTimeTeamKit])
 
@@ -73,7 +81,7 @@ const OperationTimeDrawer = () => {
             open={!!operatingTimeTeamKit}
             onClose={closeDrawer}
         >
-            <Box sx={{pt: visibilityBox ? 8 : 0}}>
+            <Box sx={{overflow: 'auto', height: '100vh'}}>
                 <Box sx={{
                     position: 'sticky',
                     top: visibilityBox ? '64px' : 0,
@@ -129,11 +137,23 @@ const OperationTimeDrawer = () => {
                         </Form>
                     </Stack>
                 </Box>
-                <List>
+                <InfiniteScroll
+                    pageStart={0}
+                    loadMore={() => {
+                        if (!isLoading && !stopLoad) {
+                            setStopLoad(true)
+                            dispatch(getOperatingTime(operatingTimeList))
+                        }
+                    }}
+                    hasMore={!!operatingTimeList.next}
+                    loader={<LinearProgress key={'loading'} sx={{height: 10}} color={'secondary'}/>}
+                    useWindow={false}
+                    threshold={100}
+                >
                     <TransitionGroup>
                         {drawerBody}
                     </TransitionGroup>
-                </List>
+                </InfiniteScroll>
             </Box>
         </Drawer>
     );

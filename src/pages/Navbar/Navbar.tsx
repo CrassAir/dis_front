@@ -169,20 +169,21 @@ const Navbar: React.FC = () => {
                             <MenuIcon/>
                         </IconButton>
                         <Card elevation={0}>
-                            <CardActionArea
-                                onClick={() => navigate('/', {replace: true})}
-                            >
-                                <CardMedia
-                                    sx={{p: 1, width: {xs: '128px', md: 'auto'}, objectPosition: 'left'}}
-                                    component="img"
-                                    height="50"
-                                    image={Logo}
-                                    alt="dis logo"
-                                />
-                            </CardActionArea>
+                            <a href={'https://dis-mobile.ru/'} target={'_blank'}>
+                                <CardActionArea>
+                                    <CardMedia
+                                        sx={{p: 1, width: {xs: '128px', md: 'auto'}, objectPosition: 'left'}}
+                                        component="img"
+                                        height="50"
+                                        image={Logo}
+                                        alt="dis logo"
+                                    />
+                                </CardActionArea>
+                            </a>
                         </Card>
                         <Box flexGrow={1}/>
-                        {user?.full_name && <Typography sx={{m: 1, maxWidth: {xs: '100px', sm: '100%'}}} noWrap>{user.full_name}</Typography>}
+                        {user?.full_name && <Typography sx={{m: 1, maxWidth: {xs: '100px', sm: '100%'}}}
+                                                        noWrap>{user.full_name}</Typography>}
                         <Notifications/>
                         <IconButton sx={{ml: 2}} edge='end' onClick={() => dispatch(logout())}>
                             <LogoutIcon/>

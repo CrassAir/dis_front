@@ -64,7 +64,7 @@ const Kits = ({teamKit}: KitsProps) => {
                 title: 'Параметры', field: 'parameter',
                 lookup: parameters && convertListToObject(parameters),
                 validate: rowData => !!rowData.parameter,
-                cellStyle: {minWidth: '300px'}
+                cellStyle: {minWidth: '250px'}
 
             },
             {
@@ -77,7 +77,7 @@ const Kits = ({teamKit}: KitsProps) => {
                         {manufacturers.map(man => <MenuItem key={man.id} value={man.id}>{man.name}</MenuItem>)}
                     </TextField>
                 },
-                cellStyle: {minWidth: '300px'}
+                cellStyle: {minWidth: '250px'}
             },
             {
                 title: 'Количество', field: 'amount', type: 'numeric',
