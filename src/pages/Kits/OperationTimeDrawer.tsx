@@ -86,8 +86,8 @@ const OperationTimeDrawer = () => {
                 <Box sx={{
                     position: 'sticky',
                     top: 0,
-                    p: 1,
-                    m: 0,
+                    p: 0,
+                    m: 1,
                     zIndex: 1,
                     backgroundColor: '#f5f8f8',
                     width: {xs: '100vw', md: '500px'}

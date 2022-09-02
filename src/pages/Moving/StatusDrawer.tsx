@@ -55,13 +55,13 @@ const StatusDrawer = () => {
                 <Box sx={{
                     position: 'sticky',
                     top: 0,
-                    p: 1,
-                    m: 0,
+                    p: 0,
+                    m: 1,
                     zIndex: 1,
                     backgroundColor: '#f5f8f8',
                     width: {xs: '100vw', md: '500px'}
                 }}>
-                    <Typography variant={'h5'}>Статусы премещения</Typography>
+                    <Typography sx={{p: 1}} variant={'h5'}>Статусы премещения</Typography>
                     <IconButton
                         sx={{position: 'absolute', top: 0, zIndex: 1202, right: 0}}
                         onClick={() => dispatch(clearStatusList())}
