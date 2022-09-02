@@ -1,7 +1,7 @@
 import React, {useEffect, useMemo, useState} from 'react';
 import MaterialTable, {Column} from "material-table";
 import Upload from "antd/lib/upload/Upload";
-import {Button, IconButton, MenuItem, TextField, Tooltip} from "@mui/material";
+import {Box, Button, IconButton, MenuItem, TextField, Tooltip, Typography} from "@mui/material";
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import FileOpenIcon from '@mui/icons-material/FileOpen';
 import type {RcFile} from 'antd/es/upload/interface';
@@ -123,10 +123,11 @@ const Kits = ({teamKit}: KitsProps) => {
         if (kits) setData(kits.map(kit => ({...kit, tableData: {}})))
     }, [kits])
 
+
     return (
-        <>
+        <Box>
             <MaterialTable
-                title="Комплекты труб"
+                title={'Комплекты труб'}
                 options={options}
                 localization={localizationMT}
                 style={{display: 'grid'}}
@@ -177,7 +178,7 @@ const Kits = ({teamKit}: KitsProps) => {
                 } : {}}
             />
             {movingForm}
-        </>
+        </Box>
     )
 }
 

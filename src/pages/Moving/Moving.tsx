@@ -49,7 +49,7 @@ const Moving = () => {
         <Box sx={{display: 'flex', justifyContent: 'center'}}>
             <Stack spacing={2}>
                 <Grid container spacing={2} justifyContent={{xs: "center", sm: "flex-start"}}>
-                    <Grid sm={'auto'} xs={'auto'}>
+                    <Grid sm={'auto'} xs={5}>
                         <Paper>
                             <LocalizationProvider adapterLocale={ru} dateAdapter={AdapterDateFns}>
                                 <DatePicker
@@ -82,7 +82,7 @@ const Moving = () => {
                             </TextField>
                         </Paper>
                     </Grid>
-                    <Grid sm={'auto'} xs={'auto'}>
+                    <Grid sm={'auto'} xs={4}>
                         <Button sx={{height: '40px'}} variant={'contained'} startIcon={<AddBoxIcon/>}
                                 onClick={() => setEditData({})}>
                             Создать

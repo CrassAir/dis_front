@@ -129,7 +129,8 @@ const Navbar: React.FC = () => {
 
     const navigationList = useMemo(() => (<List>
         {navList.map((navItem: any) => (
-            <ListItem key={navItem?.name} disablePadding sx={{display: 'block'}}
+            <ListItem key={navItem?.name} disablePadding
+                      // sx={{display: {xs: navItem?.path === '/delivery' ? 'block' : 'none', md: 'block'}}}
                       selected={navItem.path === location.pathname}
                       onClick={() => {
                           if (window.innerWidth < 600) setOpen(false)
@@ -169,7 +170,7 @@ const Navbar: React.FC = () => {
                             <MenuIcon/>
                         </IconButton>
                         <Card elevation={0}>
-                            <a href={'https://dis-mobile.ru/'} target={'_blank'}>
+                            <a href={'https://dis-mobile.ru/'} target={'_blank'} rel={'noreferrer noopener'}>
                                 <CardActionArea>
                                     <CardMedia
                                         sx={{p: 1, width: {xs: '128px', md: 'auto'}, objectPosition: 'left'}}

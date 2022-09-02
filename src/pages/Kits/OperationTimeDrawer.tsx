@@ -73,7 +73,7 @@ const OperationTimeDrawer = () => {
         setTimeout(() => setStopLoad(false), 500)
     }, [operatingTimeList])
 
-    const visibilityBox = useMemo(() => document.querySelector('header')!.style.visibility !== 'hidden', [operatingTimeTeamKit])
+    const visibilityBox = useMemo(() => document.querySelector('header')?.style.visibility !== 'hidden', [operatingTimeTeamKit])
 
     return (
         <Drawer
@@ -81,10 +81,11 @@ const OperationTimeDrawer = () => {
             open={!!operatingTimeTeamKit}
             onClose={closeDrawer}
         >
+            {visibilityBox && <Box sx={{height: '64px'}}/>}
             <Box sx={{overflow: 'auto', height: '100vh'}}>
                 <Box sx={{
                     position: 'sticky',
-                    top: visibilityBox ? '64px' : 0,
+                    top: 0,
                     p: 1,
                     m: 0,
                     zIndex: 1,

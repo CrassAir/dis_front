@@ -3,7 +3,6 @@ import {IAuth, IAuthResponse, INotifications} from "../../models/IAuth";
 import {apiUrl, restAuthUrl} from "../../api/urls";
 import {createAsyncThunk} from "@reduxjs/toolkit";
 import api, {apiError} from "../../api/api";
-import {IMoving} from "../../models/IKit";
 
 let interceptor = 0;
 
