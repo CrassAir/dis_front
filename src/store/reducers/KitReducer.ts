@@ -31,7 +31,7 @@ const initialState: IKitState = {
 }
 
 export const kitSlice = createSlice({
-    name: 'catalog',
+    name: 'kit',
     initialState,
     reducers: {
         clearStatusList: (state) => {

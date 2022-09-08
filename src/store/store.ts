@@ -2,11 +2,13 @@ import {combineReducers, configureStore} from "@reduxjs/toolkit";
 import authReducer from './reducers/AuthReducer'
 import catalogReducer from './reducers/CatalogReducer'
 import kitReducer from './reducers/KitReducer'
+import defectReducer from './reducers/DefectReducer'
 
 const rootReducer = combineReducers({
     authReducer,
     catalogReducer,
     kitReducer,
+    defectReducer,
 })
 
 export const setupStore = () => {

@@ -21,7 +21,6 @@ import GroupAddIcon from '@mui/icons-material/GroupAdd';
 import {Form} from "antd";
 import {ITeam} from "../../models/IKit";
 import {validateEditAccess} from "../utils";
-import {getManufacturers, getParameters} from "../../store/actions/catalog";
 import OperationTimeDrawer from "./OperationTimeDrawer";
 
 
@@ -37,9 +36,7 @@ const OrganizationsTeamKits = () => {
 
 
     useEffect(() => {
-        dispatch(getOrganizationsTK())
-        dispatch(getManufacturers())
-        dispatch(getParameters())
+        if (organizationsTK.length === 0) dispatch(getOrganizationsTK())
     }, [])
 
     const TeamFormDialog = useMemo((editData: ITeam | null = null) => {
@@ -54,6 +51,8 @@ const OrganizationsTeamKits = () => {
         return (
             <Dialog
                 open={!!openTeamFormDialog}
+                fullWidth
+                maxWidth={'sm'}
                 onClose={handleClose}
             >
                 <Form

@@ -10,11 +10,11 @@ import {useAppDispatch, useAppSelector} from "../../hooks/redux";
 import {convertListToObject, localizationMT, validateEditAccess} from "../utils";
 import {changeStatusMoving, createKit, deleteKit, getOperatingTime, updateKit} from "../../store/actions/kits";
 import LocalShippingIcon from '@mui/icons-material/LocalShipping';
-import LocalShippingOutlinedIcon from '@mui/icons-material/LocalShippingOutlined';
 import MoreTimeIcon from '@mui/icons-material/MoreTime';
 import ReplyIcon from '@mui/icons-material/Reply';
 import MovingForm from "../Moving/MovingForm";
 import {useNavigate} from "react-router-dom";
+import {getManufacturers, getParameters} from "../../store/actions/catalog";
 
 
 type KitsProps = {
@@ -30,6 +30,11 @@ const Kits = ({teamKit}: KitsProps) => {
     const {user} = useAppSelector(state => state.authReducer)
     const [file, setFile] = useState<RcFile | null>(null)
     const [openMoving, setOpenMoving] = useState<IKit | null>(null)
+
+    useEffect(() => {
+        if (manufacturers.length === 0) dispatch(getManufacturers())
+        if (parameters.length === 0) dispatch(getParameters())
+    }, [])
 
     const edit = useMemo(() => validateEditAccess(user!, 'teams'), [user])
 

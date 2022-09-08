@@ -78,3 +78,4 @@ export interface IContract {
     doc?: string | RcFile
     active: boolean
 }
+

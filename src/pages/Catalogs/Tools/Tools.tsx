@@ -56,7 +56,7 @@ const Tools = () => {
     ]), [])
 
     useEffect(() => {
-        dispatch(getTools())
+        if (tools.length === 0) dispatch(getTools())
     }, [])
 
     useEffect(() => {

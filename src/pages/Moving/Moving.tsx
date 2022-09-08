@@ -33,7 +33,7 @@ const Moving = () => {
     const {movingList} = useAppSelector(state => state.kitReducer)
 
     useEffect(() => {
-        dispatch(getMoving({id: id}))
+        if (!movingList.count) dispatch(getMoving({id: id}))
         window.scrollTo(0, 0)
     }, [])
 

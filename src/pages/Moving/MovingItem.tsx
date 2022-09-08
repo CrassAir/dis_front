@@ -168,7 +168,6 @@ const MovingItem = ({moving}: MovingItemProps) => {
                 </Box>
                 <Grid container spacing={2} alignItems={"center"}>
                     <Grid xs={10} md={6}>
-
                         <Stack spacing={1} direction={"row"}>
                             <Typography color={"text.secondary"}>Номер документа:</Typography>
                             <Typography>{moving.id.toString().padStart(6, '0')}</Typography>
@@ -177,7 +176,6 @@ const MovingItem = ({moving}: MovingItemProps) => {
                             <Typography color={"text.secondary"}>Статус:</Typography>
                             <Typography>{status}</Typography>
                         </Stack>
-
                     </Grid>
                     <Grid xs={10} md={6}>
                         <Stack spacing={1} direction={"row"}>

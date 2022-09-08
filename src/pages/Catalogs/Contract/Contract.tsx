@@ -78,8 +78,8 @@ const Contract = () => {
     )
 
     useEffect(() => {
-        dispatch(getContracts())
-        dispatch(getOrganizations())
+        if (contracts.length === 0) dispatch(getContracts())
+        if (organizations.length === 0) dispatch(getOrganizations())
     }, [])
 
     useEffect(() => {
@@ -109,7 +109,7 @@ const Contract = () => {
                     return dispatch(updateContract(newData))
                 },
                 onRowDelete: oldData => dispatch(deleteContract(oldData))
-            }: {}}
+            } : {}}
         />
     )
 }

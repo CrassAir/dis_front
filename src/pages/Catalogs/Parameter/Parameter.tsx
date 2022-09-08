@@ -100,12 +100,12 @@ const Parameter = () => {
     ]), [parameters, strength_group, size_range, lock_type, lock_thread, pipe_type])
 
     useEffect(() => {
-        dispatch(getParameters())
-        dispatch(getStrengthGroup())
-        dispatch(getSizeRange())
-        dispatch(getLockThread())
-        dispatch(getLockType())
-        dispatch(getPipeType())
+        if (parameters.length === 0) dispatch(getParameters())
+        if (strength_group.length === 0) dispatch(getStrengthGroup())
+        if (size_range.length === 0) dispatch(getSizeRange())
+        if (lock_thread.length === 0) dispatch(getLockThread())
+        if (lock_type.length === 0) dispatch(getLockType())
+        if (pipe_type.length === 0) dispatch(getPipeType())
     }, [])
 
     useEffect(() => {

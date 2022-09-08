@@ -13,11 +13,13 @@ const HomePage: React.FC = () => {
     }, [])
 
     return <div>
-        <Box sx={{display: 'flex'}}>
+        <Box>
             <Navbar/>
-            <Box component="main" sx={{flexGrow: 1, p: {xs: '5px', md: 3}}}>
+            <Box component="main" sx={{p: {xs: '5px', md: 3}}}>
                 <DrawerHeader/>
-                <Outlet/>
+                <Box sx={{pl: {xs: 0, md: 8}}}>
+                    <Outlet/>
+                </Box>
             </Box>
         </Box>
     </div>

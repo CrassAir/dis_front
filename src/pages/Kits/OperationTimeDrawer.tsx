@@ -1,8 +1,8 @@
 import React, {useEffect, useMemo, useRef, useState} from 'react';
 import {
-    Box, CircularProgress, Collapse,
+    Box,  Collapse,
     Divider, Drawer,
-    FormControl, Grow,
+    FormControl,
     IconButton,
     InputAdornment,
     InputLabel, LinearProgress, ListItem, ListItemText,

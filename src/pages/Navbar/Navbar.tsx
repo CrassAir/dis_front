@@ -169,7 +169,7 @@ const Navbar: React.FC = () => {
                         >
                             <MenuIcon/>
                         </IconButton>
-                        <Card elevation={0}>
+                        <Card elevation={0} sx={{display: {xs :open ? 'none' : 'block', md: 'block'}}}>
                             <a href={'https://dis-mobile.ru/'} target={'_blank'} rel={'noreferrer noopener'}>
                                 <CardActionArea>
                                     <CardMedia
@@ -193,7 +193,7 @@ const Navbar: React.FC = () => {
                     {isLoading && <LinearProgress color={'secondary'}/>}
                 </AppBar>
             </HideOnScroll>
-            <Drawer variant="permanent" open={open} sx={{display: {md: 'block', xs: open ? 'block' : 'none'}}}>
+            <Drawer variant="permanent" open={open} sx={{display: 'block', opacity: {xs: open ? 1 : 0, md: 1}}}>
                 <DrawerHeader>
                     <IconButton onClick={handleDrawer}>
                         {open ? <ChevronLeftIcon/> : <MenuIcon/>}
