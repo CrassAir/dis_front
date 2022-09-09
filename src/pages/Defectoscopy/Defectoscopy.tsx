@@ -3,6 +3,7 @@ import {useAppDispatch, useAppSelector} from "../../hooks/redux";
 import {getDefectoscopy} from "../../store/actions/defect";
 import {Box, Stack} from "@mui/material";
 import DefectItem from "./DefectItem";
+import Grid from "@mui/material/Unstable_Grid2";
 
 
 const Defectoscopy = () => {
@@ -15,11 +16,16 @@ const Defectoscopy = () => {
 
     return (
         <Box sx={{display: 'flex', justifyContent: 'center'}}>
-            <Stack spacing={2}>
-                {defectoscopy.map((defect, index) => (
-                    <DefectItem key={index} defect={defect}/>
-                ))}
-            </Stack>
+            <Grid container>
+                <Grid xs={12}>
+                    <Stack spacing={2}>
+                        {/*<DefectItem defect={{}} />*/}
+                        {defectoscopy.map((defect, index) => (
+                            <DefectItem key={index} defect={defect}/>
+                        ))}
+                    </Stack>
+                </Grid>
+            </Grid>
         </Box>
     );
 };

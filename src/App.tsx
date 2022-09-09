@@ -18,11 +18,11 @@ import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
 import ContentPasteIcon from '@mui/icons-material/ContentPaste';
 import {ReactComponent as svgLogo} from "./assets/dis_log_without_text3.svg"
-import Defectoscopy from "./pages/Defectoscopy/Defectoscopy";
 
 const Catalog = lazy(() => import("./pages/Catalogs/Catalog"))
 const TeamKits = lazy(() => import("./pages/Kits/OrganizationsTeamKits"))
 const Moving = lazy(() => import("./pages/Moving/Moving"))
+const Defectoscopy = lazy(() => import("./pages/Defectoscopy/Defectoscopy"))
 
 
 const theme = createTheme({

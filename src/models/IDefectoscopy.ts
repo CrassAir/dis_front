@@ -3,8 +3,8 @@ export interface IDefectoscopy {
     date_create: string
     doc_number: string
     organization: number
-    date_defectoscopy_start: string
-    date_defectoscopy_end: string
+    date_defectoscopy_start?: string
+    date_defectoscopy_end?: string
     location: string
     application_number: string
     kit: number
