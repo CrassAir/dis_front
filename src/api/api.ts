@@ -14,9 +14,9 @@ export interface IApiError {
 
 export const apiError = (e: Error | AxiosError) => {
     if (axios.isAxiosError(e)) {
-        let data = e.response?.data as string
-        if (data && data.length > 100) data = e.message
-        return {code: e.response?.status, message: data}
+        let data = e.response?.data
+        if (typeof data === 'string' && data.length < 100) return {code: e.response?.status, message: data}
+        return {code: e.response?.status, message: e.message.toString()}
     }
     return {code: 0, message: e.message}
 }

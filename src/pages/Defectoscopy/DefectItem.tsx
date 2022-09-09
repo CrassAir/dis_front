@@ -1,35 +1,249 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useMemo, useState} from 'react';
 import {useAppDispatch, useAppSelector} from "../../hooks/redux";
 import {IDefectoscopy} from "../../models/IDefectoscopy";
-import {Box, Divider, IconButton, Paper} from "@mui/material";
+import {
+    Box, Button,
+    Divider,
+    FormControl, FormHelperText,
+    IconButton, ListSubheader, MenuItem,
+    OutlinedInput,
+    Paper,
+    Select,
+    Stack,
+    TextField,
+    Typography
+} from "@mui/material";
 import {getOrganizations, getTools} from "../../store/actions/catalog";
-import {getStandarts} from "../../store/actions/defect";
+import {createDefectoscopy, deleteDefectoscopy, getStandarts, updateDefectoscopy} from "../../store/actions/defect";
 import Grid from "@mui/material/Unstable_Grid2";
-import EditableField from "./EditableField";
 import EditIcon from '@mui/icons-material/Edit';
 import CancelIcon from '@mui/icons-material/Cancel';
+import {getOrganizationsTK} from "../../store/actions/kits";
+import moment from "moment/moment";
+import {LocalizationProvider} from "@mui/x-date-pickers/LocalizationProvider";
+import {ru} from "date-fns/locale";
+import {AdapterDateFns} from "@mui/x-date-pickers/AdapterDateFns";
+import {DatePicker} from "@mui/x-date-pickers/DatePicker";
+import {IKit} from "../../models/IKit";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 type DefectItemProps = {
-    defect: IDefectoscopy
+    defect: IDefectoscopy | any
+    create?: boolean
+    exit?: (create: boolean) => void
 }
 
-const DefectItem = ({defect}: DefectItemProps) => {
+const DefectItem = ({defect, create, exit}: DefectItemProps) => {
     const dispatch = useAppDispatch()
     const {tools, organizations} = useAppSelector(state => state.catalogReducer)
+    const {user, error} = useAppSelector(state => state.authReducer)
     const {standarts} = useAppSelector(state => state.defectReducer)
-    const [data, setData] = useState(defect)
-    const [edit, setEdit] = useState(false)
+    const {organizationsTK} = useAppSelector(state => state.kitReducer)
+    const [data, setData] = useState({...defect})
+    const [edit, setEdit] = useState(create)
 
     useEffect(() => {
         if (tools.length === 0) dispatch(getTools())
         if (standarts.length === 0) dispatch(getStandarts())
         if (organizations.length === 0) dispatch(getOrganizations())
+        if (organizationsTK.length === 0) dispatch(getOrganizationsTK())
     }, [])
 
     const onEdit = () => {
-        setEdit(!edit)
-        if (!edit) setData(defect)
+        if (!create) {
+            setData({...defect})
+            setEdit(!edit)
+        } else exit!(false)
     }
+
+    const defaultField = (name: string, value: string, err: boolean) => {
+        if (edit) {
+            return <Paper elevation={0} sx={{width: '100%', height: 'fit-content'}}>
+                <TextField value={value ? value : ''}
+                           error={err}
+                           onChange={e => setData((prev: any) => ({...prev, [name]: e.target.value}))}
+                           variant={'outlined'}
+                           fullWidth
+                           helperText={err && 'Поле не может быть пустым!'}
+                           size={'small'}/>
+            </Paper>
+        }
+        return <Typography>{value}</Typography>
+    }
+
+    const defaultDateField = (name: string, value: string) => {
+        if (edit) {
+            return <LocalizationProvider adapterLocale={ru} dateAdapter={AdapterDateFns}>
+                <DatePicker
+                    value={value ? moment(value) : null}
+                    minDate={moment().subtract(6, 'month').toDate()}
+                    maxDate={moment().add(6, 'month').toDate()}
+                    onChange={(e) => setData((prev: any) => ({...prev, [name]: e}))}
+                    renderInput={(params: any) => <TextField {...params} placeholder={''} size={'small'}/>}
+                />
+            </LocalizationProvider>
+        }
+        return <Typography>{value && moment(value).format('DD-MM-YYYY')}</Typography>
+    }
+
+    const doc_number = useMemo(() => (
+        defaultField('doc_number', data.doc_number, !!(error && !data.doc_number))
+    ), [data.doc_number, edit, error])
+    const location = useMemo(() => (
+        defaultField('location', data.location, false)
+    ), [data.location, edit, error])
+    const application_number = useMemo(() => (
+        defaultField('application_number', data.application_number, false)
+    ), [data.application_number, edit, error])
+    const date_defectoscopy_start = useMemo(() => (
+        defaultDateField('date_defectoscopy_start', data.date_defectoscopy_start)
+    ), [data.date_defectoscopy_start, edit, error])
+    const date_defectoscopy_end = useMemo(() => (
+        defaultDateField('date_defectoscopy_end', data.date_defectoscopy_end)
+    ), [data.date_defectoscopy_end, edit, error])
+
+    const organization = useMemo(() => {
+        if (edit) {
+            const err = !!(error && !data.organization)
+            return <TextField
+                required
+                select
+                value={data.organization ? data.organization : ''}
+                error={err}
+                fullWidth
+                helperText={err && 'Поле не может быть пустым!'}
+                onChange={(e) => (
+                    setData((prev: any) => ({...prev, organization: e.target.value}))
+                )}
+                size={'small'}
+            >
+                {organizations.map((item, index) => (
+                    <MenuItem
+                        key={index}
+                        value={item.id}
+                    >
+                        {item.name}
+                    </MenuItem>
+                ))}
+            </TextField>
+        }
+        return <Typography>{organizations.find(org => org.id === data.organization)?.name}</Typography>
+    }, [data.organization, organizations, edit, error])
+
+    const kit = useMemo(() => {
+        const err = !!(error && !data.kit)
+        if (edit) {
+            return <TextField
+                required
+                select
+                value={data.kit ? data.kit : ''}
+                fullWidth
+                error={err}
+                helperText={err && 'Поле не может быть пустым!'}
+                onChange={(e) => {
+                    setData((prev: any) => ({...prev, kit: e.target.value}))
+                }}
+                size={'small'}
+            >
+                {organizationsTK.map(org => {
+                    const items = org.teams.map((team: any) => {
+                        const sub_items = team.team_kit.kits.map((kit: IKit) => (
+                            <MenuItem
+                                key={kit.id}
+                                value={kit.id}>
+                                {kit.name}
+                            </MenuItem>
+                        ))
+                        return [<ListSubheader key={team.name}>{team.name}</ListSubheader>, sub_items]
+                    })
+                    return [<ListSubheader key={org.name}>{org.name}</ListSubheader>, items]
+                })}
+            </TextField>
+        }
+        let sKit: IKit | undefined;
+        organizationsTK.forEach((org) => org.teams.forEach((team: any) => {
+            team.team_kit.kits.forEach((kit: IKit) => {
+                if (kit.id === data.kit) sKit = kit
+            })
+        }))
+        return <Typography>{sKit?.name}</Typography>
+    }, [data.kit, organizationsTK, edit, error])
+
+    const toolList = useMemo(() => {
+        if (edit) {
+            const err = !!(error && !data.tools)
+            return <FormControl fullWidth error={err}>
+                <Select
+                    multiple
+                    value={data.tools ? data.tools : []}
+                    onChange={(e) => (
+                        setData((prev: any) => ({...prev, tools: e.target.value}))
+                    )}
+                    input={<OutlinedInput size={'small'} fullWidth/>}
+                >
+                    {tools.map((item, index) => (
+                        <MenuItem
+                            key={index}
+                            value={item.id}
+                        >
+                            {item.name}
+                        </MenuItem>
+                    ))}
+                </Select>
+                <FormHelperText hidden={!err}>Поле не может быть пустым!</FormHelperText>
+            </FormControl>
+        }
+        return <Stack spacing={1}>
+            {tools.map((item, index) => data.tools.includes(item.id) &&
+                <Typography key={index}>{item.name}</Typography>)}
+        </Stack>
+    }, [data.tools, tools, edit, error])
+
+    const standartList = useMemo(() => {
+        if (edit) {
+            const err = !!(error && !data.standarts)
+            return <FormControl fullWidth error={err}>
+                <Select
+                    multiple
+                    value={data.standarts ? data.standarts : []}
+                    onChange={(e) => (
+                        setData((prev: any) => ({...prev, standarts: e.target.value}))
+                    )}
+                    input={<OutlinedInput size={'small'} fullWidth/>}
+                >
+                    {standarts.map((item, index) => (
+                        <MenuItem
+                            key={index}
+                            value={item.id}
+                        >
+                            {item.name}
+                        </MenuItem>
+                    ))}
+                </Select>
+                <FormHelperText hidden={!err}>Поле не может быть пустым!</FormHelperText>
+            </FormControl>
+        }
+        return <Stack spacing={1}>
+            {standarts.map((item, index) => data.standarts.includes(item.id) &&
+                <Typography key={index}>{item.name}</Typography>)}
+        </Stack>
+    }, [data.standarts, standarts, edit, error])
+
+    const actionButton = useMemo(() => {
+        if (edit) {
+            return <IconButton title={'Отмена'} onClick={onEdit}>
+                <CancelIcon/>
+            </IconButton>
+        }
+        return <React.Fragment>
+            <IconButton title={'Редактировать'} onClick={onEdit}>
+                <EditIcon/>
+            </IconButton>
+            <IconButton key={'delete'} title={"Удалить"}
+                        onClick={() => dispatch(deleteDefectoscopy(data))}><DeleteIcon/></IconButton>
+        </React.Fragment>
+    }, [edit])
+
 
     return (
         <Paper sx={{maxWidth: '1200px'}}>
@@ -40,58 +254,114 @@ const DefectItem = ({defect}: DefectItemProps) => {
                        position: 'relative'
                    }}>
                 <Box sx={{position: 'absolute', right: '0', top: '0'}}>
-                    <IconButton onClick={onEdit}>{edit ? <CancelIcon/> : <EditIcon/>}</IconButton>
+                    {actionButton}
                 </Box>
                 <Grid container spacing={2} columns={16} alignItems={"center"}>
                     <Grid xs={16} md={5}>
-                        <EditableField title={'Дата создания отчета:'} value={data.date_create}/>
+                        <Stack spacing={1} direction={"row"}>
+                            <Typography color={"text.secondary"}>Дата создания отчета:</Typography>
+                            <Typography>{data.date_create && moment(data.date_create).format('DD-MM-YYYY')}</Typography>
+                        </Stack>
                     </Grid>
                     <Grid xs={16} md={5}>
-                        <EditableField title={'Номер документа:'} value={defect.doc_number} edit={edit}/>
+                        <Stack spacing={1} direction={"row"}>
+                            <Typography color={"text.secondary"}>Номер документа:</Typography>
+                            {doc_number}
+                        </Stack>
                     </Grid>
                     <Grid xs={16} md={5}>
-                        <EditableField title={'Номер заявки:'} value={defect.application_number} edit={edit}/>
+                        <Stack spacing={1} direction={"row"}>
+                            <Typography color={"text.secondary"}>Номер заявки:</Typography>
+                            {application_number}
+                        </Stack>
                     </Grid>
                 </Grid>
             </Paper>
             <Box sx={{p: 1}}>
                 <Grid container spacing={2} alignItems={"center"}>
                     <Grid xs={12} md={6}>
-                        <EditableField title={'Организация:'} value={defect.organization} list={organizations}
-                                       edit={edit}/>
+                        <Stack spacing={1} direction={"row"}>
+                            <Typography color={"text.secondary"}>Организация:</Typography>
+                            {organization}
+                        </Stack>
                     </Grid>
                     <Grid xs={12} md={6}>
-                        <EditableField title={'Место проведения:'} value={defect.location} edit={edit}/>
+                        <Stack spacing={1} direction={"row"}>
+                            <Typography color={"text.secondary"}>Место проведения:</Typography>
+                            {location}
+                        </Stack>
                     </Grid>
                     <Grid xs={12} md={6}>
-                        <EditableField title={'Инструмент:'} value={defect.tools} list={tools} edit={edit}/>
+                        <Stack spacing={1} direction={"row"}>
+                            <Typography color={"text.secondary"}>Инструмент:</Typography>
+                            {toolList}
+                        </Stack>
                     </Grid>
                     <Grid xs={12} md={6}>
-                        <EditableField title={'Стандарты:'} value={defect.standarts} list={standarts} edit={edit}/>
+                        <Stack spacing={1} direction={"row"}>
+                            <Typography color={"text.secondary"}>Стандарты:</Typography>
+                            {standartList}
+                        </Stack>
                     </Grid>
                     <Grid xs={12} md={12}>
                         <Divider variant="middle"/>
                     </Grid>
-                    <Grid xs={12} md={4}>
-                        <EditableField title={'Количество в комплекте:'} value={defect.kit_count}/>
+                    <Grid xs={12} md={6}>
+                        <Stack spacing={1} direction={"row"}>
+                            <Typography color={"text.secondary"}>Комплект:</Typography>
+                            {kit}
+                        </Stack>
                     </Grid>
-                    <Grid xs={12} md={4}>
-                        <EditableField title={'Количество проверенных:'} value={defect.pipe_count} edit={edit}/>
-                    </Grid>
-                    <Grid xs={12} md={4}>
-                        <EditableField title={'Количество лома:'} value={defect.lom_count} edit={edit}/>
+                    <Grid xs={12} md={6}>
+                        <Stack spacing={1}>
+                            <Stack spacing={1} direction={"row"}>
+                                <Typography color={"text.secondary"}>Количество труб в комплекте:</Typography>
+                                <Typography>{data.kit_count}</Typography>
+                            </Stack>
+                            <Stack spacing={1} direction={"row"}>
+                                <Typography color={"text.secondary"}>Количество проверенных труб:</Typography>
+                                <Typography>{data.pipe_count}</Typography>
+                            </Stack>
+                            <Stack spacing={1} direction={"row"}>
+                                <Typography color={"text.secondary"}>Количество лома:</Typography>
+                                <Typography>{data.lom_count}</Typography>
+                            </Stack>
+                        </Stack>
                     </Grid>
                     <Grid xs={12} md={12}>
                         <Divider variant="middle"/>
                     </Grid>
                     <Grid xs={12} md={6}>
-                        <EditableField title={'Дата начала дефектоскопии:'} value={defect.date_defectoscopy_start}
-                                       edit={edit}/>
+                        <Stack spacing={1} direction={"row"}>
+                            <Typography color={"text.secondary"}>Дата начала дефектоскопии:</Typography>
+                            {date_defectoscopy_start}
+                        </Stack>
                     </Grid>
                     <Grid xs={12} md={6}>
-                        <EditableField title={'Дата окончания дефектоскопии:'} value={defect.date_defectoscopy_end}
-                                       edit={edit}/>
+                        <Stack spacing={1} direction={"row"}>
+                            <Typography color={"text.secondary"}>Дата окончания дефектоскопии:</Typography>
+                            {date_defectoscopy_end}
+                        </Stack>
                     </Grid>
+                    {edit && <React.Fragment>
+                        <Grid xs={12} md={12}>
+                            <Divider variant="middle"/>
+                        </Grid>
+                        <Grid xs={12} md={12} display={'flex'} justifyContent={'end'}>
+                            <Button sx={{height: '40px'}} variant={'contained'}
+                                    onClick={() => {
+                                        if (create) {
+                                            data.defectoscopist = user!.id
+                                            dispatch(createDefectoscopy(data)).then(val => val.meta.requestStatus !== 'rejected' && exit!(false))
+
+                                        } else {
+                                            dispatch(updateDefectoscopy(data)).then((val) => val.meta.requestStatus !== 'rejected' && setEdit(false))
+                                        }
+                                    }}>
+                                {create ? 'Создать' : 'Изменить'}
+                            </Button>
+                        </Grid>
+                    </React.Fragment>}
                 </Grid>
             </Box>
         </Paper>
