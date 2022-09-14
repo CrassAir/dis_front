@@ -56,13 +56,6 @@ const DefectItem = ({defect, create, exit}: DefectItemProps) => {
     const [edit, setEdit] = useState(create)
     const [menuAnchor, setMenuAnchor] = useState<HTMLButtonElement | null>(null)
 
-    useEffect(() => {
-        if (tools.length === 0) dispatch(getTools())
-        if (standarts.length === 0) dispatch(getStandarts())
-        if (organizations.length === 0) dispatch(getOrganizations())
-        if (organizationsTK.length === 0) dispatch(getOrganizationsTK())
-    }, [])
-
     const onEdit = () => {
         if (!create) {
             setData({...defect})
@@ -336,13 +329,13 @@ const DefectItem = ({defect, create, exit}: DefectItemProps) => {
                     {actionButton}
                 </Box>
                 <Grid container spacing={2} columns={16} alignItems={"center"}>
-                    <Grid xs={16} md={4}>
+                    <Grid xs={16} md={5}>
                         <Stack spacing={1} direction={"row"}>
                             <Typography color={"text.secondary"}>Дата создания отчета:</Typography>
                             <Typography>{data.date_create && moment(data.date_create).format('DD-MM-YYYY')}</Typography>
                         </Stack>
                     </Grid>
-                    <Grid xs={16} md={4}>
+                    <Grid xs={16} md={5}>
                         <Stack spacing={1} direction={"row"}>
                             <Typography color={"text.secondary"}>Номер документа:</Typography>
                             {doc_number}

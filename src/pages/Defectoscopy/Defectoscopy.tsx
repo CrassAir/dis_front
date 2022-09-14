@@ -1,25 +1,32 @@
 import React, {useEffect, useState} from 'react';
 import {useAppDispatch, useAppSelector} from "../../hooks/redux";
-import {getDefectoscopy} from "../../store/actions/defect";
+import {getDefectoscopy, getStandarts} from "../../store/actions/defect";
 import {Box, Button, Collapse, LinearProgress, Stack} from "@mui/material";
 import DefectItem from "./DefectItem";
 import Grid from "@mui/material/Unstable_Grid2";
 import AddBoxIcon from "@mui/icons-material/AddBox";
 import {TransitionGroup} from "react-transition-group";
 import DefectPipeTable from "./DefectPipeTable";
-import {getMoving} from "../../store/actions/kits";
 import InfiniteScroll from 'react-infinite-scroller';
+import {getOrganizations, getTools} from "../../store/actions/catalog";
+import {getOrganizationsTK} from "../../store/actions/kits";
 
 
 const Defectoscopy = () => {
     const dispatch = useAppDispatch()
-    const {defectoscopy} = useAppSelector(state => state.defectReducer)
+    const {defectoscopy, standarts} = useAppSelector(state => state.defectReducer)
+    const {tools, organizations} = useAppSelector(state => state.catalogReducer)
+    const {organizationsTK} = useAppSelector(state => state.kitReducer)
     const {isLoading} = useAppSelector(state => state.authReducer)
     const [create, setCreate] = useState(false)
     const [stopLoad, setStopLoad] = useState(true)
 
     useEffect(() => {
         dispatch(getDefectoscopy({}))
+        if (tools.length === 0) dispatch(getTools())
+        if (standarts.length === 0)dispatch(getStandarts())
+        if (organizations.length === 0)dispatch(getOrganizations())
+        if (organizationsTK.length === 0)dispatch(getOrganizationsTK())
     }, [])
 
     useEffect(() => {

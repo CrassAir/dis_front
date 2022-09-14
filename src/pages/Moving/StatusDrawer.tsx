@@ -1,4 +1,4 @@
-import React, {useMemo} from 'react';
+import React, {useEffect, useMemo, useState} from 'react';
 import {Box, Divider, Drawer, IconButton, LinearProgress, Stack, Typography} from "@mui/material";
 import {clearStatusList} from "../../store/reducers/KitReducer";
 import CloseIcon from "@mui/icons-material/Close";
@@ -11,6 +11,12 @@ import InfiniteScroll from "react-infinite-scroller";
 const StatusDrawer = () => {
     const dispatch = useAppDispatch()
     const {statusList} = useAppSelector(state => state.kitReducer)
+    const {isLoading} = useAppSelector(state => state.authReducer)
+    const [stopLoad, setStopLoad] = useState(true)
+
+    useEffect(() => {
+        setTimeout(() => setStopLoad(false), 500)
+    }, [statusList])
 
     const visibilityBox = useMemo(() => document.querySelector('header')?.style.visibility !== 'hidden', [statusList])
 
@@ -69,7 +75,12 @@ const StatusDrawer = () => {
                 </Box>
                 <InfiniteScroll
                     pageStart={0}
-                    loadMore={() => dispatch(getStatus(statusList))}
+                    loadMore={() => {
+                        if (!isLoading && !stopLoad) {
+                            setStopLoad(true)
+                            dispatch(getStatus(statusList))
+                        }
+                    }}
                     hasMore={!!statusList.next}
                     loader={<LinearProgress key={'loading'} sx={{height: 10}} color={'secondary'}/>}
                     useWindow={false}

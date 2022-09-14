@@ -36,7 +36,7 @@ const OrganizationsTeamKits = () => {
 
 
     useEffect(() => {
-        if (organizationsTK.length === 0) dispatch(getOrganizationsTK())
+        dispatch(getOrganizationsTK())
     }, [])
 
     const TeamFormDialog = useMemo((editData: ITeam | null = null) => {

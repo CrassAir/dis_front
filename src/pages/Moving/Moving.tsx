@@ -36,7 +36,7 @@ const Moving = () => {
     const [stopLoad, setStopLoad] = useState(true)
 
     useEffect(() => {
-        if (!movingList.count) dispatch(getMoving({id: id}))
+        dispatch(getMoving({id: id}))
         window.scrollTo(0, 0)
     }, [])
 
@@ -109,6 +109,7 @@ const Moving = () => {
                     hasMore={!!movingList.next}
                     loader={<LinearProgress key={'loading'} sx={{height: 10}} color={'secondary'}/>}
                     threshold={100}
+                    useWindow={false}
                 >
                     <Stack spacing={2}>
                         <TransitionGroup>
