@@ -34,27 +34,27 @@ const Parameter = () => {
             validate: rowData => !!rowData.pipe_type,
         },
         {
-            title: 'Номинальный диаметр трубы', field: 'nominal_pipe_diameter', type: 'numeric',
+            title: 'Номинальный диаметр трубы', field: 'nominal_pipe_diameter', type: 'numeric', align: 'center',
             validate: rowData => !!rowData.nominal_pipe_diameter && isFinite(rowData.nominal_pipe_diameter),
         },
         {
-            title: 'Внутренний диаметр трубы', field: 'pipe_inner_diameter', type: 'numeric',
+            title: 'Внутренний диаметр трубы', field: 'pipe_inner_diameter', type: 'numeric', align: 'center',
             validate: rowData => !!rowData.pipe_inner_diameter && isFinite(rowData.pipe_inner_diameter),
         },
         {
-            title: 'Вес, фунтов на фут', field: 'weight_foot', type: 'numeric',
+            title: 'Вес, фунтов на фут', field: 'weight_foot', type: 'numeric', align: 'center',
             validate: rowData => !!rowData.weight_foot && isFinite(rowData.weight_foot),
         },
         {
-            title: 'Вес в кг/м', field: 'weight', type: 'numeric',
+            title: 'Вес в кг/м', field: 'weight', type: 'numeric', align: 'center',
             validate: rowData => !!rowData.weight && isFinite(rowData.weight),
         },
         {
-            title: 'Толщина стенки в мм', field: 'wall_thickness', type: 'numeric',
+            title: 'Толщина стенки в мм', field: 'wall_thickness', type: 'numeric', align: 'center',
             validate: rowData => !!rowData.wall_thickness && isFinite(rowData.wall_thickness),
         },
         {
-            title: 'Длина одного элемента в м', field: 'length', type: 'numeric',
+            title: 'Длина одного элемента в м', field: 'length', type: 'numeric', align: 'center',
             validate: rowData => !!rowData.length && isFinite(rowData.length),
         },
         {
@@ -89,11 +89,11 @@ const Parameter = () => {
             validate: rowData => !!rowData.lock_thread,
         },
         {
-            title: 'Наружний диаметр замка', field: 'lock_outside_diameter', type: 'numeric',
+            title: 'Наружний диаметр замка', field: 'lock_outside_diameter', type: 'numeric', align: 'center',
             validate: rowData => !!rowData.lock_outside_diameter && isFinite(rowData.lock_outside_diameter),
         },
         {
-            title: 'Внутренний диаметр замка', field: 'lock_inner_diameter', type: 'numeric',
+            title: 'Внутренний диаметр замка', field: 'lock_inner_diameter', type: 'numeric', align: 'center',
             validate: rowData => !!rowData.lock_inner_diameter && isFinite(rowData.lock_inner_diameter),
         },
 

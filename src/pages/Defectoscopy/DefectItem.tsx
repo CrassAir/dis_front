@@ -1,11 +1,11 @@
-import React, {useEffect, useMemo, useState} from 'react';
+import React, {ChangeEventHandler, useEffect, useMemo, useState} from 'react';
 import {useAppDispatch, useAppSelector} from "../../hooks/redux";
 import {IDefectoscopy} from "../../models/IDefectoscopy";
 import {
     Box, Button,
     Divider,
     FormControl, FormHelperText,
-    IconButton, ListSubheader, MenuItem,
+    IconButton, ListItemIcon, ListItemText, ListSubheader, Menu, MenuItem,
     OutlinedInput,
     Paper,
     Select,
@@ -14,7 +14,13 @@ import {
     Typography
 } from "@mui/material";
 import {getOrganizations, getTools} from "../../store/actions/catalog";
-import {createDefectoscopy, deleteDefectoscopy, getStandarts, updateDefectoscopy} from "../../store/actions/defect";
+import {
+    createDefectoscopy,
+    deleteDefectoscopy,
+    getPipes,
+    getStandarts,
+    updateDefectoscopy
+} from "../../store/actions/defect";
 import Grid from "@mui/material/Unstable_Grid2";
 import EditIcon from '@mui/icons-material/Edit';
 import CancelIcon from '@mui/icons-material/Cancel';
@@ -26,6 +32,12 @@ import {AdapterDateFns} from "@mui/x-date-pickers/AdapterDateFns";
 import {DatePicker} from "@mui/x-date-pickers/DatePicker";
 import {IKit} from "../../models/IKit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import ArticleIcon from '@mui/icons-material/Article';
+import UploadFileIcon from '@mui/icons-material/UploadFile';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import FileDownloadIcon from '@mui/icons-material/FileDownload';
+import {apiError, uploadDefectoscopyFile} from "../../api/api";
+import {useSnackbar} from "notistack";
 
 type DefectItemProps = {
     defect: IDefectoscopy | any
@@ -35,12 +47,14 @@ type DefectItemProps = {
 
 const DefectItem = ({defect, create, exit}: DefectItemProps) => {
     const dispatch = useAppDispatch()
+    const {enqueueSnackbar} = useSnackbar()
     const {tools, organizations} = useAppSelector(state => state.catalogReducer)
     const {user, error} = useAppSelector(state => state.authReducer)
     const {standarts} = useAppSelector(state => state.defectReducer)
     const {organizationsTK} = useAppSelector(state => state.kitReducer)
     const [data, setData] = useState({...defect})
     const [edit, setEdit] = useState(create)
+    const [menuAnchor, setMenuAnchor] = useState<HTMLButtonElement | null>(null)
 
     useEffect(() => {
         if (tools.length === 0) dispatch(getTools())
@@ -53,6 +67,7 @@ const DefectItem = ({defect, create, exit}: DefectItemProps) => {
         if (!create) {
             setData({...defect})
             setEdit(!edit)
+            setMenuAnchor(null)
         } else exit!(false)
     }
 
@@ -229,19 +244,77 @@ const DefectItem = ({defect, create, exit}: DefectItemProps) => {
         </Stack>
     }, [data.standarts, standarts, edit, error])
 
+    const handleUpload = (e: any) => {
+        if (e.target?.files.length > 0) {
+            const data = uploadDefectoscopyFile(e.target.files[0])
+            data.then(_ => enqueueSnackbar('Отчет успешно загружен', {variant: 'success'}))
+                .catch(err => enqueueSnackbar(apiError(err).message, {variant: 'error'}))
+        }
+        setMenuAnchor(null)
+    }
+
+    const headMenu = useMemo(() => (
+        <Menu
+            anchorEl={menuAnchor}
+            open={!!menuAnchor}
+            onClose={() => setMenuAnchor(null)}
+        >
+            <MenuItem disabled={data.pipe_count === 0} onClick={() => {
+                dispatch(getPipes(data))
+                setMenuAnchor(null)
+            }}>
+                <ListItemIcon>
+                    <ArticleIcon/>
+                </ListItemIcon>
+                <ListItemText>Детально</ListItemText>
+            </MenuItem>
+            <MenuItem component="label">
+                <input
+                    hidden
+                    id={'report-upload'}
+                    accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                    onChange={handleUpload}
+                    type="file"
+                />
+                <ListItemIcon>
+                    <UploadFileIcon/>
+                </ListItemIcon>
+                <ListItemText>Загрузить отчет</ListItemText>
+            </MenuItem>
+            <MenuItem onClick={() => {
+                setMenuAnchor(null)
+            }}>
+                <ListItemIcon>
+                    <FileDownloadIcon/>
+                </ListItemIcon>
+                <ListItemText>Скачать отчет</ListItemText>
+            </MenuItem>
+            <MenuItem onClick={onEdit}>
+                <ListItemIcon>
+                    <EditIcon/>
+                </ListItemIcon>
+                <ListItemText>Редактировать</ListItemText>
+            </MenuItem>
+            <MenuItem onClick={() => {
+                dispatch(deleteDefectoscopy(data))
+                setMenuAnchor(null)
+            }}>
+                <ListItemIcon>
+                    <DeleteIcon/>
+                </ListItemIcon>
+                <ListItemText>Удалить</ListItemText>
+            </MenuItem>
+        </Menu>
+    ), [menuAnchor])
+
     const actionButton = useMemo(() => {
         if (edit) {
             return <IconButton title={'Отмена'} onClick={onEdit}>
                 <CancelIcon/>
             </IconButton>
         }
-        return <React.Fragment>
-            <IconButton title={'Редактировать'} onClick={onEdit}>
-                <EditIcon/>
-            </IconButton>
-            <IconButton key={'delete'} title={"Удалить"}
-                        onClick={() => dispatch(deleteDefectoscopy(data))}><DeleteIcon/></IconButton>
-        </React.Fragment>
+        return <IconButton key={'detail'} title={"Детально"}
+                           onClick={(e) => setMenuAnchor(e.currentTarget)}><MoreVertIcon/></IconButton>
     }, [edit])
 
 
@@ -251,25 +324,26 @@ const DefectItem = ({defect, create, exit}: DefectItemProps) => {
                    sx={{
                        backgroundColor: data.date_defectoscopy_end ? 'success.light' : 'info.light',
                        p: 1,
-                       position: 'relative'
+                       position: 'relative',
+                       alignItems: 'inherit'
                    }}>
                 <Box sx={{position: 'absolute', right: '0', top: '0'}}>
                     {actionButton}
                 </Box>
                 <Grid container spacing={2} columns={16} alignItems={"center"}>
-                    <Grid xs={16} md={5}>
+                    <Grid xs={16} md={4}>
                         <Stack spacing={1} direction={"row"}>
                             <Typography color={"text.secondary"}>Дата создания отчета:</Typography>
                             <Typography>{data.date_create && moment(data.date_create).format('DD-MM-YYYY')}</Typography>
                         </Stack>
                     </Grid>
-                    <Grid xs={16} md={5}>
+                    <Grid xs={16} md={4}>
                         <Stack spacing={1} direction={"row"}>
                             <Typography color={"text.secondary"}>Номер документа:</Typography>
                             {doc_number}
                         </Stack>
                     </Grid>
-                    <Grid xs={16} md={5}>
+                    <Grid xs={16} md={'auto'}>
                         <Stack spacing={1} direction={"row"}>
                             <Typography color={"text.secondary"}>Номер заявки:</Typography>
                             {application_number}
@@ -364,6 +438,7 @@ const DefectItem = ({defect, create, exit}: DefectItemProps) => {
                     </React.Fragment>}
                 </Grid>
             </Box>
+            {headMenu}
         </Paper>
     );
 };

@@ -84,18 +84,18 @@ export const defaultNavList: INavItem[] = [
         component: <Moving/>
     },
     {
-        name: 'Справочник',
-        icon: <LibraryBooksIcon/>,
-        path: '/directory',
-        validate: 'directory',
-        component: <Catalog/>
-    },
-    {
         name: 'Дефектоскопия',
         icon: <ContentPasteIcon/>,
         path: '/defectoscopy',
         validate: 'defectoscopy',
         component: <Defectoscopy/>
+    },
+    {
+        name: 'Справочник',
+        icon: <LibraryBooksIcon/>,
+        path: '/directory',
+        validate: 'directory',
+        component: <Catalog/>
     },
 ]
 
@@ -107,7 +107,7 @@ const App: React.FC = () => {
 
     useEffect(() => {
         if (error?.message && error?.code !== 401) {
-            enqueueSnackbar(error.message, {variant: 'error'});
+            enqueueSnackbar(error.message, {variant: 'error'})
         }
     }, [error])
 

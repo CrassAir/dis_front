@@ -6,6 +6,7 @@ import DefectItem from "./DefectItem";
 import Grid from "@mui/material/Unstable_Grid2";
 import AddBoxIcon from "@mui/icons-material/AddBox";
 import {TransitionGroup} from "react-transition-group";
+import DefectPipeTable from "./DefectPipeTable";
 
 
 const Defectoscopy = () => {
@@ -41,6 +42,7 @@ const Defectoscopy = () => {
                     </Stack>
                 </Grid>
             </Grid>
+            <DefectPipeTable/>
         </Box>
     );
 };

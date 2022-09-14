@@ -20,6 +20,16 @@ export const apiError = (e: Error | AxiosError) => {
     }
     return {code: 0, message: e.message}
 }
+
+export const uploadDefectoscopyFile = (file: File) => {
+    const header = {
+        headers: {
+            'Content-Type': 'multipart/form-data'
+        }
+    }
+    return api.post(apiUrl + 'technological-operations/upload_file/', file, header)
+}
+
 // api.interceptors.request.use((config) => {
 //     config.headers["X-CSRFToken"] = Cookies.get("csrftoken");
 //     // console.log("api.interceptors.request: ", config.headers);

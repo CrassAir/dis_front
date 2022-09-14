@@ -86,7 +86,7 @@ const Kits = ({teamKit}: KitsProps) => {
             },
             {
                 title: 'Количество', field: 'amount', type: 'numeric',
-                validate: rowData => !!rowData.amount,
+                validate: rowData => !!rowData.amount, align: 'center'
             },
             {
                 title: 'Класс труб', field: 'pipe_class',
@@ -118,11 +118,37 @@ const Kits = ({teamKit}: KitsProps) => {
         [parameters, manufacturers]
     )
 
-    let options = useMemo(() => ({
+    const options = useMemo(() => ({
         pageSize: 5,
         draggable: false,
         rowStyle: (rowData: IKit) => colorCell[rowData.general_state]
-    }), [])
+    }), [data])
+
+    const actions = useMemo(() => ([
+        {
+            icon: () => <MoreTimeIcon/>,
+            tooltip: 'Наработка',
+            isFreeAction: true,
+            onClick: () => dispatch(getOperatingTime({team_kit: teamKit.id}))
+        },
+        (rowData: any) => ({
+            icon: () => [null, 'create', 'sent'].includes(rowData.last_status_name) ? <LocalShippingIcon/> :
+                <ReplyIcon/>, //: <LocalShippingOutlinedIcon/>,
+            tooltip: rowData.last_status_name ? moving_status[rowData.last_status_name as keyof typeof moving_status].status : 'Созадать перемещение',
+            disabled: ['sent', 'back'].includes(rowData.last_status_name),
+            hidden: teamKit?.name !== user!.team_name,
+            onClick: (event: any) => {
+                if (['received', 'not_received'].includes(rowData.last_status_name)) {
+                    dispatch(changeStatusMoving({
+                        id: rowData.last_moving_id,
+                        forward: true
+                    })).then(() => navigation('delivery'))
+                } else {
+                    setOpenMoving(rowData)
+                }
+            }
+        })
+    ]), [data])
 
     useEffect(() => {
         if (kits) setData(kits.map(kit => ({...kit, tableData: {}})))
@@ -138,37 +164,7 @@ const Kits = ({teamKit}: KitsProps) => {
                 style={{display: 'grid'}}
                 columns={columns}
                 data={data}
-                actions={[
-                    {
-                        icon: () => <MoreTimeIcon/>,
-                        tooltip: 'Наработка',
-                        isFreeAction: true,
-                        onClick: () => dispatch(getOperatingTime({team_kit: teamKit.id}))
-                    },
-                    // rowData => ({
-                    //     icon: () => <ArticleIcon/>,
-                    //     tooltip: 'Трубы в комплекте',
-                    //     disabled: rowData.pipes?.length === 0,
-                    //     onClick: (event, rowData) => alert("You saved")
-                    // }),
-                    rowData => ({
-                        icon: () => [null, 'create', 'sent'].includes(rowData.last_status_name) ? <LocalShippingIcon/> :
-                            <ReplyIcon/>, //: <LocalShippingOutlinedIcon/>,
-                        tooltip: rowData.last_status_name ? moving_status[rowData.last_status_name as keyof typeof moving_status].status : 'Созадать перемещение',
-                        disabled: ['sent', 'back'].includes(rowData.last_status_name),
-                        hidden: teamKit?.name !== user!.team_name,
-                        onClick: (event) => {
-                            if (['received', 'not_received'].includes(rowData.last_status_name)) {
-                                dispatch(changeStatusMoving({
-                                    id: rowData.last_moving_id,
-                                    forward: true
-                                })).then(() => navigation('delivery'))
-                            } else {
-                                setOpenMoving(rowData)
-                            }
-                        }
-                    })
-                ]}
+                actions={actions}
                 editable={edit ? {
                     onRowAdd: newData => {
                         if (file) newData.passport = file
