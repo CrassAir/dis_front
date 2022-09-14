@@ -1,7 +1,7 @@
 import React, {useEffect, useMemo, useState} from 'react';
 import {
     Box,
-    Button, CircularProgress,
+    Button, CircularProgress, Collapse, LinearProgress,
     MenuItem,
     Paper,
     Stack,
@@ -22,6 +22,7 @@ import {moving_status} from "../../models/IKit";
 import StatusDrawer from "./StatusDrawer";
 import InfiniteScroll from 'react-infinite-scroller';
 import {useLocation, useNavigate, useParams} from "react-router-dom";
+import {TransitionGroup} from "react-transition-group";
 
 const Moving = () => {
     const [selectDate, setSelectDate] = useState(moment())
@@ -31,6 +32,8 @@ const Moving = () => {
     const {id} = useParams()
     const dispatch = useAppDispatch()
     const {movingList} = useAppSelector(state => state.kitReducer)
+    const {isLoading} = useAppSelector(state => state.authReducer)
+    const [stopLoad, setStopLoad] = useState(true)
 
     useEffect(() => {
         if (!movingList.count) dispatch(getMoving({id: id}))
@@ -42,7 +45,13 @@ const Moving = () => {
     ), [editData])
 
     const movingItems = useMemo(() => {
-        return movingList.results.map(item => <MovingItem key={item.id} moving={item}/>)
+        return movingList.results.map(item => <Collapse key={item.id}>
+            <MovingItem key={item.id} moving={item}/>
+        </Collapse>)
+    }, [movingList])
+
+    useEffect(() => {
+        setTimeout(() => setStopLoad(false), 500)
     }, [movingList])
 
     return (
@@ -91,12 +100,20 @@ const Moving = () => {
                 </Grid>
                 <InfiniteScroll
                     pageStart={0}
-                    loadMore={() => dispatch(getMoving(movingList))}
+                    loadMore={() => {
+                        if (!isLoading && !stopLoad) {
+                            setStopLoad(true)
+                            dispatch(getMoving(movingList))
+                        }
+                    }}
                     hasMore={!!movingList.next}
-                    loader={<CircularProgress/>}
+                    loader={<LinearProgress key={'loading'} sx={{height: 10}} color={'secondary'}/>}
+                    threshold={100}
                 >
                     <Stack spacing={2}>
-                        {movingItems}
+                        <TransitionGroup>
+                            {movingItems}
+                        </TransitionGroup>
                     </Stack>
                 </InfiniteScroll>
             </Stack>

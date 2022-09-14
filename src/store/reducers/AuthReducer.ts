@@ -2,8 +2,9 @@ import {AnyAction, createSlice, isFulfilled, isPending, isRejected} from "@redux
 import {checkToken, getNotifications, login, logout} from "../actions/auth";
 import {IAccount, INotifications} from "../../models/IAuth";
 import api, {IApiError} from "../../api/api";
-import {changeNavListOnValidate} from "../../pages/utils";
+import {changeNavListOnValidate, updatePaginationList} from "../../pages/utils";
 import {INavItem, defaultNavList} from "../../App";
+import {IPagination} from "../../models/IKit";
 
 
 interface IAuthState {
@@ -13,7 +14,7 @@ interface IAuthState {
     isLoading: boolean
     error: IApiError | null
     interceptor: number
-    notifications: INotifications[]
+    notifications: IPagination<INotifications[]>
 }
 
 const initialState: IAuthState = {
@@ -23,7 +24,7 @@ const initialState: IAuthState = {
     isLoading: false,
     error: null,
     interceptor: 0,
-    notifications: [],
+    notifications: {count: 0, next: null, previous: null, results: []},
 }
 
 export const authSlice = createSlice({
@@ -54,7 +55,7 @@ export const authSlice = createSlice({
             state.error = null
         })
         builder.addCase(getNotifications.fulfilled, (state, {payload}) => {
-            state.notifications = payload
+            state.notifications = updatePaginationList(state.notifications, payload)
             state.isLoading = false
             state.error = null
         })

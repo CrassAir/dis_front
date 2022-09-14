@@ -9,7 +9,7 @@ const HomePage: React.FC = () => {
     const dispatch = useAppDispatch()
 
     useEffect(() => {
-        dispatch(getNotifications())
+        dispatch(getNotifications({}))
     }, [])
 
     return <div>
