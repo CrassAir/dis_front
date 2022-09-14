@@ -3,13 +3,15 @@ import api, {apiError} from "../../api/api";
 import {apiUrl} from "../../api/urls";
 import {AxiosError} from "axios";
 import {IConventions, IDefectoscopy, IPipe, IStandarts} from "../../models/IDefectoscopy";
+import {IPagination} from "../../models/IKit";
 
 
 export const getDefectoscopy = createAsyncThunk(
     'getDefectoscopy',
-    async (_, thunkAPI) => {
+    async (query: any, thunkAPI) => {
         try {
-            const {data} = await api.get<IDefectoscopy[]>(apiUrl + 'defectoscopy_report/')
+            const url = query?.next ? query.next : apiUrl + 'defectoscopy_report/'
+            const {data} = await api.get<IPagination<IDefectoscopy[]>>(url)
             return data
         } catch (e) {
             return thunkAPI.rejectWithValue(apiError(e as Error | AxiosError))

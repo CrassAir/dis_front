@@ -1,7 +1,7 @@
 import React, {useEffect, useMemo, useState} from 'react';
 import {
     Box,
-    Button, CircularProgress, Collapse, LinearProgress,
+    Button, Collapse, LinearProgress,
     MenuItem,
     Paper,
     Stack,

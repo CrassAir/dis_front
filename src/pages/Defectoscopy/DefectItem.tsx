@@ -165,12 +165,17 @@ const DefectItem = ({defect, create, exit}: DefectItemProps) => {
                         const sub_items = team.team_kit.kits.map((kit: IKit) => (
                             <MenuItem
                                 key={kit.id}
+                                onClick={() => setData((prev: any) => ({...prev, organization: org.id}))}
                                 value={kit.id}>
                                 {kit.name}
                             </MenuItem>
                         ))
                         return [<ListSubheader key={team.name}>{team.name}</ListSubheader>, sub_items]
                     })
+                    if (data.organization) {
+                        if (org.id === data.organization) return items
+                        return null
+                    }
                     return [<ListSubheader key={org.name}>{org.name}</ListSubheader>, items]
                 })}
             </TextField>
@@ -182,7 +187,7 @@ const DefectItem = ({defect, create, exit}: DefectItemProps) => {
             })
         }))
         return <Typography>{sKit?.name}</Typography>
-    }, [data.kit, organizationsTK, edit, error])
+    }, [data.kit, data.organization, organizationsTK, edit, error])
 
     const toolList = useMemo(() => {
         if (edit) {

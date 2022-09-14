@@ -8,10 +8,11 @@ import {
     getStandarts, getConventions,
     updateDefectoscopy
 } from "../actions/defect";
+import {IPagination} from "../../models/IKit";
 
 
 interface IKitState {
-    defectoscopy: IDefectoscopy[]
+    defectoscopy: IPagination<IDefectoscopy[]>
     standarts: IStandarts[]
     report: IDefectoscopy | null
     conventions: IConventions[]
@@ -20,7 +21,7 @@ interface IKitState {
 }
 
 const initialState: IKitState = {
-    defectoscopy: [],
+    defectoscopy: {count: 0, next: null, previous: null, results: []},
     standarts: [],
     report: null,
     conventions: [],
@@ -38,7 +39,7 @@ export const defectSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder.addCase(getDefectoscopy.fulfilled, (state, {payload}) => {
-            state.defectoscopy = payload
+            state.defectoscopy = updatePaginationList(state.defectoscopy, payload)
         })
         builder.addCase(getStandarts.fulfilled, (state, {payload}) => {
             state.standarts = payload
@@ -51,13 +52,13 @@ export const defectSlice = createSlice({
             state.conventions = payload
         })
         builder.addCase(createDefectoscopy.fulfilled, (state, {payload}) => {
-            state.defectoscopy = [payload, ...state.defectoscopy]
+            state.defectoscopy.results = [payload, ...state.defectoscopy.results]
         })
         builder.addCase(updateDefectoscopy.fulfilled, (state, {payload}) => {
-            state.defectoscopy = updateElementInList(state.defectoscopy, payload)
+            state.defectoscopy.results = updateElementInList(state.defectoscopy.results, payload)
         })
         builder.addCase(deleteDefectoscopy.fulfilled, (state, {payload}) => {
-            state.defectoscopy = deleteElementFromList(state.defectoscopy, payload)
+            state.defectoscopy.results = deleteElementFromList(state.defectoscopy.results, payload)
         })
     }
 })
