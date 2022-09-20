@@ -1,13 +1,21 @@
 import {createSlice} from "@reduxjs/toolkit";
-import {IMoving, IOperationTime, IOrganizationTK, IPagination, IStatusMoving, ITeamKit} from "../../models/IKit";
+import {
+    IMoving,
+    IOperationTime,
+    IOrganizationTK,
+    IPagination,
+    IRepair,
+    IStatusMoving,
+    ITeamKit
+} from "../../models/IKit";
 import {
     changeStatusMoving,
-    createMoving, createOperatingTime,
+    createMoving, createOperatingTime, createRepair,
     createTeam,
-    deleteMoving, deleteOperatingTime,
+    deleteMoving, deleteOperatingTime, deleteRepair,
     getMoving, getOperatingTime,
-    getOrganizationsTK, getStatus,
-    updateMoving
+    getOrganizationsTK, getRepairs, getStatus,
+    updateMoving, updateRepair
 } from "../actions/kits";
 import {deleteElementFromList, updateElementInList, updatePaginationList} from "../../pages/utils";
 
@@ -15,6 +23,7 @@ import {deleteElementFromList, updateElementInList, updatePaginationList} from "
 interface IKitState {
     teamKits: ITeamKit[]
     organizationsTK: IOrganizationTK[]
+    repairs: IRepair[]
     movingList: IPagination<IMoving[]>
     statusList: IPagination<IStatusMoving[]>
     operatingTimeList: IPagination<IOperationTime[]>
@@ -24,6 +33,7 @@ interface IKitState {
 const initialState: IKitState = {
     teamKits: [],
     organizationsTK: [],
+    repairs: [],
     movingList: {count: 0, next: null, previous: null, results: []},
     statusList: {count: 0, next: null, previous: null, results: []},
     operatingTimeList: {count: 0, next: null, previous: null, results: []},
@@ -62,6 +72,9 @@ export const kitSlice = createSlice({
             state.operatingTimeList = updatePaginationList(state.operatingTimeList, payload.data)
             if (!payload.data.previous) state.operatingTimeTeamKit = payload.team_kit
         })
+        builder.addCase(getRepairs.fulfilled, (state, {payload}) => {
+            state.repairs = payload
+        })
         builder.addCase(deleteOperatingTime.fulfilled, (state, {payload}) => {
             state.operatingTimeList.results = deleteElementFromList(state.operatingTimeList.results, payload)
         })
@@ -87,6 +100,15 @@ export const kitSlice = createSlice({
                 }
                 return org
             })
+        })
+        builder.addCase(createRepair.fulfilled, (state, {payload}) => {
+            state.repairs = [payload, ...state.repairs]
+        })
+        builder.addCase(updateRepair.fulfilled, (state, {payload}) => {
+            state.repairs = updateElementInList(state.repairs, payload)
+        })
+        builder.addCase(deleteRepair.fulfilled, (state, {payload}) => {
+            state.repairs = deleteElementFromList(state.repairs, payload)
         })
     }
 })

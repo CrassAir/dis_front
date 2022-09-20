@@ -62,7 +62,7 @@ const Moving = () => {
                         <Paper>
                             <LocalizationProvider adapterLocale={ru} dateAdapter={AdapterDateFns}>
                                 <DatePicker
-                                    views={['year', 'month']}
+                                    views={['month', 'year']}
                                     value={selectDate}
                                     minDate={new Date('2022-01-01')}
                                     maxDate={new Date('2023-12-01')}
@@ -111,8 +111,8 @@ const Moving = () => {
                     threshold={100}
                     useWindow={false}
                 >
-                    <Stack spacing={2}>
-                        <TransitionGroup>
+                    <Stack spacing={3}>
+                        <TransitionGroup component={null}>
                             {movingItems}
                         </TransitionGroup>
                     </Stack>

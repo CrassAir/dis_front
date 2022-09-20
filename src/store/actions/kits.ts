@@ -1,8 +1,18 @@
 import {createAsyncThunk} from "@reduxjs/toolkit";
 import api, {apiError} from "../../api/api";
 import {apiUrl} from "../../api/urls";
-import {IKit, IMoving, IOperationTime, IOrganizationTK, IPagination, IStatusMoving, ITeam} from "../../models/IKit";
+import {
+    IKit,
+    IMoving,
+    IOperationTime,
+    IOrganizationTK,
+    IPagination,
+    IRepair,
+    IStatusMoving,
+    ITeam
+} from "../../models/IKit";
 import {AxiosError} from "axios";
+import {IContract} from "../../models/ICatalog";
 
 
 // export const getTeamKits = createAsyncThunk(
@@ -48,6 +58,18 @@ export const getStatus = createAsyncThunk(
         try {
             const url = query?.next ? query.next : apiUrl + 'status_moving_kit/'
             const {data} = await api.get<IPagination<IStatusMoving[]>>(url, {params: {mov_id: query.mov_id}})
+            return data
+        } catch (e) {
+            return thunkAPI.rejectWithValue(apiError(e as Error | AxiosError))
+        }
+    }
+)
+
+export const getRepairs = createAsyncThunk(
+    'getRepairs',
+    async (_, thunkAPI) => {
+        try {
+            const {data} = await api.get<IRepair[]>(apiUrl + 'repair/')
             return data
         } catch (e) {
             return thunkAPI.rejectWithValue(apiError(e as Error | AxiosError))
@@ -206,6 +228,50 @@ export const deleteMoving = createAsyncThunk(
     async (post: IMoving, thunkAPI) => {
         try {
             await api.delete<IMoving>(apiUrl + `moving_kit/${post.id}/`)
+            return post.id
+        } catch (e) {
+            return thunkAPI.rejectWithValue(apiError(e as Error | AxiosError))
+        }
+    }
+)
+
+export const createRepair = createAsyncThunk(
+    'createRepair',
+    async (post: IRepair, thunkAPI) => {
+        try {
+            const {data} = await api.post<IRepair>(apiUrl + 'repair/', post, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            })
+            return data
+        } catch (e) {
+            return thunkAPI.rejectWithValue(apiError(e as Error | AxiosError))
+        }
+    }
+)
+
+export const updateRepair = createAsyncThunk(
+    'updateRepair',
+    async (post: IRepair, thunkAPI) => {
+        try {
+            const {data} = await api.put<IRepair>(apiUrl + `repair/${post.id}/`, post, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            })
+            return data
+        } catch (e) {
+            return thunkAPI.rejectWithValue(apiError(e as Error | AxiosError))
+        }
+    }
+)
+
+export const deleteRepair = createAsyncThunk(
+    'deleteRepair',
+    async (post: IRepair, thunkAPI) => {
+        try {
+            await api.delete<IRepair>(apiUrl + `repair/${post.id}/`)
             return post.id
         } catch (e) {
             return thunkAPI.rejectWithValue(apiError(e as Error | AxiosError))

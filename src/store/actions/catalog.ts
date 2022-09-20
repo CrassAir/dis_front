@@ -239,3 +239,15 @@ export const getManufacturers = createAsyncThunk(
         }
     }
 )
+
+export const getRepairContractor = createAsyncThunk(
+    'getRepairContractor',
+    async (_, thunkAPI) => {
+        try {
+            const {data} = await api.get<ISubParameter[]>(apiUrl + 'repair_contractor/')
+            return data
+        } catch (e) {
+            return thunkAPI.rejectWithValue(apiError(e as Error | AxiosError))
+        }
+    }
+)

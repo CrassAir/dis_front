@@ -113,3 +113,12 @@ export interface IOperationTime {
     team_kit: number
     hours: number
 }
+
+export interface IRepair {
+    id: number
+    date_create: string
+    repair_contractor: number
+    kit: number
+    description: string
+    act_scan?: string | RcFile
+}

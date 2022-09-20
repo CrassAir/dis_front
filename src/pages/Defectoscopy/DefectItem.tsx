@@ -1,4 +1,4 @@
-import React, {ChangeEventHandler, useEffect, useMemo, useState} from 'react';
+import React, {useMemo, useState} from 'react';
 import {useAppDispatch, useAppSelector} from "../../hooks/redux";
 import {IDefectoscopy} from "../../models/IDefectoscopy";
 import {
@@ -13,18 +13,15 @@ import {
     TextField,
     Typography
 } from "@mui/material";
-import {getOrganizations, getTools} from "../../store/actions/catalog";
 import {
     createDefectoscopy,
     deleteDefectoscopy,
     getPipes,
-    getStandarts,
     updateDefectoscopy
 } from "../../store/actions/defect";
 import Grid from "@mui/material/Unstable_Grid2";
 import EditIcon from '@mui/icons-material/Edit';
 import CancelIcon from '@mui/icons-material/Cancel';
-import {getOrganizationsTK} from "../../store/actions/kits";
 import moment from "moment/moment";
 import {LocalizationProvider} from "@mui/x-date-pickers/LocalizationProvider";
 import {ru} from "date-fns/locale";
@@ -36,7 +33,8 @@ import ArticleIcon from '@mui/icons-material/Article';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
-import {apiError, uploadDefectoscopyFile} from "../../api/api";
+import FileCopyIcon from '@mui/icons-material/FileCopy';
+import {apiError, downloadBlankReport, downloadDefectReport, uploadDefectoscopyFile} from "../../api/api";
 import {useSnackbar} from "notistack";
 
 type DefectItemProps = {
@@ -47,7 +45,7 @@ type DefectItemProps = {
 
 const DefectItem = ({defect, create, exit}: DefectItemProps) => {
     const dispatch = useAppDispatch()
-    const {enqueueSnackbar} = useSnackbar()
+    const {enqueueSnackbar, closeSnackbar} = useSnackbar()
     const {tools, organizations} = useAppSelector(state => state.catalogReducer)
     const {user, error} = useAppSelector(state => state.authReducer)
     const {standarts} = useAppSelector(state => state.defectReducer)
@@ -244,7 +242,7 @@ const DefectItem = ({defect, create, exit}: DefectItemProps) => {
 
     const handleUpload = (e: any) => {
         if (e.target?.files.length > 0) {
-            const data = uploadDefectoscopyFile(e.target.files[0])
+            const data = uploadDefectoscopyFile(defect, e.target.files[0])
             data.then(_ => enqueueSnackbar('Отчет успешно загружен', {variant: 'success'}))
                 .catch(err => enqueueSnackbar(apiError(err).message, {variant: 'error'}))
         }
@@ -266,6 +264,15 @@ const DefectItem = ({defect, create, exit}: DefectItemProps) => {
                 </ListItemIcon>
                 <ListItemText>Детально</ListItemText>
             </MenuItem>
+            <MenuItem onClick={() => {
+                downloadBlankReport(data)
+                setMenuAnchor(null)
+            }}>
+                <ListItemIcon>
+                    <FileCopyIcon/>
+                </ListItemIcon>
+                <ListItemText>Скачать шаблон отчета</ListItemText>
+            </MenuItem>
             <MenuItem component="label">
                 <input
                     hidden
@@ -280,6 +287,10 @@ const DefectItem = ({defect, create, exit}: DefectItemProps) => {
                 <ListItemText>Загрузить отчет</ListItemText>
             </MenuItem>
             <MenuItem onClick={() => {
+                const snak = enqueueSnackbar('Начало загрузки...')
+                downloadDefectReport(data)
+                    .then(() => {closeSnackbar(snak); enqueueSnackbar('Загрузка заврешена')})
+                    .catch(err => enqueueSnackbar(apiError(err).message, {variant: 'error'}))
                 setMenuAnchor(null)
             }}>
                 <ListItemIcon>

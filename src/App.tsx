@@ -16,6 +16,7 @@ import {useSnackbar} from "notistack";
 import LocalShippingIcon from '@mui/icons-material/LocalShipping';
 import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
+import ConstructionIcon from '@mui/icons-material/Construction';
 import ContentPasteIcon from '@mui/icons-material/ContentPaste';
 import {ReactComponent as svgLogo} from "./assets/dis_log_without_text3.svg"
 
@@ -23,6 +24,7 @@ const Catalog = lazy(() => import("./pages/Catalogs/Catalog"))
 const TeamKits = lazy(() => import("./pages/Kits/OrganizationsTeamKits"))
 const Moving = lazy(() => import("./pages/Moving/Moving"))
 const Defectoscopy = lazy(() => import("./pages/Defectoscopy/Defectoscopy"))
+const Repair = lazy(() => import("./pages/Repair/Repair"))
 
 
 const theme = createTheme({
@@ -89,6 +91,13 @@ export const defaultNavList: INavItem[] = [
         path: '/defectoscopy',
         validate: 'defectoscopy',
         component: <Defectoscopy/>
+    },
+    {
+        name: 'Ремонты',
+        icon: <ConstructionIcon/>,
+        path: '/repair',
+        validate: 'repair',
+        component: <Repair/>
     },
     {
         name: 'Справочник',

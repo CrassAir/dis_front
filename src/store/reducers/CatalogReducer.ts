@@ -6,7 +6,7 @@ import {
     getLockThread,
     getLockType, getManufacturers, getOrganizations,
     getParameters,
-    getPipeType,
+    getPipeType, getRepairContractor,
     getSizeRange,
     getStrengthGroup, getTools, updateContract, updateParameter, updateTool
 } from "../actions/catalog";
@@ -24,6 +24,7 @@ interface ICatalogState {
     contracts: IContract[]
     organizations: IOrganization[]
     manufacturers: ISubParameter[]
+    repair_contractors: ISubParameter[]
 }
 
 const initialState: ICatalogState = {
@@ -37,6 +38,7 @@ const initialState: ICatalogState = {
     contracts: [],
     organizations: [],
     manufacturers: [],
+    repair_contractors: [],
 }
 
 export const catalogSlice = createSlice({
@@ -100,6 +102,9 @@ export const catalogSlice = createSlice({
         })
         builder.addCase(getManufacturers.fulfilled, (state, {payload}) => {
             state.manufacturers = payload
+        })
+        builder.addCase(getRepairContractor.fulfilled, (state, {payload}) => {
+            state.repair_contractors = payload
         })
     }
 })
