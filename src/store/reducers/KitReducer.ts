@@ -1,5 +1,6 @@
 import {createSlice} from "@reduxjs/toolkit";
 import {
+    IKit,
     IMoving,
     IOperationTime,
     IOrganizationTK,
@@ -12,7 +13,7 @@ import {
     changeStatusMoving,
     createMoving, createOperatingTime, createRepair,
     createTeam,
-    deleteMoving, deleteOperatingTime, deleteRepair,
+    deleteMoving, deleteOperatingTime, deleteRepair, getKits,
     getMoving, getOperatingTime,
     getOrganizationsTK, getRepairs, getStatus,
     updateMoving, updateRepair
@@ -22,6 +23,7 @@ import {deleteElementFromList, updateElementInList, updatePaginationList} from "
 
 interface IKitState {
     teamKits: ITeamKit[]
+    kits: IKit[]
     organizationsTK: IOrganizationTK[]
     repairs: IRepair[]
     movingList: IPagination<IMoving[]>
@@ -32,6 +34,7 @@ interface IKitState {
 
 const initialState: IKitState = {
     teamKits: [],
+    kits: [],
     organizationsTK: [],
     repairs: [],
     movingList: {count: 0, next: null, previous: null, results: []},
@@ -53,9 +56,9 @@ export const kitSlice = createSlice({
         }
     },
     extraReducers: (builder) => {
-        // builder.addCase(getKits.fulfilled, (state, {payload}) => {
-        //     state.kits = payload
-        // })
+        builder.addCase(getKits.fulfilled, (state, {payload}) => {
+            state.kits = payload
+        })
         // builder.addCase(getTeamKits.fulfilled, (state, {payload}) => {
         //     state.teamKits = payload
         // })

@@ -328,7 +328,7 @@ const DefectItem = ({defect, create, exit}: DefectItemProps) => {
 
 
     return (
-        <Paper sx={{maxWidth: '1200px'}}>
+        <Paper>
             <Paper elevation={4}
                    sx={{
                        backgroundColor: data.date_defectoscopy_end ? 'success.light' : 'info.light',

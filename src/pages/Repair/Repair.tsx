@@ -1,15 +1,14 @@
 import React, {useEffect, useMemo, useState} from 'react';
-import Grid from "@mui/material/Unstable_Grid2";
 import {useAppDispatch, useAppSelector} from "../../hooks/redux";
 import {RcFile} from "antd/es/upload/interface";
 import {convertListToObject, localizationMT, validateEditAccess} from "../utils";
-import {IconButton, Tooltip} from "@mui/material";
+import {Box, IconButton, Paper, Tooltip} from "@mui/material";
 import FileOpenIcon from "@mui/icons-material/FileOpen";
 import MaterialTable, {Column} from "material-table";
 import Upload from "antd/lib/upload/Upload";
 import UploadFileIcon from "@mui/icons-material/UploadFile";
 import {IRepair} from "../../models/IKit";
-import {createRepair, deleteRepair, getRepairs, updateRepair} from "../../store/actions/kits";
+import {createRepair, deleteRepair, getKits, getRepairs, updateRepair} from "../../store/actions/kits";
 import {getRepairContractor} from "../../store/actions/catalog";
 
 const Repair = () => {
@@ -17,12 +16,13 @@ const Repair = () => {
     const dispatch = useAppDispatch()
     const {user, isLoading} = useAppSelector(state => state.authReducer)
     const {repair_contractors} = useAppSelector(state => state.catalogReducer)
-    const {repairs} = useAppSelector(state => state.kitReducer)
+    const {repairs, kits} = useAppSelector(state => state.kitReducer)
     const [file, setFile] = useState<RcFile | null>(null)
 
     useEffect(() => {
         dispatch(getRepairs())
         if (repair_contractors.length === 0) dispatch(getRepairContractor())
+        if (kits.length === 0) dispatch(getKits())
     }, [])
 
     useEffect(() => {
@@ -59,7 +59,7 @@ const Repair = () => {
             {
                 title: 'Комплект', field: 'kit',
                 validate: rowData => !!rowData.kit,
-                // lookup: organizations && convertListToObject(organizations),
+                lookup: kits && convertListToObject(kits),
             },
             {
                 title: 'Описание', field: 'description'
@@ -80,12 +80,12 @@ const Repair = () => {
                 )
             },
         ]),
-        [data, repair_contractors]
+        [data, repair_contractors, kits]
     )
 
     return (
-        <Grid container spacing={2}>
-            <Grid xs={12}>
+        <Box sx={{display: 'flex', justifyContent: 'center'}}>
+            <Paper sx={{width: '1200px',}}>
                 <MaterialTable
                     title="Ремонты"
                     options={{
@@ -109,8 +109,8 @@ const Repair = () => {
                         onRowDelete: oldData => dispatch(deleteRepair(oldData))
                     } : {}}
                 />
-            </Grid>
-        </Grid>
+            </Paper>
+        </Box>
     )
 }
 

@@ -56,68 +56,70 @@ const Moving = () => {
 
     return (
         <Box sx={{display: 'flex', justifyContent: 'center'}}>
-            <Stack spacing={2}>
-                <Grid container spacing={2} justifyContent={{xs: "center", sm: "flex-start"}}>
-                    <Grid sm={'auto'} xs={5}>
-                        <Paper>
-                            <LocalizationProvider adapterLocale={ru} dateAdapter={AdapterDateFns}>
-                                <DatePicker
-                                    views={['month', 'year']}
-                                    value={selectDate}
-                                    minDate={new Date('2022-01-01')}
-                                    maxDate={new Date('2023-12-01')}
-                                    onChange={(e) => {
-                                        setSelectDate(moment(e))
-                                        dispatch(getMoving({date: e}))
-                                        if (location.pathname !== '/delivery') navigation('', {replace: true})
-                                    }}
-                                    renderInput={(params: any) => <TextField {...params} size={'small'}/>}
-                                />
-                            </LocalizationProvider>
-                        </Paper>
+            <Box sx={{maxWidth: '1200px'}}>
+                <Stack spacing={2}>
+                    <Grid container spacing={2} justifyContent={{xs: "center", sm: "flex-start"}}>
+                        <Grid sm={'auto'} xs={5}>
+                            <Paper>
+                                <LocalizationProvider adapterLocale={ru} dateAdapter={AdapterDateFns}>
+                                    <DatePicker
+                                        views={['month', 'year']}
+                                        value={selectDate}
+                                        minDate={new Date('2022-01-01')}
+                                        maxDate={new Date('2023-12-01')}
+                                        onChange={(e) => {
+                                            setSelectDate(moment(e))
+                                            dispatch(getMoving({date: e}))
+                                            if (location.pathname !== '/delivery') navigation('', {replace: true})
+                                        }}
+                                        renderInput={(params: any) => <TextField {...params} size={'small'}/>}
+                                    />
+                                </LocalizationProvider>
+                            </Paper>
+                        </Grid>
+                        <Grid sm={'auto'} xs={'auto'}>
+                            <Paper>
+                                <TextField
+                                    select
+                                    size={'small'}
+                                    defaultValue={'all'}
+                                >
+                                    <MenuItem value={'all'}>Все</MenuItem>
+                                    {Object.keys(moving_status).map(key => (
+                                        <MenuItem key={key} value={key}>
+                                            {moving_status[key as keyof typeof moving_status].status}
+                                        </MenuItem>))}
+                                </TextField>
+                            </Paper>
+                        </Grid>
+                        <Grid sm={'auto'} xs={4}>
+                            <Button sx={{height: '40px'}} variant={'contained'} startIcon={<AddBoxIcon/>}
+                                    onClick={() => setEditData({})}>
+                                Создать
+                            </Button>
+                        </Grid>
                     </Grid>
-                    <Grid sm={'auto'} xs={'auto'}>
-                        <Paper>
-                            <TextField
-                                select
-                                size={'small'}
-                                defaultValue={'all'}
-                            >
-                                <MenuItem value={'all'}>Все</MenuItem>
-                                {Object.keys(moving_status).map(key => (
-                                    <MenuItem key={key} value={key}>
-                                        {moving_status[key as keyof typeof moving_status].status}
-                                    </MenuItem>))}
-                            </TextField>
-                        </Paper>
-                    </Grid>
-                    <Grid sm={'auto'} xs={4}>
-                        <Button sx={{height: '40px'}} variant={'contained'} startIcon={<AddBoxIcon/>}
-                                onClick={() => setEditData({})}>
-                            Создать
-                        </Button>
-                    </Grid>
-                </Grid>
-                <InfiniteScroll
-                    pageStart={0}
-                    loadMore={() => {
-                        if (!isLoading && !stopLoad) {
-                            setStopLoad(true)
-                            dispatch(getMoving(movingList))
-                        }
-                    }}
-                    hasMore={!!movingList.next}
-                    loader={<LinearProgress key={'loading'} sx={{height: 10}} color={'secondary'}/>}
-                    threshold={100}
-                    useWindow={false}
-                >
-                    <Stack spacing={3}>
-                        <TransitionGroup component={null}>
-                            {movingItems}
-                        </TransitionGroup>
-                    </Stack>
-                </InfiniteScroll>
-            </Stack>
+                    <InfiniteScroll
+                        pageStart={0}
+                        loadMore={() => {
+                            if (!isLoading && !stopLoad) {
+                                setStopLoad(true)
+                                dispatch(getMoving(movingList))
+                            }
+                        }}
+                        hasMore={!!movingList.next}
+                        loader={<LinearProgress key={'loading'} sx={{height: 10}} color={'secondary'}/>}
+                        threshold={100}
+                        useWindow={false}
+                    >
+                        <Stack spacing={3}>
+                            <TransitionGroup component={null}>
+                                {movingItems}
+                            </TransitionGroup>
+                        </Stack>
+                    </InfiniteScroll>
+                </Stack>
+            </Box>
             {movingForm}
             <StatusDrawer/>
         </Box>

@@ -11,7 +11,7 @@ export const getDefectoscopy = createAsyncThunk(
     async (query: any, thunkAPI) => {
         try {
             const url = query?.next ? query.next : apiUrl + 'defectoscopy_report/'
-            const {data} = await api.get<IPagination<IDefectoscopy[]>>(url)
+            const {data} = await api.get<IPagination<IDefectoscopy[]>>(url, {params: {date: query.date}})
             return data
         } catch (e) {
             return thunkAPI.rejectWithValue(apiError(e as Error | AxiosError))

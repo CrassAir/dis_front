@@ -160,7 +160,7 @@ const MovingItem = ({moving}: MovingItemProps) => {
     }, [moving, actionBtnAnchor, comment])
 
     return (
-        <Paper sx={{maxWidth: '1200px'}}>
+        <Paper>
             <Paper elevation={4}
                    sx={{backgroundColor: color, p: 1, position: 'relative'}}>
                 <Box sx={{position: 'absolute', right: '0', top: '0'}}>
