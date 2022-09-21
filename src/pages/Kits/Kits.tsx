@@ -31,11 +31,6 @@ const Kits = ({teamKit}: KitsProps) => {
     const [file, setFile] = useState<RcFile | null>(null)
     const [openMoving, setOpenMoving] = useState<IKit | null>(null)
 
-    useEffect(() => {
-        if (manufacturers.length === 0) dispatch(getManufacturers())
-        if (parameters.length === 0) dispatch(getParameters())
-    }, [])
-
     const edit = useMemo(() => validateEditAccess(user!, 'teams'), [user])
 
     const scanPassport = (rowData: IKit) => {

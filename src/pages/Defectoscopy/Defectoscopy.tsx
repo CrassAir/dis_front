@@ -9,7 +9,7 @@ import {TransitionGroup} from "react-transition-group";
 import DefectPipeTable from "./DefectPipeTable";
 import InfiniteScroll from 'react-infinite-scroller';
 import {getOrganizations, getTools} from "../../store/actions/catalog";
-import {getMoving, getOrganizationsTK} from "../../store/actions/kits";
+import {getOrganizationsTK} from "../../store/actions/kits";
 import {LocalizationProvider} from "@mui/x-date-pickers/LocalizationProvider";
 import {ru} from "date-fns/locale";
 import {AdapterDateFns} from "@mui/x-date-pickers/AdapterDateFns";

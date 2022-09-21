@@ -251,3 +251,15 @@ export const getRepairContractor = createAsyncThunk(
         }
     }
 )
+
+export const getProjectGroups = createAsyncThunk(
+    'getProjectGroups',
+    async (_, thunkAPI) => {
+        try {
+            const {data} = await api.get<ISubParameter[]>(apiUrl + 'project_group/')
+            return data
+        } catch (e) {
+            return thunkAPI.rejectWithValue(apiError(e as Error | AxiosError))
+        }
+    }
+)

@@ -38,6 +38,12 @@ export const pipe_class_choose = {
     'class_3': 'Класс 3',
 }
 
+export const project_group_choose = {
+    'group_1': 'Первая группа',
+    'group_2': 'Вторая группа',
+    'group_3': 'Третья группа',
+}
+
 export interface ITeamKit {
     id: number
     name: string
@@ -112,6 +118,7 @@ export interface IOperationTime {
     date_create: string
     team_kit: number
     hours: number
+    project_group: number
 }
 
 export interface IRepair {

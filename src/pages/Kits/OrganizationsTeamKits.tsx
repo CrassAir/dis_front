@@ -22,11 +22,13 @@ import {Form} from "antd";
 import {ITeam} from "../../models/IKit";
 import {validateEditAccess} from "../utils";
 import OperationTimeDrawer from "./OperationTimeDrawer";
+import {getManufacturers, getParameters} from "../../store/actions/catalog";
 
 
 const OrganizationsTeamKits = () => {
     const dispatch = useAppDispatch()
     const {organizationsTK} = useAppSelector(state => state.kitReducer)
+    const {parameters, manufacturers} = useAppSelector(state => state.catalogReducer)
     const {user} = useAppSelector(state => state.authReducer)
     const [openTeamFormDialog, setOpenTeamFormDialog] = useState<number | null>(null)
     const [form] = Form.useForm();
@@ -37,6 +39,8 @@ const OrganizationsTeamKits = () => {
 
     useEffect(() => {
         dispatch(getOrganizationsTK())
+        if (manufacturers.length === 0) dispatch(getManufacturers())
+        if (parameters.length === 0) dispatch(getParameters())
     }, [])
 
     const TeamFormDialog = useMemo((editData: ITeam | null = null) => {
@@ -106,46 +110,46 @@ const OrganizationsTeamKits = () => {
 
     const body = useMemo(() => (
         organizationsTK.map(({id, name, teams}) => (
-                    <Box key={`org${id}`} sx={{maxWidth: '1200px'}}>
-                        <Paper sx={{p: 1, mb: 1, borderBottomRightRadius: 0, borderBottomLeftRadius: 0}}>
-                            <Grid container spacing={1}>
-                                <Grid item xs={2}>
-                                    <Box flexGrow={1}/>
-                                </Grid>
-                                <Grid item xs={8}>
-                                    <Typography variant={'h5'} textAlign={'center'}
-                                                letterSpacing={'2px'}>{name}</Typography>
-                                </Grid>
-                                <Grid item xs={2} textAlign={'end'}>
-                                    {edit &&
-                                        <Tooltip title={'Создать бригаду'}>
-                                            <IconButton onClick={() => setOpenTeamFormDialog(id)}>
-                                                <GroupAddIcon/>
-                                            </IconButton>
-                                        </Tooltip>}
-                                </Grid>
-                            </Grid>
-                        </Paper>
-                        {teams.map(({team_kit}, index) => (
-                            <Accordion key={`team_kit_${team_kit.id}`} defaultExpanded={index === 0}>
-                                <AccordionSummary
-                                    expandIcon={<ExpandMoreIcon/>}
-                                    aria-controls={`panel${team_kit.id}-content`}
-                                    id={`panel${team_kit.id}-header`}
-                                >
-                                    <Typography variant="h5">
-                                        {team_kit.name}
-                                    </Typography>
-                                </AccordionSummary>
-                                <AccordionDetails sx={{p: 0}}>
-                                    <Kits teamKit={team_kit}/>
-                                </AccordionDetails>
-                            </Accordion>
-                        ))
-                        }
-                    </Box>
+            <Box key={`org${id}`} sx={{maxWidth: '1200px'}}>
+                <Paper sx={{p: 1, mb: 1, borderBottomRightRadius: 0, borderBottomLeftRadius: 0}}>
+                    <Grid container spacing={1}>
+                        <Grid item xs={2}>
+                            <Box flexGrow={1}/>
+                        </Grid>
+                        <Grid item xs={8}>
+                            <Typography variant={'h5'} textAlign={'center'}
+                                        letterSpacing={'2px'}>{name}</Typography>
+                        </Grid>
+                        <Grid item xs={2} textAlign={'end'}>
+                            {edit &&
+                                <Tooltip title={'Создать бригаду'}>
+                                    <IconButton onClick={() => setOpenTeamFormDialog(id)}>
+                                        <GroupAddIcon/>
+                                    </IconButton>
+                                </Tooltip>}
+                        </Grid>
+                    </Grid>
+                </Paper>
+                {teams.map(({team_kit}, index) => (
+                    <Accordion key={`team_kit_${team_kit.id}`} defaultExpanded={index === 0}>
+                        <AccordionSummary
+                            expandIcon={<ExpandMoreIcon/>}
+                            aria-controls={`panel${team_kit.id}-content`}
+                            id={`panel${team_kit.id}-header`}
+                        >
+                            <Typography variant="h5">
+                                {team_kit.name}
+                            </Typography>
+                        </AccordionSummary>
+                        <AccordionDetails sx={{p: 0}}>
+                            <Kits teamKit={team_kit}/>
+                        </AccordionDetails>
+                    </Accordion>
                 ))
-    ),[organizationsTK])
+                }
+            </Box>
+        ))
+    ), [organizationsTK])
 
     return (
         <Box sx={{display: 'flex', justifyContent: 'center'}}>

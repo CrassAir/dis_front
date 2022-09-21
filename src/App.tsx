@@ -124,6 +124,10 @@ const App: React.FC = () => {
         dispatch(checkToken())
     }, [])
 
+    useEffect(() => {
+        window.scrollTo(0, 0)
+    }, [location])
+
     const navigationList = useMemo(() => {
         let nav = '/'
         const newList = navList.map((navItem, index) => {
