@@ -110,7 +110,7 @@ const OrganizationsTeamKits = () => {
 
     const body = useMemo(() => (
         organizationsTK.map(({id, name, teams}) => (
-            <Box key={`org${id}`} sx={{maxWidth: '1200px'}}>
+            <Box key={`org${id}`} sx={{maxWidth: '1400px'}}>
                 <Paper sx={{p: 1, mb: 1, borderBottomRightRadius: 0, borderBottomLeftRadius: 0}}>
                     <Grid container spacing={1}>
                         <Grid item xs={2}>

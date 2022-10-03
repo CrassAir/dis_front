@@ -36,6 +36,7 @@ import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import FileCopyIcon from '@mui/icons-material/FileCopy';
 import {apiError, downloadBlankReport, downloadDefectReport, uploadDefectoscopyFile} from "../../api/api";
 import {useSnackbar} from "notistack";
+import {validateEditAccess} from "../utils";
 
 type DefectItemProps = {
     defect: IDefectoscopy | any
@@ -53,6 +54,8 @@ const DefectItem = ({defect, create, exit}: DefectItemProps) => {
     const [data, setData] = useState({...defect})
     const [edit, setEdit] = useState(create)
     const [menuAnchor, setMenuAnchor] = useState<HTMLButtonElement | null>(null)
+
+    const can_edit = useMemo(() => validateEditAccess(user!, 'defectoscopy'), [user])
 
     const onEdit = () => {
         if (!create) {
@@ -273,7 +276,7 @@ const DefectItem = ({defect, create, exit}: DefectItemProps) => {
                 </ListItemIcon>
                 <ListItemText>Скачать шаблон отчета</ListItemText>
             </MenuItem>
-            <MenuItem component="label">
+            <MenuItem component="label" disabled={!can_edit}>
                 <input
                     hidden
                     id={'report-upload'}
@@ -289,7 +292,10 @@ const DefectItem = ({defect, create, exit}: DefectItemProps) => {
             <MenuItem onClick={() => {
                 const snak = enqueueSnackbar('Начало загрузки...')
                 downloadDefectReport(data)
-                    .then(() => {closeSnackbar(snak); enqueueSnackbar('Загрузка заврешена')})
+                    .then(() => {
+                        closeSnackbar(snak);
+                        enqueueSnackbar('Загрузка заврешена')
+                    })
                     .catch(err => enqueueSnackbar(apiError(err).message, {variant: 'error'}))
                 setMenuAnchor(null)
             }}>
@@ -298,16 +304,18 @@ const DefectItem = ({defect, create, exit}: DefectItemProps) => {
                 </ListItemIcon>
                 <ListItemText>Скачать отчет</ListItemText>
             </MenuItem>
-            <MenuItem onClick={onEdit}>
+            <MenuItem onClick={onEdit} disabled={!can_edit}>
                 <ListItemIcon>
                     <EditIcon/>
                 </ListItemIcon>
                 <ListItemText>Редактировать</ListItemText>
             </MenuItem>
-            <MenuItem onClick={() => {
-                dispatch(deleteDefectoscopy(data))
-                setMenuAnchor(null)
-            }}>
+            <MenuItem
+                disabled={!can_edit}
+                onClick={() => {
+                    dispatch(deleteDefectoscopy(data))
+                    setMenuAnchor(null)
+                }}>
                 <ListItemIcon>
                     <DeleteIcon/>
                 </ListItemIcon>

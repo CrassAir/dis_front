@@ -23,6 +23,7 @@ import StatusDrawer from "./StatusDrawer";
 import InfiniteScroll from 'react-infinite-scroller';
 import {useLocation, useNavigate, useParams} from "react-router-dom";
 import {TransitionGroup} from "react-transition-group";
+import {validateEditAccess} from "../utils";
 
 const Moving = () => {
     const [selectDate, setSelectDate] = useState(moment())
@@ -32,8 +33,10 @@ const Moving = () => {
     const {id} = useParams()
     const dispatch = useAppDispatch()
     const {movingList} = useAppSelector(state => state.kitReducer)
-    const {isLoading} = useAppSelector(state => state.authReducer)
+    const {user, isLoading} = useAppSelector(state => state.authReducer)
     const [stopLoad, setStopLoad] = useState(true)
+
+    const can_edit = useMemo(() => validateEditAccess(user!, 'delivery'), [user])
 
     useEffect(() => {
         dispatch(getMoving({id: id}))
@@ -92,7 +95,7 @@ const Moving = () => {
                             </Paper>
                         </Grid>
                         <Grid sm={'auto'} xs={4}>
-                            <Button sx={{height: '40px'}} variant={'contained'} startIcon={<AddBoxIcon/>}
+                            <Button sx={{height: '40px'}} disabled={!can_edit} variant={'contained'} startIcon={<AddBoxIcon/>}
                                     onClick={() => setEditData({})}>
                                 Создать
                             </Button>

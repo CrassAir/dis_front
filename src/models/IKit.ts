@@ -22,6 +22,8 @@ export interface IKit {
     last_status_name: string
     last_returnable?: boolean
     last_moving_id?: number
+    next_date_defectoscopy?: string
+    deviation_percentage: number
 }
 
 export const general_state_choose = {

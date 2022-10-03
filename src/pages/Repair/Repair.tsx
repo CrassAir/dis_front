@@ -104,6 +104,7 @@ const Repair = () => {
                         },
                         onRowUpdate: (newData) => {
                             if (file) newData.act_scan = file
+                            else newData.act_scan = undefined
                             return dispatch(updateRepair(newData))
                         },
                         onRowDelete: oldData => dispatch(deleteRepair(oldData))

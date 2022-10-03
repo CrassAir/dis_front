@@ -1,7 +1,7 @@
 import React, {useEffect, useMemo, useState} from 'react';
 import MaterialTable, {Column} from "material-table";
 import Upload from "antd/lib/upload/Upload";
-import {Box, Button, IconButton, MenuItem, TextField, Tooltip, Typography} from "@mui/material";
+import {Box, IconButton, MenuItem, TextField, Tooltip} from "@mui/material";
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import FileOpenIcon from '@mui/icons-material/FileOpen';
 import type {RcFile} from 'antd/es/upload/interface';
@@ -14,7 +14,6 @@ import MoreTimeIcon from '@mui/icons-material/MoreTime';
 import ReplyIcon from '@mui/icons-material/Reply';
 import MovingForm from "../Moving/MovingForm";
 import {useNavigate} from "react-router-dom";
-import {getManufacturers, getParameters} from "../../store/actions/catalog";
 
 
 type KitsProps = {
@@ -31,7 +30,7 @@ const Kits = ({teamKit}: KitsProps) => {
     const [file, setFile] = useState<RcFile | null>(null)
     const [openMoving, setOpenMoving] = useState<IKit | null>(null)
 
-    const edit = useMemo(() => validateEditAccess(user!, 'teams'), [user])
+    const can_edit = useMemo(() => validateEditAccess(user!, 'teams'), [user])
 
     const scanPassport = (rowData: IKit) => {
         if (rowData.passport) {
@@ -89,10 +88,19 @@ const Kits = ({teamKit}: KitsProps) => {
                 validate: rowData => !!rowData.pipe_class,
             },
             {
+                title: 'Процент износа', field: 'deviation_percentage', type: 'numeric',
+                editable: 'never',
+                render: rowData => (rowData.deviation_percentage * 100).toFixed(0) + '%'
+            },
+            {
                 title: 'Состояние', field: 'general_state',
                 lookup: general_state_choose,
                 customSort: (a, b) => Number(a.general_state) - Number(b.general_state),
                 validate: rowData => !!rowData.general_state,
+            },
+            {
+                title: 'Следующая дата дефектоскопии', field: 'next_date_defectoscopy', type: 'date',
+                editable: 'never'
             },
             {
                 title: 'Скан паспорта', field: 'passport',
@@ -131,7 +139,7 @@ const Kits = ({teamKit}: KitsProps) => {
                 <ReplyIcon/>, //: <LocalShippingOutlinedIcon/>,
             tooltip: rowData.last_status_name ? moving_status[rowData.last_status_name as keyof typeof moving_status].status : 'Созадать перемещение',
             disabled: ['sent', 'back'].includes(rowData.last_status_name),
-            hidden: teamKit?.name !== user!.team_name,
+            // hidden: teamKit?.name !== user!.team_name,
             onClick: (event: any) => {
                 if (['received', 'not_received'].includes(rowData.last_status_name)) {
                     dispatch(changeStatusMoving({
@@ -160,7 +168,7 @@ const Kits = ({teamKit}: KitsProps) => {
                 columns={columns}
                 data={data}
                 actions={actions}
-                editable={edit ? {
+                editable={can_edit ? {
                     onRowAdd: newData => {
                         if (file) newData.passport = file
                         newData.team_kit = teamKit.id
@@ -168,6 +176,7 @@ const Kits = ({teamKit}: KitsProps) => {
                     },
                     onRowUpdate: (newData) => {
                         if (file) newData.passport = file
+                        else newData.passport = undefined
                         return dispatch(updateKit(newData))
                     },
                     onRowDelete: oldData => dispatch(deleteKit(oldData))

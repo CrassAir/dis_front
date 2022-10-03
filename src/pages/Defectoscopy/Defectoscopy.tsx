@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useMemo, useState} from 'react';
 import {useAppDispatch, useAppSelector} from "../../hooks/redux";
 import {getDefectoscopy, getStandarts} from "../../store/actions/defect";
 import {Box, Button, Collapse, LinearProgress, Paper, Stack, TextField} from "@mui/material";
@@ -15,6 +15,7 @@ import {ru} from "date-fns/locale";
 import {AdapterDateFns} from "@mui/x-date-pickers/AdapterDateFns";
 import {DatePicker} from "@mui/x-date-pickers/DatePicker";
 import moment from "moment/moment";
+import {validateEditAccess} from "../utils";
 
 
 const Defectoscopy = () => {
@@ -22,10 +23,12 @@ const Defectoscopy = () => {
     const {defectoscopy, standarts} = useAppSelector(state => state.defectReducer)
     const {tools, organizations} = useAppSelector(state => state.catalogReducer)
     const {organizationsTK} = useAppSelector(state => state.kitReducer)
-    const {isLoading} = useAppSelector(state => state.authReducer)
+    const {user, isLoading} = useAppSelector(state => state.authReducer)
     const [create, setCreate] = useState(false)
     const [stopLoad, setStopLoad] = useState(true)
     const [selectDate, setSelectDate] = useState(moment())
+
+    const can_edit = useMemo(() => validateEditAccess(user!, 'defectoscopy'), [user])
 
     useEffect(() => {
         dispatch(getDefectoscopy({}))
@@ -64,7 +67,7 @@ const Defectoscopy = () => {
                                     />
                                 </LocalizationProvider>
                             </Paper>
-                            <Button sx={{height: '40px'}} variant={'contained'} startIcon={<AddBoxIcon/>}
+                            <Button sx={{height: '40px'}} disabled={!can_edit} variant={'contained'} startIcon={<AddBoxIcon/>}
                                     onClick={() => setCreate(true)}>
                                 Создать
                             </Button>

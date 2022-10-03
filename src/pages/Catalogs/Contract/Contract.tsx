@@ -106,6 +106,7 @@ const Contract = () => {
                 },
                 onRowUpdate: (newData) => {
                     if (file) newData.doc = file
+                    else newData.doc = undefined
                     return dispatch(updateContract(newData))
                 },
                 onRowDelete: oldData => dispatch(deleteContract(oldData))

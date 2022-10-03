@@ -1,4 +1,4 @@
-import React, {useEffect, useMemo, useRef, useState} from 'react';
+import React, {useEffect, useMemo, useState} from 'react';
 import {
     Box, Collapse,
     Divider, Drawer,
@@ -6,12 +6,11 @@ import {
     IconButton,
     InputAdornment,
     InputLabel, LinearProgress, ListItem, ListItemText, MenuItem,
-    OutlinedInput, Select,
+    OutlinedInput,
     Stack, TextField,
     Typography
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-import {Form} from "antd";
 import {createOperatingTime, deleteOperatingTime, getOperatingTime} from "../../store/actions/kits";
 import SendIcon from "@mui/icons-material/Send";
 import {TransitionGroup} from "react-transition-group";
