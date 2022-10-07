@@ -1,4 +1,4 @@
-import {combineReducers, configureStore} from "@reduxjs/toolkit";
+import {AnyAction, combineReducers, configureStore} from "@reduxjs/toolkit";
 import authReducer from './reducers/AuthReducer'
 import catalogReducer from './reducers/CatalogReducer'
 import kitReducer from './reducers/KitReducer'
@@ -11,9 +11,16 @@ const rootReducer = combineReducers({
     defectReducer,
 })
 
+const reducerProxy = (state: any, action: AnyAction) => {
+    if (action.type === 'logout/fulfilled') {
+        return rootReducer(undefined, action);
+    }
+    return rootReducer(state, action);
+}
+
 export const setupStore = () => {
     return configureStore({
-        reducer: rootReducer,
+        reducer: reducerProxy,
         middleware: getDefaultMiddleware => getDefaultMiddleware({serializableCheck: false})
     })
 }

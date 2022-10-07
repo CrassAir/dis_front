@@ -108,48 +108,57 @@ const OrganizationsTeamKits = () => {
         )
     }, [openTeamFormDialog])
 
-    const body = useMemo(() => (
-        organizationsTK.map(({id, name, teams}) => (
-            <Box key={`org${id}`} sx={{maxWidth: '1400px'}}>
-                <Paper sx={{p: 1, mb: 1, borderBottomRightRadius: 0, borderBottomLeftRadius: 0}}>
-                    <Grid container spacing={1}>
-                        <Grid item xs={2}>
-                            <Box flexGrow={1}/>
-                        </Grid>
-                        <Grid item xs={8}>
-                            <Typography variant={'h5'} textAlign={'center'}
-                                        letterSpacing={'2px'}>{name}</Typography>
-                        </Grid>
-                        <Grid item xs={2} textAlign={'end'}>
-                            {edit &&
-                                <Tooltip title={'Создать бригаду'}>
-                                    <IconButton onClick={() => setOpenTeamFormDialog(id)}>
-                                        <GroupAddIcon/>
-                                    </IconButton>
-                                </Tooltip>}
-                        </Grid>
-                    </Grid>
+    const body = useMemo(() => {
+        if (organizationsTK.length === 0) {
+            return <Box key={`empty`} sx={{maxWidth: '1400px'}}>
+                <Paper sx={{p: 2}}>
+                    <Typography variant={'h4'}>Данных пока нет</Typography>
                 </Paper>
-                {teams.map(({team_kit}, index) => (
-                    <Accordion key={`team_kit_${team_kit.id}`} defaultExpanded={index === 0}>
-                        <AccordionSummary
-                            expandIcon={<ExpandMoreIcon/>}
-                            aria-controls={`panel${team_kit.id}-content`}
-                            id={`panel${team_kit.id}-header`}
-                        >
-                            <Typography variant="h5">
-                                {team_kit.name}
-                            </Typography>
-                        </AccordionSummary>
-                        <AccordionDetails sx={{p: 0}}>
-                            <Kits teamKit={team_kit}/>
-                        </AccordionDetails>
-                    </Accordion>
-                ))
-                }
             </Box>
-        ))
-    ), [organizationsTK])
+        }
+        return organizationsTK.map(({id, name, teams}) =>
+            (
+                <Box key={`org${id}`} sx={{maxWidth: '1400px'}}>
+                    <Paper sx={{p: 1, mb: 1, borderBottomRightRadius: 0, borderBottomLeftRadius: 0}}>
+                        <Grid container spacing={1}>
+                            <Grid item xs={2}>
+                                <Box flexGrow={1}/>
+                            </Grid>
+                            <Grid item xs={8}>
+                                <Typography variant={'h5'} textAlign={'center'}
+                                            letterSpacing={'2px'}>{name}</Typography>
+                            </Grid>
+                            <Grid item xs={2} textAlign={'end'}>
+                                {edit &&
+                                    <Tooltip title={'Создать бригаду'}>
+                                        <IconButton onClick={() => setOpenTeamFormDialog(id)}>
+                                            <GroupAddIcon/>
+                                        </IconButton>
+                                    </Tooltip>}
+                            </Grid>
+                        </Grid>
+                    </Paper>
+                    {teams.map(({team_kit}, index) => (
+                        <Accordion key={`team_kit_${team_kit.id}`} defaultExpanded={index === 0}>
+                            <AccordionSummary
+                                expandIcon={<ExpandMoreIcon/>}
+                                aria-controls={`panel${team_kit.id}-content`}
+                                id={`panel${team_kit.id}-header`}
+                            >
+                                <Typography variant="h5">
+                                    {team_kit.name}
+                                </Typography>
+                            </AccordionSummary>
+                            <AccordionDetails sx={{p: 0}}>
+                                <Kits teamKit={team_kit}/>
+                            </AccordionDetails>
+                        </Accordion>
+                    ))
+                    }
+                </Box>
+            )
+        )
+    }, [organizationsTK])
 
     return (
         <Box sx={{display: 'flex', justifyContent: 'center'}}>

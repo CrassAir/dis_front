@@ -63,7 +63,8 @@ const Kits = ({teamKit}: KitsProps) => {
                 title: 'Параметры', field: 'parameter',
                 lookup: parameters && convertListToObject(parameters),
                 validate: rowData => !!rowData.parameter,
-                cellStyle: {minWidth: '250px'}
+                cellStyle: {minWidth: '250px'},
+                render: rowData => rowData.name,
 
             },
             {
@@ -122,7 +123,7 @@ const Kits = ({teamKit}: KitsProps) => {
     )
 
     const options = useMemo(() => ({
-        pageSize: 5,
+        pageSize: 10,
         draggable: false,
         rowStyle: (rowData: IKit) => colorCell[rowData.general_state]
     }), [data])

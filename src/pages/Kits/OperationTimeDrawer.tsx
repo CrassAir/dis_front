@@ -34,7 +34,7 @@ const OperationTimeDrawer = () => {
 
     useEffect(() => {
         if (project_groups.length === 0) dispatch(getProjectGroups())
-    }, [project_groups])
+    }, [])
 
     const closeDrawer = () => {
         dispatch(clearOperatingTimeList())

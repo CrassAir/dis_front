@@ -164,16 +164,16 @@ const Navbar: React.FC = () => {
                             onClick={handleDrawer}
                             edge="start"
                             sx={{
-                                marginRight: 5, ...(open && {display: 'none'}),
+                                marginRight: {xs: 1, md: 5}, ...(open && {display: 'none'}),
                             }}
                         >
                             <MenuIcon/>
                         </IconButton>
-                        <Card elevation={0} sx={{display: {xs :open ? 'none' : 'block', md: 'block'}}}>
+                        <Card elevation={0} sx={{display: {xs :open ? 'none' : 'block', md: 'block'}, width: {xs: '128px', md: 'auto'}}}>
                             <a href={'https://dis-mobile.ru/'} target={'_blank'} rel={'noreferrer noopener'}>
                                 <CardActionArea>
                                     <CardMedia
-                                        sx={{p: 1, width: {xs: '128px', md: 'auto'}, objectPosition: 'left'}}
+                                        sx={{p: 1, objectPosition: 'left'}}
                                         component="img"
                                         height="50"
                                         image={Logo}

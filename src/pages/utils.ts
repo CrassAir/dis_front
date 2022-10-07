@@ -99,18 +99,18 @@ export const disableByMovingStatus = (user: IAccount, moving: IMoving, btn: stri
     if (user.is_superuser) return false
     if (moving.last_status_name === 'sent') {
         if (btn === 'accept') {
-            return !(validateEditAccess(user!, 'delivery') && user?.team_name === moving.to_team_name)
+            return !(user?.team_name === moving.to_team_name)
         }
         if (btn === 'cancel') {
-            return !(validateEditAccess(user!, 'delivery') && (user?.id === moving.creator || user?.team_name === moving.to_team_name))
+            return !(user?.id === moving.creator || user?.team_name === moving.to_team_name)
         }
     }
     if (moving.last_status_name === 'back') {
         if (btn === 'accept') {
-            return !(validateEditAccess(user!, 'delivery') && user?.id === moving.creator)
+            return !(user?.id === moving.creator)
         }
         if (btn === 'cancel') {
-            return !(validateEditAccess(user!, 'delivery') && (user?.id === moving.recipient || user?.id === moving.creator))
+            return !(user?.id === moving.recipient || user?.id === moving.creator)
         }
     }
     return true

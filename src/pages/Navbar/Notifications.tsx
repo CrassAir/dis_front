@@ -16,7 +16,6 @@ const Notifications = () => {
     const {notifications, isLoading} = useAppSelector(state => state.authReducer)
     const [stopLoad, setStopLoad] = useState(true)
 
-
     useEffect(() => {
         setTimeout(() => setStopLoad(false), 500)
     }, [notifications])
@@ -35,6 +34,7 @@ const Notifications = () => {
             <IconButton edge='end'
                         onClick={(e) => {
                             setAnchorEl(e.currentTarget)
+                            dispatch(getNotifications({}))
                         }}>
                 <NotificationsIcon/>
             </IconButton>
@@ -52,7 +52,7 @@ const Notifications = () => {
                     horizontal: 'right',
                 }}
             >
-                <Box sx={{overflow: 'auto', height: '60vh', width: '30vw'}}>
+                <Box sx={{overflow: 'auto', height: {xs: '90vh', md: '60vh'}, width: {xs: '90vw', md: '30vw'}}}>
                     <Box sx={{position: 'sticky', top: 0, right: 0, m: 1, backgroundColor: '#f5f8f8'}}>
                         <Typography variant={'h5'} sx={{p: 1}}>Уведомления</Typography>
                         <IconButton sx={{position: 'absolute', top: 0, right: 0}}

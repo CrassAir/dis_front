@@ -52,6 +52,18 @@ export const getOrganizationsTK = createAsyncThunk(
     }
 )
 
+export const getOrganizationsTeam = createAsyncThunk(
+    'getOrganizationsTeam',
+    async (_, thunkAPI) => {
+        try {
+            const {data} = await api.get<IOrganizationTK[]>(apiUrl + 'organization_team/')
+            return data
+        } catch (e) {
+            return thunkAPI.rejectWithValue(apiError(e as Error | AxiosError))
+        }
+    }
+)
+
 export const getStatus = createAsyncThunk(
     'getStatus',
     async (query: any, thunkAPI) => {

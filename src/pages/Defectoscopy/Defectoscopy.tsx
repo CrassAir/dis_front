@@ -1,7 +1,7 @@
 import React, {useEffect, useMemo, useState} from 'react';
 import {useAppDispatch, useAppSelector} from "../../hooks/redux";
 import {getDefectoscopy, getStandarts} from "../../store/actions/defect";
-import {Box, Button, Collapse, LinearProgress, Paper, Stack, TextField} from "@mui/material";
+import {Box, Button, Collapse, LinearProgress, Paper, Stack, TextField, Typography} from "@mui/material";
 import DefectItem from "./DefectItem";
 import Grid from "@mui/material/Unstable_Grid2";
 import AddBoxIcon from "@mui/icons-material/AddBox";
@@ -9,7 +9,7 @@ import {TransitionGroup} from "react-transition-group";
 import DefectPipeTable from "./DefectPipeTable";
 import InfiniteScroll from 'react-infinite-scroller';
 import {getOrganizations, getTools} from "../../store/actions/catalog";
-import {getOrganizationsTK} from "../../store/actions/kits";
+import {getOrganizationsTeam, getOrganizationsTK} from "../../store/actions/kits";
 import {LocalizationProvider} from "@mui/x-date-pickers/LocalizationProvider";
 import {ru} from "date-fns/locale";
 import {AdapterDateFns} from "@mui/x-date-pickers/AdapterDateFns";
@@ -22,7 +22,7 @@ const Defectoscopy = () => {
     const dispatch = useAppDispatch()
     const {defectoscopy, standarts} = useAppSelector(state => state.defectReducer)
     const {tools, organizations} = useAppSelector(state => state.catalogReducer)
-    const {organizationsTK} = useAppSelector(state => state.kitReducer)
+    const {organizationsTeam} = useAppSelector(state => state.kitReducer)
     const {user, isLoading} = useAppSelector(state => state.authReducer)
     const [create, setCreate] = useState(false)
     const [stopLoad, setStopLoad] = useState(true)
@@ -35,12 +35,27 @@ const Defectoscopy = () => {
         if (tools.length === 0) dispatch(getTools())
         if (standarts.length === 0) dispatch(getStandarts())
         if (organizations.length === 0) dispatch(getOrganizations())
-        if (organizationsTK.length === 0) dispatch(getOrganizationsTK())
+        if (organizationsTeam.length === 0) dispatch(getOrganizationsTeam())
     }, [])
 
     useEffect(() => {
         setTimeout(() => setStopLoad(false), 500)
     }, [defectoscopy])
+
+    const defectItems = useMemo(() => {
+        if (defectoscopy.results.length === 0) {
+            return <Collapse key={'empty'}>
+                <Paper sx={{p: 2}}>
+                    <Typography variant={'h4'}>Данных пока нет</Typography>
+                </Paper>
+            </Collapse>
+        }
+        return defectoscopy.results.map((defect) => (
+            <Collapse key={defect.id}>
+                <DefectItem key={defect.id} defect={defect}/>
+            </Collapse>
+        ))
+    }, [defectoscopy.results])
 
     return (
         <Box sx={{display: 'flex', justifyContent: 'center'}}>
@@ -59,7 +74,7 @@ const Defectoscopy = () => {
                                             const tmp = moment(e)
                                             if (tmp.isValid()) {
                                                 setSelectDate(tmp)
-                                                dispatch(getDefectoscopy({date: e}))
+                                                dispatch(getDefectoscopy({date: tmp.endOf('month').toDate()}))
                                             }
                                             // if (location.pathname !== '/delivery') navigation('', {replace: true})
                                         }}
@@ -67,7 +82,8 @@ const Defectoscopy = () => {
                                     />
                                 </LocalizationProvider>
                             </Paper>
-                            <Button sx={{height: '40px'}} disabled={!can_edit} variant={'contained'} startIcon={<AddBoxIcon/>}
+                            <Button sx={{height: '40px'}} disabled={!can_edit} variant={'contained'}
+                                    startIcon={<AddBoxIcon/>}
                                     onClick={() => setCreate(true)}>
                                 Создать
                             </Button>
@@ -94,11 +110,7 @@ const Defectoscopy = () => {
                                                 <DefectItem defect={{}} create={true} exit={setCreate}/>
                                             </Collapse>
                                         }
-                                        {defectoscopy.results.map((defect) => (
-                                            <Collapse key={defect.id}>
-                                                <DefectItem key={defect.id} defect={defect}/>
-                                            </Collapse>
-                                        ))}
+                                        {defectItems}
                                     </TransitionGroup>
                                 </Stack>
                             </InfiniteScroll>

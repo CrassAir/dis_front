@@ -20,7 +20,7 @@ export const login = createAsyncThunk(
             })
             return {user: data.user, token: data.key, interceptor: interceptor}
         } catch (e) {
-            return thunkAPI.rejectWithValue(apiError(e as Error | AxiosError))
+            return thunkAPI.rejectWithValue({code: 0, message: 'Неверный логин или пароль'})
         }
     }
 )
@@ -55,6 +55,7 @@ export const checkToken = createAsyncThunk(
                 })
                 return {user: user, token: token, interceptor: interceptor}
             } catch (e) {
+                thunkAPI.dispatch(logout());
                 return thunkAPI.rejectWithValue(apiError(e as Error | AxiosError))
             }
         } else if (token === undefined) {
@@ -65,7 +66,7 @@ export const checkToken = createAsyncThunk(
 
 export const getNotifications = createAsyncThunk(
     'getNotifications',
-    async (query:any, thunkAPI) => {
+    async (query: any, thunkAPI) => {
         try {
             const url = query?.next ? query.next : apiUrl + 'notifications/'
             const {data} = await api.get<IPagination<INotifications[]>>(url)

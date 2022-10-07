@@ -14,7 +14,7 @@ import {
     createMoving, createOperatingTime, createRepair,
     createTeam,
     deleteMoving, deleteOperatingTime, deleteRepair, getKits,
-    getMoving, getOperatingTime,
+    getMoving, getOperatingTime, getOrganizationsTeam,
     getOrganizationsTK, getRepairs, getStatus,
     updateMoving, updateRepair
 } from "../actions/kits";
@@ -25,6 +25,7 @@ interface IKitState {
     teamKits: ITeamKit[]
     kits: IKit[]
     organizationsTK: IOrganizationTK[]
+    organizationsTeam: IOrganizationTK[]
     repairs: IRepair[]
     movingList: IPagination<IMoving[]>
     statusList: IPagination<IStatusMoving[]>
@@ -36,6 +37,7 @@ const initialState: IKitState = {
     teamKits: [],
     kits: [],
     organizationsTK: [],
+    organizationsTeam: [],
     repairs: [],
     movingList: {count: 0, next: null, previous: null, results: []},
     statusList: {count: 0, next: null, previous: null, results: []},
@@ -53,7 +55,8 @@ export const kitSlice = createSlice({
         clearOperatingTimeList: (state) => {
             state.operatingTimeList = initialState.operatingTimeList
             state.operatingTimeTeamKit = null
-        }
+        },
+
     },
     extraReducers: (builder) => {
         builder.addCase(getKits.fulfilled, (state, {payload}) => {
@@ -64,6 +67,9 @@ export const kitSlice = createSlice({
         // })
         builder.addCase(getOrganizationsTK.fulfilled, (state, {payload}) => {
             state.organizationsTK = payload
+        })
+        builder.addCase(getOrganizationsTeam.fulfilled, (state, {payload}) => {
+            state.organizationsTeam = payload
         })
         builder.addCase(getMoving.fulfilled, (state, {payload}) => {
             state.movingList = updatePaginationList(state.movingList, payload)

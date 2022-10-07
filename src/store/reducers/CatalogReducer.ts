@@ -99,7 +99,7 @@ export const catalogSlice = createSlice({
         builder.addCase(deleteContract.fulfilled, (state, {payload}) => {
             state.contracts = deleteElementFromList(state.contracts, payload)
         })
-         builder.addCase(getOrganizations.fulfilled, (state, {payload}) => {
+        builder.addCase(getOrganizations.fulfilled, (state, {payload}) => {
             state.organizations = payload
         })
         builder.addCase(getManufacturers.fulfilled, (state, {payload}) => {

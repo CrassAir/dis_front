@@ -9,7 +9,7 @@ import {
 } from "@mui/material";
 import {Form} from "antd";
 import {useAppDispatch, useAppSelector} from "../../hooks/redux";
-import {createMoving, getOrganizationsTK, updateMoving} from "../../store/actions/kits";
+import {createMoving, getOrganizationsTeam, getOrganizationsTK, updateMoving} from "../../store/actions/kits";
 import {LocalizationProvider} from "@mui/x-date-pickers/LocalizationProvider";
 import {ru} from "date-fns/locale";
 import {AdapterDateFns} from "@mui/x-date-pickers/AdapterDateFns";
@@ -28,7 +28,7 @@ const MovingForm = ({editData, moveId, onClose}: MovingFormProps) => {
     const dispatch = useAppDispatch()
     const navigation = useNavigate()
     const location = useLocation()
-    const {organizationsTK} = useAppSelector(state => state.kitReducer)
+    const {organizationsTK, organizationsTeam} = useAppSelector(state => state.kitReducer)
     const {user} = useAppSelector(state => state.authReducer)
     const [selectKitId, setSelectKitId] = useState<number | null>(null)
     const [switchVal, setSwitchVal] = useState(true)
@@ -51,6 +51,7 @@ const MovingForm = ({editData, moveId, onClose}: MovingFormProps) => {
 
     useEffect(() => {
         if (organizationsTK.length === 0) dispatch(getOrganizationsTK())
+        if (organizationsTeam.length === 0) dispatch(getOrganizationsTeam())
     }, [])
 
     const handleClose = () => {
@@ -106,7 +107,7 @@ const MovingForm = ({editData, moveId, onClose}: MovingFormProps) => {
                             {organizationsTK.map(org => {
                                 const items = org.teams.map(team => {
                                     const items = team.team_kit.kits.map(kit => <MenuItem key={kit.id}
-                                                                                          value={kit.id}>{kit.name}</MenuItem>)
+                                                                                          value={kit.id}>{kit.name} {kit.amount}Шт.</MenuItem>)
 
                                     return [<ListSubheader key={team.name}>{team.name}</ListSubheader>, items]
                                 })
@@ -137,7 +138,7 @@ const MovingForm = ({editData, moveId, onClose}: MovingFormProps) => {
                             value={editData?.to_team}
                             fullWidth
                         >
-                            {organizationsTK.map(org => {
+                            {organizationsTeam.map(org => {
                                 const items = org.teams.map(team => (
                                     !team.team_kit.kits.some(kit => kit.id === selectKitId) &&
                                     <MenuItem key={team.id} value={team.id}>{team.name}</MenuItem>

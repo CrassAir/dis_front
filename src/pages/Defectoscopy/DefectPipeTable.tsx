@@ -73,6 +73,7 @@ const DefectPipeTable = () => {
             }, {
                 title: 'Длина нипеля', field: 'nipple_length',
                 type: 'numeric', align: 'center',
+                lookup: conventionList,
             }, {
                 title: 'Место установки нипеля', field: 'nipple_location_of_the_key',
                 type: 'numeric', align: 'center',

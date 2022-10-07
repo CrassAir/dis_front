@@ -50,7 +50,7 @@ const DefectItem = ({defect, create, exit}: DefectItemProps) => {
     const {tools, organizations} = useAppSelector(state => state.catalogReducer)
     const {user, error} = useAppSelector(state => state.authReducer)
     const {standarts} = useAppSelector(state => state.defectReducer)
-    const {organizationsTK} = useAppSelector(state => state.kitReducer)
+    const {organizationsTeam} = useAppSelector(state => state.kitReducer)
     const [data, setData] = useState({...defect})
     const [edit, setEdit] = useState(create)
     const [menuAnchor, setMenuAnchor] = useState<HTMLButtonElement | null>(null)
@@ -154,7 +154,7 @@ const DefectItem = ({defect, create, exit}: DefectItemProps) => {
                 }}
                 size={'small'}
             >
-                {organizationsTK.map(org => {
+                {organizationsTeam.map(org => {
                     const items = org.teams.map((team: any) => {
                         const sub_items = team.team_kit.kits.map((kit: IKit) => (
                             <MenuItem
@@ -175,13 +175,13 @@ const DefectItem = ({defect, create, exit}: DefectItemProps) => {
             </TextField>
         }
         let sKit: IKit | undefined;
-        organizationsTK.forEach((org) => org.teams.forEach((team: any) => {
+        organizationsTeam.forEach((org) => org.teams.forEach((team: any) => {
             team.team_kit.kits.forEach((kit: IKit) => {
                 if (kit.id === data.kit) sKit = kit
             })
         }))
         return <Typography>{sKit?.name}</Typography>
-    }, [data.kit, data.organization, organizationsTK, edit, error])
+    }, [data.kit, data.organization, organizationsTeam, edit, error])
 
     const toolList = useMemo(() => {
         if (edit) {
@@ -258,23 +258,33 @@ const DefectItem = ({defect, create, exit}: DefectItemProps) => {
             open={!!menuAnchor}
             onClose={() => setMenuAnchor(null)}
         >
-            <MenuItem disabled={data.pipe_count === 0} onClick={() => {
-                dispatch(getPipes(data))
-                setMenuAnchor(null)
-            }}>
+            <MenuItem
+                disabled={data.pipe_count === 0}
+                onClick={() => {
+                    dispatch(getPipes(data))
+                    setMenuAnchor(null)
+                }}>
                 <ListItemIcon>
                     <ArticleIcon/>
                 </ListItemIcon>
                 <ListItemText>Детально</ListItemText>
             </MenuItem>
-            <MenuItem onClick={() => {
-                downloadBlankReport(data)
-                setMenuAnchor(null)
-            }}>
+            <MenuItem
+                disabled={data.pipe_count === 0}
+                onClick={() => {
+                    const snak = enqueueSnackbar('Начало загрузки...')
+                    downloadDefectReport(data)
+                        .then(() => {
+                            closeSnackbar(snak);
+                            enqueueSnackbar('Загрузка заврешена')
+                        })
+                        .catch(err => enqueueSnackbar(apiError(err).message, {variant: 'error'}))
+                    setMenuAnchor(null)
+                }}>
                 <ListItemIcon>
-                    <FileCopyIcon/>
+                    <FileDownloadIcon/>
                 </ListItemIcon>
-                <ListItemText>Скачать шаблон отчета</ListItemText>
+                <ListItemText>Скачать отчет</ListItemText>
             </MenuItem>
             <MenuItem component="label" disabled={!can_edit}>
                 <input
@@ -290,19 +300,13 @@ const DefectItem = ({defect, create, exit}: DefectItemProps) => {
                 <ListItemText>Загрузить отчет</ListItemText>
             </MenuItem>
             <MenuItem onClick={() => {
-                const snak = enqueueSnackbar('Начало загрузки...')
-                downloadDefectReport(data)
-                    .then(() => {
-                        closeSnackbar(snak);
-                        enqueueSnackbar('Загрузка заврешена')
-                    })
-                    .catch(err => enqueueSnackbar(apiError(err).message, {variant: 'error'}))
+                downloadBlankReport(data)
                 setMenuAnchor(null)
             }}>
                 <ListItemIcon>
-                    <FileDownloadIcon/>
+                    <FileCopyIcon/>
                 </ListItemIcon>
-                <ListItemText>Скачать отчет</ListItemText>
+                <ListItemText>Скачать шаблон отчета</ListItemText>
             </MenuItem>
             <MenuItem onClick={onEdit} disabled={!can_edit}>
                 <ListItemIcon>

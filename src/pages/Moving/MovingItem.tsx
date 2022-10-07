@@ -73,7 +73,7 @@ const MovingItem = ({moving}: MovingItemProps) => {
         const listBtn = []
         if (moving.last_status_name === 'create') {
             listBtn.push(<Button key={'send'} variant={'contained'} startIcon={<SendIcon/>}
-                                 disabled={!(user!.is_superuser || user!.id === moving.creator)}
+                                 disabled={!(user!.is_superuser || user?.team_name === moving.from_team_name)}
                                  onClick={() => dispatch(changeStatusMoving({
                                      id: moving.id,
                                      forward: true
@@ -100,8 +100,12 @@ const MovingItem = ({moving}: MovingItemProps) => {
             </Button>)
         }
         if (['received', 'not_received', 'back_received', 'not_back_received'].includes(moving.last_status_name) && !moving.complete) {
+            let disabled = user!.id === moving.recipient
+            if (['back_received', 'not_back_received'].includes(moving.last_status_name)) {
+                disabled = user!.id === moving.creator
+            }
             listBtn.push(<Button key={'back'} variant={'contained'} startIcon={<ReplyIcon/>}
-                                 disabled={!(user!.is_superuser || user!.id === moving.creator || user!.id === moving.recipient)}
+                                 disabled={!(user!.is_superuser || disabled)}
                                  onClick={() => dispatch(changeStatusMoving({
                                      id: moving.id,
                                      forward: true
@@ -110,6 +114,7 @@ const MovingItem = ({moving}: MovingItemProps) => {
                 Вернуть
             </Button>)
         }
+
         return <React.Fragment>
             <Stack spacing={1} direction={'row'} justifyContent={'end'}>{listBtn}</Stack>
             <Popover
