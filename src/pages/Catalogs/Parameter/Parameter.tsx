@@ -24,7 +24,7 @@ const Parameter = () => {
         lock_thread,
         pipe_type
     } = useAppSelector(state => state.catalogReducer)
-    const {user, isLoading} = useAppSelector(state => state.authReducer)
+    const {user} = useAppSelector(state => state.authReducer)
 
     const edit = useMemo(() => validateEditAccess(user!, 'directory'), [user])
 
@@ -122,7 +122,6 @@ const Parameter = () => {
             }}
             localization={localizationMT}
             style={{display: 'grid'}}
-            isLoading={isLoading}
             columns={columns}
             data={data}
             editable={edit ? {

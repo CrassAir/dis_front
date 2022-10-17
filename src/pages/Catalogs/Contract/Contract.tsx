@@ -21,7 +21,7 @@ const Contract = () => {
     const [data, setData] = useState<IContract[]>([])
     const dispatch = useAppDispatch()
     const {contracts, organizations} = useAppSelector(state => state.catalogReducer)
-    const {user, isLoading} = useAppSelector(state => state.authReducer)
+    const {user} = useAppSelector(state => state.authReducer)
     const [file, setFile] = useState<RcFile | null>(null)
 
     const edit = useMemo(() => validateEditAccess(user!, 'directory'), [user])
@@ -96,7 +96,6 @@ const Contract = () => {
             }}
             localization={localizationMT}
             style={{display: 'grid'}}
-            isLoading={isLoading}
             columns={columns}
             data={data}
             editable={edit ? {

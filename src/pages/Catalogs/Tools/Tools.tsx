@@ -15,7 +15,7 @@ const Tools = () => {
     const [data, setData] = useState<ITools[]>([])
     const dispatch = useAppDispatch()
     const {tools} = useAppSelector(state => state.catalogReducer)
-    const {user, isLoading} = useAppSelector(state => state.authReducer)
+    const {user} = useAppSelector(state => state.authReducer)
 
     const edit = useMemo(() => validateEditAccess(user!, 'directory'), [user])
 
@@ -73,7 +73,6 @@ const Tools = () => {
             }}
             localization={localizationMT}
             style={{display: 'grid'}}
-            isLoading={isLoading}
             columns={columns}
             data={data}
             editable={edit ? {

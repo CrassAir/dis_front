@@ -1,7 +1,7 @@
 import React, {useEffect, useMemo, useState} from 'react';
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import IconButton from "@mui/material/IconButton";
-import {Box, LinearProgress, Popover, Stack, Typography} from "@mui/material";
+import {Box, Divider, LinearProgress, Popover, Stack, Typography} from "@mui/material";
 import {useAppDispatch, useAppSelector} from "../../hooks/redux";
 import moment from "moment";
 import CloseIcon from "@mui/icons-material/Close";
@@ -22,11 +22,12 @@ const Notifications = () => {
 
     const notifBody = useMemo(() => notifications.results.map(notif => (
         <Box key={notif.id} sx={{p: 1,}}>
+            <Divider sx={{mb: 2}} variant="middle"/>
             <Stack spacing={2} direction={"row"}>
                 <Typography color={"text.secondary"}>Дата создания:</Typography>
                 <Typography>{moment(notif.date_create).format('DD-MM-YYYY')}</Typography>
             </Stack>
-            <Typography>{notif.message}</Typography>
+            {notif.message.split('\n').map(el => <Typography>{el}</Typography>)}
         </Box>
     )), [notifications])
 
@@ -52,7 +53,7 @@ const Notifications = () => {
                     horizontal: 'right',
                 }}
             >
-                <Box sx={{overflow: 'auto', height: {xs: '90vh', md: '60vh'}, width: {xs: '90vw', md: '30vw'}}}>
+                <Box sx={{overflow: 'auto', height: {xs: '90vh', md: '60vh'}, width: {xs: '90vw', md: '500px'}}}>
                     <Box sx={{position: 'sticky', top: 0, right: 0, m: 1, backgroundColor: '#f5f8f8'}}>
                         <Typography variant={'h5'} sx={{p: 1}}>Уведомления</Typography>
                         <IconButton sx={{position: 'absolute', top: 0, right: 0}}
