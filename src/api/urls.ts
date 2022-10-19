@@ -1,5 +1,6 @@
 const actualUrl = {
-    'test': {hostname: '192.168.252.140', port: '8000', protocol: 'http:', ws: 'ws'},
+    'test': {hostname: '192.168.1.101', port: '80', protocol: 'http:', ws: 'ws'},
+    // 'test': {hostname: '192.168.252.140', port: '8000', protocol: 'http:', ws: 'ws'},
     // 'test': {hostname: '192.168.252.191', port: '9009', protocol: 'http:', ws: 'ws'},
     'main': {
         hostname: window.location.hostname,

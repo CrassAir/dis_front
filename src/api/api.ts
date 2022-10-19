@@ -20,7 +20,7 @@ export const apiError = (e: Error | AxiosError) => {
         if (typeof data === 'string' && data.length < 100) return {code: e.response?.status, message: data}
         return {code: e.response?.status, message: e.message.toString()}
     }
-    return {code: 0, message: e.message}
+    return {code: 0, message: e?.message}
 }
 
 export const uploadDefectoscopyFile = (report: IDefectoscopy, file: File) => {

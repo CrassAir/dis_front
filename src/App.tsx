@@ -1,10 +1,16 @@
-import React, {useEffect, lazy, Suspense, ReactElement, useMemo} from 'react';
+import React, {useEffect, ReactElement, useMemo} from 'react';
 import './App.less';
 import {Navigate, Route, Routes, useLocation} from "react-router-dom";
 import {checkToken, logout} from "./store/actions/auth";
 import {useAppDispatch, useAppSelector} from "./hooks/redux";
 import LoginPage from "./pages/LoginPage/LoginPage";
 import HomePage from "./pages/HomePage/HomePage";
+import TeamKits from "./pages/Kits/OrganizationsTeamKits";
+import Catalog from "./pages/Catalogs/Catalog";
+import Moving from "./pages/Moving/Moving";
+import Defectoscopy from "./pages/Defectoscopy/Defectoscopy";
+import Repair from "./pages/Repair/Repair";
+
 import {
     Box,
     createTheme,
@@ -20,11 +26,11 @@ import ConstructionIcon from '@mui/icons-material/Construction';
 import ContentPasteIcon from '@mui/icons-material/ContentPaste';
 import {ReactComponent as svgLogo} from "./assets/dis_log_without_text3.svg"
 
-const Catalog = lazy(() => import("./pages/Catalogs/Catalog"))
-const TeamKits = lazy(() => import("./pages/Kits/OrganizationsTeamKits"))
-const Moving = lazy(() => import("./pages/Moving/Moving"))
-const Defectoscopy = lazy(() => import("./pages/Defectoscopy/Defectoscopy"))
-const Repair = lazy(() => import("./pages/Repair/Repair"))
+// const TeamKits = lazy(() => import("./pages/Kits/OrganizationsTeamKits"))
+// const Catalog = lazy(() => import("./pages/Catalogs/Catalog"))
+// const Moving = lazy(() => import("./pages/Moving/Moving"))
+// const Defectoscopy = lazy(() => import("./pages/Defectoscopy/Defectoscopy"))
+// const Repair = lazy(() => import("./pages/Repair/Repair"))
 
 
 const theme = createTheme({
@@ -70,7 +76,7 @@ export interface INavItem {
     component: ReactElement
 }
 
-export const defaultNavList: INavItem[] = [
+export var defaultNavList: INavItem[] = [
     {
         name: 'Бригады',
         icon: <PeopleAltIcon/>,
@@ -135,21 +141,23 @@ const App: React.FC = () => {
             return <Route
                 key={navItem.name} path={navItem.path}
                 element={
-                    <Suspense fallback={<Box className={'login-container'}>
-                        <SvgIcon className={'logo_anim'} component={svgLogo}
-                                 sx={{width: 150, height: 150}}
-                                 viewBox="-1.2989280492092803E-5 -2.8421709430404007E-13 128.08380126953125 128.46115112304688"/>
-                    </Box>}>
-                        {navItem.component}
-                    </Suspense>
+                    // <Suspense fallback={<Box className={'login-container'}>
+                    //     <SvgIcon className={'logo_anim'} component={svgLogo}
+                    //              sx={{width: 150, height: 150}}
+                    //              viewBox="-1.2989280492092803E-5 -2.8421709430404007E-13 128.08380126953125 128.46115112304688"/>
+                    // </Box>}>
+                        navItem.component
+                    // </Suspense>
                 }>
-                <Route path={':id'} element={<Suspense fallback={<Box className={'login-container'}>
-                    <SvgIcon className={'logo_anim'} component={svgLogo}
-                             sx={{width: 150, height: 150}}
-                             viewBox="-1.2989280492092803E-5 -2.8421709430404007E-13 128.08380126953125 128.46115112304688"/>
-                </Box>}>
-                    {navItem.component}
-                </Suspense>}/>
+                <Route path={':id'} element={
+                //     <Suspense fallback={<Box className={'login-container'}>
+                //     <SvgIcon className={'logo_anim'} component={svgLogo}
+                //              sx={{width: 150, height: 150}}
+                //              viewBox="-1.2989280492092803E-5 -2.8421709430404007E-13 128.08380126953125 128.46115112304688"/>
+                // </Box>}>
+                    navItem.component
+                // </Suspense>
+                }/>
             </Route>
         })
         if (nav !== '/') newList.push(<Route key={'redirect'} path="/" element={<Navigate to={nav}/>}/>)

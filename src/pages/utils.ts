@@ -88,7 +88,7 @@ export const changeNavListOnValidate = (user: IAccount, navList: INavItem[]) => 
 }
 
 export const validateEditAccess = (user: IAccount, valName: string) => {
-    if (!user) return []
+    if (!user) return false
     if (user.is_superuser) return true
     if (!user.role) return false
     return user.role.edit.some(val => val.name_plural === valName)
