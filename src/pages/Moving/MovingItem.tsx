@@ -245,7 +245,7 @@ const MovingItem = ({moving}: MovingItemProps) => {
                 </Grid>
                 <Grid xs={6} md={1}>
                     {moving.transfer_basis === 'rent' &&
-                        <Typography variant={'h6'} fontSize={'bold'}>Арнеда</Typography>}
+                        <Typography variant={'h6'} fontSize={'bold'}>Аренда</Typography>}
                 </Grid>
                 <Grid xs={6} md={4}>
                     {actionButton}
